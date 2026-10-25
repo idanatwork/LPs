@@ -1,0 +1,23 @@
+{
+ "name": "אשר יצר",
+ "short_name": "אשר יצר",
+ "lang": "he",
+ "dir": "rtl",
+ "start_url": "./asher-yatzar.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#1e3a8a",
+ "theme_color": "#1e3a8a",
+ "icons": [
+  {
+   "src": "icon-asher-yatzar.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-asher-yatzar-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
