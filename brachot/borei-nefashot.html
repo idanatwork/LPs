@@ -27,16 +27,63 @@ h1{font-size:clamp(28px,8vw,40px);color:var(--accent);margin:8px 0 6px;font-weig
 .note{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 18px}
 .text{font-size:clamp(26px,7.2vw,36px);line-height:1.95;text-align:center;margin:0}
 .text b{color:var(--accent)}
+.card{margin:22px 0 0;text-align:right;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:14px;padding:4px 14px}
+.card summary{cursor:pointer;font-size:18px;color:var(--accent);font-weight:700;padding:10px 0;list-style:none;text-align:center}
+.card summary::-webkit-details-marker{display:none}
+.card ul{margin:0 0 12px;padding:0 18px 0 0;font-size:16px;line-height:1.7}
+.card li{margin-bottom:6px}
+nav.top{display:flex;gap:8px;justify-content:center;margin:0 0 14px}
+nav.top a,.tg button{font:inherit;font-size:16px;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:6px 14px;text-decoration:none;background:transparent}
+.tg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0 14px}
+.tg button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.add{font-size:clamp(20px,5.6vw,26px);color:var(--muted);margin:8px 0;line-height:1.8}
+.add small{display:block;font-size:14px}
+h2{font-size:clamp(24px,7vw,34px);color:var(--accent);margin:40px 0 6px}
 .src{margin-top:28px;font-size:12px;color:var(--muted);direction:ltr}
 </style>
 </head>
 <body>
 <main>
-<h1>בִּרְכַּת בּוֹרֵא נְפָשׁוֹת</h1>
+<nav class="top"><a href="#borei-nefashot">בורא נפשות</a><a href="#mein-shalosh">מעין שלוש</a></nav>
+<h1 id="borei-nefashot">בִּרְכַּת בּוֹרֵא נְפָשׁוֹת</h1>
 <div class="sep"></div>
 <p class="note">לאחר האכילה אם אכל כזית בכדי אכילת פרס (4 דקות, וי"א 8 דקות), או שתה רביעית בבת אחת על פרות האילן (חוץ מן הז' מינים), פרות האדמה, ודבר שאין גידולו מן הארץ, מברך</p>
+<details class="card"><summary>מתי מברכים? ▾</summary><ul>
+<li><b>בורא נפשות</b> – אחרי פירות (שאינם משבעת המינים), ירקות, בשר, דגים, ביצים, מוצרי חלב, ממתקים, וכל משקה חוץ מיין (כולל מים).</li>
+<li><b>מעין שלוש</b> – <b>על המחיה</b> אחרי מזונות מחמשת מיני דגן (חיטה, שעורה, כוסמין, שיבולת שועל, שיפון), כמו עוגה, פסטה, בורקס, קרקרים; <b>על הגפן</b> אחרי יין או מיץ ענבים; <b>על העץ</b> אחרי פירות שבעת המינים (ענבים, תאנים, רימונים, זיתים, תמרים).</li>
+<li><b>שיעור</b> – לפחות כזית (כ־27 גרם) שנאכל תוך כמה דקות, או רביעית (כ־86 מ"ל) משקה ששתה ברצף.</li>
+<li><b>עד מתי</b> – כל עוד לא התעכל המזון; למעשה עד כ־72 דקות מסוף האכילה.</li>
+<li><b>אכל משניהם</b> – מברך קודם מעין שלוש ואחר כך בורא נפשות (לפי השולחן ערוך, "על העץ" פוטר גם פירות עץ אחרים שאכל יחד). אחרי לחם – ברכת המזון פוטרת הכול.</li>
+</ul></details>
 <p class="text"><b>בָּרוּךְ</b> אַתָּה יְהֹוָה, אֱלֹהֵֽינוּ מֶֽלֶךְ הָעוֹלָם, בּוֹרֵא נְפָשׁוֹת רַבּוֹת וְחֶסְרוֹנָן עַל כָּל־מַה־שֶּׁבָּרָֽאתָ לְהַחֲיוֹת בָּהֶם נֶֽפֶשׁ כָּל־חָי, בָּרוּךְ חַי הָעוֹלָמִים.</p>
 <div class="src">נוסח עדות המזרח · Sefaria: Siddur_Edot_HaMizrach, Blessings on Enjoyments 13</div>
+<h2 id="mein-shalosh">בְּרָכָה מֵעֵין שָׁלֹשׁ</h2>
+<div class="sep"></div>
+<p class="note">סמן מה אכלת/שתית (אפשר יותר מאחד):</p>
+<div class="tg" id="kinds"><button data-k="m" aria-pressed="true">מזונות</button><button data-k="g" aria-pressed="false">יין</button><button data-k="e" aria-pressed="false">פירות ז' המינים</button></div>
+<div class="tg"><button id="ey" aria-pressed="true">יין/פירות מארץ ישראל</button></div>
+<p class="text"><b>בָּרוּךְ</b> אַתָּה יְהֹוָה, אֱלֹהֵֽינוּ מֶֽלֶךְ הָעוֹלָם, <span id="open"></span> וְעַל תְּנוּבַת הַשָּׂדֶה, וְעַל אֶֽרֶץ חֶמְדָּה טוֹבָה וּרְחָבָה, שֶׁרָצִֽיתָ וְהִנְחַֽלְתָּ לַאֲבוֹתֵֽינוּ, לֶאֱכֹל מִפִּרְיָהּ וְלִשְׂבֹּֽעַ מִטּוּבָהּ. רַחֵם יְהֹוָה אֱלֹהֵֽינוּ עָלֵֽינוּ וְעַל יִשְׂרָאֵל עַמָּךְ, וְעַל יְרוּשָׁלַֽיִם עִירָךְ, וְעַל הַר צִיּוֹן מִשְׁכַּן כְּבוֹדָךְ, וְעַל מִזְבָּחָךְ וְעַל הֵיכָלָךְ. וּבְנֵה יְרוּשָׁלַֽיִם עִיר הַקֹּֽדֶשׁ בִּמְהֵרָה בְיָמֵֽינוּ, וְהַעֲלֵֽנוּ לְתוֹכָהּ, וְשַׂמְּחֵֽנוּ בְּבִנְיָנָהּ, וּנְבָֽרְכָֽךְ עָלֶֽיהָ בִּקְדֻשָּׁה וּבְטָהֳרָה.</p>
+<div class="add"><small>בשבת</small>וּרְצֵה וְהַחֲלִיצֵֽנוּ בְּיוֹם הַשַּׁבָּת הַזֶּה.
+<small>בראש חודש</small>וְזָכְרֵֽנוּ לְטוֹבָה בְּיוֹם רֹאשׁ חֹֽדֶשׁ הַזֶּה.
+<small>בראש השנה</small>וְזָכְרֵֽנוּ לְטוֹבָה בְּיוֹם הַזִּכָּרוֹן הַזֶּה.
+<small>בפסח</small>וְשַׂמְּחֵֽנוּ בְּיוֹם חַג הַמַּצּוֹת הַזֶּה, בְּיוֹם (ביום טוב: טוֹב) מִקְרָא קֹדֶשׁ הַזֶּה.
+<small>בשבועות</small>וְשַׂמְּחֵֽנוּ בְּיוֹם חַג הַשָּׁבוּעוֹת הַזֶּה, בְּיוֹם טוֹב מִקְרָא קֹֽדֶשׁ הַזֶּה.
+<small>בסוכות</small>וְשַׂמְּחֵֽנוּ בְּיוֹם חַג הַסֻּכּוֹת הַזֶּה, בְּיוֹם (ביום טוב: טוֹב) מִקְרָא קֹֽדֶשׁ הַזֶּה.
+<small>בשמיני עצרת</small>וְשַׂמְּחֵֽנוּ בְּיוֹם שְׁמִינִי חַג עֲצֶֽרֶת הַזֶּה, בְּיוֹם טוֹב מִקְרָא קֹֽדֶשׁ הַזֶּה.</div>
+<p class="text">כִּי אַתָּה טוֹב וּמֵטִיב לַכֹּל, וְנוֹדֶה לְךָ עַל הָאָֽרֶץ <span id="mid"></span>. <b>בָּרוּךְ</b> אַתָּה יְהֹוָה, עַל הָאָֽרֶץ <span id="end"></span>.</p>
+<div class="src">נוסח עדות המזרח · Sefaria: Siddur_Edot_HaMizrach, Al Hamihya</div>
+<script>
+const O={m:'עַל הַמִּחְיָה וְעַל הַכַּלְכָּלָה',g:'עַל הַגֶּֽפֶן וְעַל פְּרִי הַגֶּֽפֶן',e:'עַל הָעֵץ וְעַל פְּרִי הָעֵץ'};
+const E={m:['הַמִּחְיָה וְעַל הַכַּלְכָּלָה','הַמִּחְיָה וְעַל הַכַּלְכָּלָה'],g:['פְּרִי הַגֶּֽפֶן','פְּרִי גַפְנָהּ'],e:['הַפֵּרוֹת','פֵּרוֹתֶֽיהָ']};
+function r(){const ks=[...document.querySelectorAll('#kinds button')].filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>b.dataset.k);
+const ey=document.getElementById('ey').getAttribute('aria-pressed')==='true'?1:0;
+const v=ks.length?ks:['m'];
+document.getElementById('open').textContent=v.map((k,i)=>(i?'וְ':'')+O[k]).join(' ')+',';
+const e=v.map(k=>'וְעַל '+E[k][ey]).join(' ');
+document.getElementById('mid').textContent=e;document.getElementById('end').textContent=e;}
+document.querySelectorAll('.tg button').forEach(b=>b.onclick=()=>{b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');r();});
+r();
+</script>
 </main>
 </body>
 </html>
