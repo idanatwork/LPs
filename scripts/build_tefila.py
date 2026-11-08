@@ -424,8 +424,7 @@ def render(service: str, title: str, page: Page) -> str:
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="{short}">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#fbf7ef" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="theme-color" content="#fdfbf6">
 <link rel="apple-touch-icon" sizes="180x180" href="{icon}">
 <link rel="icon" type="image/png" href="{icon}">
 <link rel="manifest" href="{service}.webmanifest">
@@ -442,16 +441,27 @@ def render(service: str, title: str, page: Page) -> str:
 }}
 </script>
 <script>
-try {{
-  var s = localStorage.getItem("tefila-font");
-  if (s) document.documentElement.style.setProperty("--fs", Math.max(18, Math.min(40, parseInt(s, 10))) + "px");
-}} catch (e) {{}}
+(function () {{
+  var theme;
+  try {{ theme = localStorage.getItem("tefila-theme"); }} catch (e) {{}}
+  if (theme !== "light" && theme !== "dark") {{
+    theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }}
+  document.documentElement.setAttribute("data-theme", theme);
+  var meta = document.getElementById("theme-color");
+  if (meta) meta.setAttribute("content", theme === "dark" ? "#111111" : "#fdfbf6");
+  try {{
+    var s = localStorage.getItem("tefila-font");
+    if (s) document.documentElement.style.setProperty("--fs", Math.max(18, Math.min(40, parseInt(s, 10))) + "px");
+  }} catch (e) {{}}
+}})();
 </script>
 </head>
 <body data-service="{service}">
 <header class="bar">
   <div class="brand"><a href="index.html">תפילה</a><strong>{short}</strong></div>
   <div class="szs">
+    <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
     <button type="button" id="font-dec" aria-label="הקטן אות">א−</button>
     <button type="button" id="font-inc" aria-label="הגדל אות">א+</button>
   </div>
@@ -468,6 +478,7 @@ try {{
 {chr(10).join(page.parts)}
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
+<script src="controls.js"></script>
 <script type="module" src="browser.mjs"></script>
 </body>
 </html>

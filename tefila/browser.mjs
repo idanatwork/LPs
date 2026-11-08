@@ -1,19 +1,5 @@
 import { statusFor } from "./day-status.mjs";
 
-function bindFont() {
-  const root = document.documentElement;
-  const read = () => parseInt(getComputedStyle(root).getPropertyValue("--fs"), 10) || 22;
-  const apply = (n) => {
-    n = Math.max(18, Math.min(40, n));
-    root.style.setProperty("--fs", n + "px");
-    try { localStorage.setItem("tefila-font", String(n)); } catch (e) {}
-  };
-  const dec = document.getElementById("font-dec");
-  const inc = document.getElementById("font-inc");
-  if (dec) dec.addEventListener("click", () => apply(read() - 2));
-  if (inc) inc.addEventListener("click", () => apply(read() + 2));
-}
-
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
     el.open = false;
@@ -47,7 +33,6 @@ function showBanner(status) {
 }
 
 function init() {
-  bindFont();
   const service = document.body && document.body.dataset.service;
   if (!service) return;
   try {
