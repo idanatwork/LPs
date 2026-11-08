@@ -93,6 +93,8 @@ function tachanunDecision(hd, events, service, weekday) {
   if (has(/^Tu BiShvat$/)) return { say: false, debate: false };
   if (has(/^(Purim|Shushan Purim|Purim Katan|Shushan Purim Katan)$/)) return { say: false, debate: false };
   if (has(/^Yom HaAtzma/) || has(/^Yom Yerushalayim/)) return { say: false, debate: true };
+  // Yalkut Yosef and Chazon Ovadia: no vidui or nefilat apayim on Erev Rosh Hashana, including Shacharit.
+  if (has(/^Erev Rosh Hashana/)) return { say: false, debate: false };
   if (service === "mincha" && weekday === 5) return { say: false, debate: false };
   if (service === "mincha" && isErevYomTov(events)) return { say: false, debate: false };
   return { say: true, debate: false };

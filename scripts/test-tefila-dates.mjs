@@ -69,10 +69,16 @@ function at(y, m, d, service) {
 }
 
 {
-  const hd = new HDate(29, months.ELUL, 5786);
-  const sh = statusForHDate(hd, "shacharit");
-  const mi = statusForHDate(hd, "mincha");
-  check("Erev RH shacharit says tachanun, mincha does not", sh.flags.tachanun && sh.chips.includes("אומרים תחנון") && !mi.flags.tachanun && mi.chips.includes("לא אומרים תחנון"), `shacharit: ${sh.chips.join(" · ")} | mincha: ${mi.chips.join(" · ")}`);
+  const erev = new HDate(29, months.ELUL, 5786);
+  const before = new HDate(28, months.ELUL, 5786);
+  const sh = statusForHDate(erev, "shacharit");
+  const mi = statusForHDate(erev, "mincha");
+  const mincha28 = statusForHDate(before, "mincha");
+  check("29 Elul 5786 is Erev Rosh Hashana", erev.greg().toDateString() === "Fri Sep 11 2026", erev.greg().toDateString());
+  check("29 Elul Shacharit does not say tachanun", !sh.flags.tachanun && sh.chips.includes("לא אומרים תחנון"), sh.chips.join(" · "));
+  check("29 Elul Mincha does not say tachanun", !mi.flags.tachanun && mi.chips.includes("לא אומרים תחנון"), mi.chips.join(" · "));
+  check("28 Elul is Thursday", before.greg().getUTCDay() === 4, before.greg().toDateString());
+  check("28 Elul Mincha says tachanun", mincha28.flags.tachanun && mincha28.chips.includes("אומרים תחנון"), mincha28.chips.join(" · "));
 }
 
 {
