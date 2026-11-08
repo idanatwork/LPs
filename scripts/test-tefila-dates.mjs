@@ -1,5 +1,5 @@
-import { HDate, months } from "@hebcal/core";
-import { statusForHDate, resolveHDate, formatHebrewDate } from "../tefila/day-status.mjs";
+import { HDate, Location, Zmanim, months } from "@hebcal/core";
+import { statusForHDate, resolveHDate, formatHebrewDate, activeService } from "../tefila/day-status.mjs";
 
 const checks = [];
 function check(name, ok, detail) {
@@ -103,6 +103,18 @@ function at(y, m, d, service) {
   check("arvit before sunset is the coming day", formatHebrewDate(arvitDay).startsWith("כ״ט"), formatHebrewDate(arvitDay));
   check("arvit after sunset is that new day", formatHebrewDate(arvitNight).startsWith("כ״ט"), formatHebrewDate(arvitNight));
   check("arvit after midnight does not skip another day", formatHebrewDate(arvitAfterMidnight).startsWith("כ״ט"), formatHebrewDate(arvitAfterMidnight));
+}
+
+{
+  const loc = new Location(32.13, 34.99, true, "Asia/Jerusalem", "Oranit", "IL");
+  const z = new Zmanim(loc, new Date("2026-11-08T10:00:00Z"), false);
+  const alot = z.alotHaShachar();
+  const mid = z.chatzot();
+  const sunset = z.sunset();
+  check("before dawn is Arvit", activeService(new Date(alot.getTime() - 60000)) === "arvit");
+  check("after dawn is Shacharit", activeService(new Date(alot.getTime() + 60000)) === "shacharit");
+  check("after chatzot is Mincha", activeService(new Date(mid.getTime() + 60000)) === "mincha");
+  check("after sunset is Arvit", activeService(new Date(sunset.getTime() + 60000)) === "arvit");
 }
 
 const failed = checks.filter((c) => !c.ok);
