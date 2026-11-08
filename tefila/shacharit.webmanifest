@@ -1,0 +1,15 @@
+{
+ "name": "שחרית",
+ "short_name": "שחרית",
+ "lang": "he",
+ "dir": "rtl",
+ "start_url": "./shacharit.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#1e3a8a",
+ "theme_color": "#1e3a8a",
+ "icons": [
+  { "src": "icon-shacharit.png", "sizes": "180x180", "type": "image/png" },
+  { "src": "icon-shacharit-512.png", "sizes": "512x512", "type": "image/png" }
+ ]
+}
