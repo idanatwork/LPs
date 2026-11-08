@@ -1,0 +1,15 @@
+{
+ "name": "מנחה",
+ "short_name": "מנחה",
+ "lang": "he",
+ "dir": "rtl",
+ "start_url": "./mincha.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#9a3412",
+ "theme_color": "#9a3412",
+ "icons": [
+  { "src": "icon-mincha.png", "sizes": "180x180", "type": "image/png" },
+  { "src": "icon-mincha-512.png", "sizes": "512x512", "type": "image/png" }
+ ]
+}

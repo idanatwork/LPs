@@ -1,0 +1,15 @@
+{
+ "name": "ערבית",
+ "short_name": "ערבית",
+ "lang": "he",
+ "dir": "rtl",
+ "start_url": "./arvit.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#312e81",
+ "theme_color": "#312e81",
+ "icons": [
+  { "src": "icon-arvit.png", "sizes": "180x180", "type": "image/png" },
+  { "src": "icon-arvit-512.png", "sizes": "512x512", "type": "image/png" }
+ ]
+}
