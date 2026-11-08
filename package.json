@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "dependencies": {
+    "@hebcal/core": "6.15.0"
+  },
+  "scripts": {
+    "test:dates": "node scripts/test-tefila-dates.mjs"
+  }
+}
