@@ -271,18 +271,47 @@ a.to-toc {
   box-shadow: 0 6px 18px color-mix(in srgb, var(--fg) 18%, transparent);
 }
 
-.cards { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
-.cards a {
-  display: block;
-  text-decoration: none;
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  border-radius: 16px;
-  padding: 18px 16px;
-  font-size: 28px;
+.hub-h {
+  margin: 26px 0 10px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
 }
+.cards { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.cards a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 18px;
+  padding: 20px 18px;
+  min-height: 76px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+.cards.small a { font-size: 26px; min-height: 64px; padding: 16px 18px; }
+.cards a.now {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.now-tag {
+  display: none;
+  flex: none;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--accent);
+}
+.cards a.now .now-tag { display: inline-block; }
 .index-main { padding-top: 18px; }
 
 :focus-visible {

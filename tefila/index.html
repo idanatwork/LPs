@@ -16,6 +16,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="tefila.css">
 <title>תפילה</title>
+<script type="importmap">
+{
+  "imports": {
+    "@hebcal/core": "https://cdn.jsdelivr.net/npm/@hebcal/core@6.15.0/+esm"
+  }
+}
+</script>
 <script>
 (function () {
   var theme;
@@ -37,15 +44,24 @@
   </div>
 </header>
 <main class="index-main">
-<p class="kicker">תפילה ליחיד</p>
-<div class="sep"></div>
-<p class="note">נוסח עדות המזרח לימי חול, למי שמתפלל לבד. אין כאן נוסח שבת או יום טוב. תוספות של ימים מיוחדים סגורות, ואפשר לפתוח אותן במקומן.</p>
+<div class="today" id="today-banner" hidden>
+  <p class="date"></p>
+  <p class="status"></p>
+  <p class="extra" hidden></p>
+</div>
+<p class="note">נוסח עדות המזרח לימי חול, למי שמתפלל לבד.</p>
 <nav class="cards" aria-label="התפילות">
-  <a href="shacharit.html">שחרית</a>
-  <a href="mincha.html">מנחה</a>
-  <a href="arvit.html">ערבית</a>
+  <a id="card-shacharit" href="shacharit.html"><span>שחרית</span><span class="now-tag">עכשיו</span></a>
+  <a id="card-mincha" href="mincha.html"><span>מנחה</span><span class="now-tag">עכשיו</span></a>
+  <a id="card-arvit" href="arvit.html"><span>ערבית</span><span class="now-tag">עכשיו</span></a>
+</nav>
+<h2 class="hub-h">ברכות</h2>
+<nav class="cards small" aria-label="ברכות">
+  <a href="../brachot/asher-yatzar.html">אשר יצר</a>
+  <a href="../brachot/borei-nefashot.html">בורא נפשות</a>
 </nav>
 </main>
 <script src="controls.js"></script>
+<script type="module" src="hub.mjs"></script>
 </body>
 </html>

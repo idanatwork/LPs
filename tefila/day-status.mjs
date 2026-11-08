@@ -1,5 +1,9 @@
 import { HDate, HebrewCalendar, Location, Zmanim, flags, months } from "@hebcal/core";
 
+export function oranit() {
+  return new Location(32.13, 34.99, true, "Asia/Jerusalem", "Oranit", "IL");
+}
+
 const PUBLIC_FASTS = new Set([
   "Tzom Gedaliah",
   "Asara B'Tevet",
@@ -189,4 +193,22 @@ export function resolveHDate(now, service) {
 
 export function statusFor(now, service) {
   return statusForHDate(resolveHDate(now, service), service);
+}
+
+export function activeService(now) {
+  const z = new Zmanim(oranit(), now, false);
+  const alot = z.alotHaShachar();
+  const mid = z.chatzot();
+  const sunset = z.sunset();
+  if (!alot || !mid || !sunset || now < alot || now >= sunset) return "arvit";
+  if (now < mid) return "shacharit";
+  return "mincha";
+}
+
+export function hebrewNow(now) {
+  const z = new Zmanim(oranit(), now, false);
+  const hd = new HDate(now);
+  const sunset = z.sunset();
+  if (sunset && now >= sunset) return hd.next();
+  return hd;
 }
