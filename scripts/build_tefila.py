@@ -110,9 +110,9 @@ def classify(text: str):
     if "תוספת רשות" in text:
         return ("one", "תפילת רב — רשות, אפשר לדלג", None)
     if "למנצח יענך נאמר" in text:
-        return ("one", "למנצח יענך — בימים שיש בהם תחנון", None)
+        return ("one", "למנצח יענך — בימים שיש בהם תחנון", "tachanun")
     if "תפילה לדוד נאמרת" in text:
-        return ("one", "תפילה לדוד — בימים שיש בהם תחנון", None)
+        return ("one", "תפילה לדוד — בימים שיש בהם תחנון", "tachanun")
     return ("plain",)
 
 
@@ -294,7 +294,7 @@ def emit_tachanun(page: Page, blocks, i):
         b = blocks[i]
         if b["tag"] == "h3" and "שני וחמישי" in b["text"]:
             chunk, i = chunk_paragraphs(page, blocks, i + 1, {"h2"})
-            inner.append(page.details_html(None, chunk, None, heading=b["text"], level=3))
+            inner.append(page.details_html(None, chunk, "tachanun-mw", heading=b["text"], level=3))
             continue
         if b["note"]:
             inner.append(page.note_html(b))
@@ -303,7 +303,7 @@ def emit_tachanun(page: Page, blocks, i):
         else:
             inner.append(page.heading_html(b))
         i += 1
-    page.parts.append(page.details_html(small, "".join(inner), None, sec=True, heading=heading["text"], level=2, hid=hid))
+    page.parts.append(page.details_html(small, "".join(inner), "tachanun", sec=True, heading=heading["text"], level=2, hid=hid))
     return i
 
 
@@ -434,6 +434,13 @@ def render(service: str, title: str, page: Page) -> str:
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="tefila.css">
 <title>{short}</title>
+<script type="importmap">
+{{
+  "imports": {{
+    "@hebcal/core": "https://cdn.jsdelivr.net/npm/@hebcal/core@6.15.0/+esm"
+  }}
+}}
+</script>
 <script>
 try {{
   var s = localStorage.getItem("tefila-font");
@@ -452,11 +459,16 @@ try {{
 <main>
 <p class="kicker">{html.escape(title, quote=False)}</p>
 <div class="sep"></div>
+<div class="today" id="today-banner" hidden>
+  <p class="date"></p>
+  <p class="status"></p>
+  <p class="extra" hidden></p>
+</div>
 {toc_html(page)}
 {chr(10).join(page.parts)}
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="tefila.js"></script>
+<script type="module" src="browser.mjs"></script>
 </body>
 </html>
 """

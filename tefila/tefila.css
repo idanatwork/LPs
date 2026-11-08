@@ -145,6 +145,28 @@ p.t {
   margin: 0 0 0.9em;
   text-align: right;
 }
+.today {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  text-align: right;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.today .date {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.4;
+}
+.today .status, .today .extra {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.today .extra { color: var(--muted); margin-top: 6px; }
+
 p.note, summary small, .sum-note {
   font-size: 15px;
   line-height: 1.55;
@@ -188,8 +210,12 @@ details.sec > summary::before {
 }
 details.add[open] > summary::before,
 details.sec[open] > summary::before { content: "▾ "; }
+details.is-today {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
 details.is-today > summary::after {
-  content: "היום";
+  content: "היום אומרים";
   display: inline-block;
   margin-right: 8px;
   padding: 0 8px;
@@ -201,7 +227,6 @@ details.is-today > summary::after {
   line-height: 1.7;
   vertical-align: middle;
 }
-details.is-today:has(details.is-today) > summary::after { content: none; }
 details.sec details.add { margin-right: 0; }
 
 a.to-toc {

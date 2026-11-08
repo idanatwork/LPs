@@ -17,6 +17,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="tefila.css">
 <title>ערבית</title>
+<script type="importmap">
+{
+  "imports": {
+    "@hebcal/core": "https://cdn.jsdelivr.net/npm/@hebcal/core@6.15.0/+esm"
+  }
+}
+</script>
 <script>
 try {
   var s = localStorage.getItem("tefila-font");
@@ -35,6 +42,11 @@ try {
 <main>
 <p class="kicker">ערבית ליחיד — עדות המזרח</p>
 <div class="sep"></div>
+<div class="today" id="today-banner" hidden>
+  <p class="date"></p>
+  <p class="status"></p>
+  <p class="extra" hidden></p>
+</div>
 <nav class="toc" id="toc" aria-label="תוכן העניינים"><p class="toc-title">תוכן</p>
 <a class="l2" href="#s1">קריאת שמע וברכותיה</a>
 <a class="l2" href="#s2">עמידה — תפילת לחש ליחיד</a>
@@ -150,6 +162,6 @@ try {
 <p class="note">הוראה — ההגהות נעשו לפי המקורות המקושרים, ולא מיוחס כאן פסק לרב חיים דרוקמן בלי מקור מפורש. סדר זה מיועד לימי חול; פרטי שבת, יום טוב, ראש חודש ותעניות דורשים את סדר היום המתאים.</p>
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="tefila.js"></script>
+<script type="module" src="browser.mjs"></script>
 </body>
 </html>
