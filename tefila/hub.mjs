@@ -1,4 +1,6 @@
+import { Location, Zmanim } from "@hebcal/core";
 import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs";
+import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
 
 const now = new Date();
 const service = activeService(now);
@@ -16,6 +18,23 @@ if (box) {
     note.hidden = !status.note;
   }
   box.hidden = false;
+}
+
+const strip = document.getElementById("next-zman");
+if (strip) {
+  const loc = new Location(ORANIT.lat, ORANIT.lon, true, ORANIT.tz, "Oranit", "IL");
+  const sun = new Zmanim(loc, now, false);
+  const times = computeFromSun(sun.sunrise(), sun.sunset());
+  const order = [
+    ["alot", "עלות השחר"],
+    ["sunrise", "הנץ"],
+    ["chatzot", "חצות"],
+    ["minchaGedola", "מנחה גדולה"],
+    ["sunset", "שקיעה"],
+    ["tzeit", "צאת הכוכבים"],
+  ];
+  const upcoming = order.find(([key]) => times[key] > now);
+  strip.textContent = upcoming ? `הזמן הבא: ${upcoming[1]} ${formatHM(times[upcoming[0]])}` : "עבר צאת הכוכבים";
 }
 
 const card = document.getElementById("card-" + service);

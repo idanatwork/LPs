@@ -4,6 +4,6 @@
     "@hebcal/core": "6.15.0"
   },
   "scripts": {
-    "test:dates": "node scripts/test-tefila-dates.mjs"
+    "test:dates": "node scripts/test-tefila-dates.mjs && node scripts/test-zmanim.mjs && python3 scripts/test_solo_text.py"
   }
 }

@@ -166,6 +166,17 @@ export function statusForHDate(hd, service) {
     hallel: service === "shacharit" && (rc || chanukah),
     tachanun: service !== "arvit" && tachanun.say,
     "tachanun-mw": service === "shacharit" && tachanun.say && (weekday === 1 || weekday === 4),
+    shabbat: weekday === 6,
+    "rosh-hashana": hd.getMonth() === months.TISHREI && (hd.getDate() === 1 || hd.getDate() === 2),
+    pesach: hd.getMonth() === months.NISAN && hd.getDate() >= 15 && hd.getDate() <= 21,
+    shavuot: hd.getMonth() === months.SIVAN && hd.getDate() === 6,
+    sukkot: hd.getMonth() === months.TISHREI && hd.getDate() >= 15 && hd.getDate() <= 21,
+    "shemini-atzeret": hd.getMonth() === months.TISHREI && hd.getDate() === 22,
+    yomtov: (mask & flags.CHAG) !== 0 || chm,
+    fast,
+    torah:
+      (service === "shacharit" && weekday !== 6 && (((weekday === 1 || weekday === 4) && tachanun.say) || rc || fast))
+      || (service === "mincha" && fast && weekday !== 6),
   };
   if (service === "shacharit" && weekday <= 5) flagsOut["weekday-" + weekday] = true;
 

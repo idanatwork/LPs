@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" id="theme-color" content="#fdfbf6">
+<link rel="icon" type="image/png" href="icon-tefila.png">
+<link rel="stylesheet" href="tefila.css">
+<title>זמני היום</title>
+<script type="importmap">
+{
+  "imports": {
+    "@hebcal/core": "https://cdn.jsdelivr.net/npm/@hebcal/core@6.15.0/+esm"
+  }
+}
+</script>
+<script src="boot.js"></script>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><a href="index.html">בית</a><strong>זמנים</strong></div>
+  <div class="szs">
+    <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
+  </div>
+</header>
+<main>
+<p class="kicker">זמני היום באורנית</p>
+<div class="sep"></div>
+<p class="note">לפי הרב עובדיה יוסף: שעה זמנית גר״א מהנץ עד השקיעה. עלות השחר 72 דקות זמניות לפני הנץ, צאת הכוכבים 13.5 אחרי השקיעה, ר״ת 72 אחרי השקיעה. שעה זמנית מג״א מעלות עד ר״ת. פלג המנחה לפי ילקוט יוסף: צאת הכוכבים פחות 75 דקות זמניות. סוף זמן ק״ש ותפילה למג״א הוא לכתחילה, ולגר״א בדיעבד. הדלקת נרות: 20 דקות קבועות לפני השקיעה.</p>
+<div class="z-nav">
+  <button type="button" id="z-prev" aria-label="היום הקודם">הקודם</button>
+  <input id="z-date" type="date" aria-label="תאריך">
+  <button type="button" id="z-next" aria-label="היום הבא">הבא</button>
+</div>
+<p class="date" id="z-head"></p>
+<ol class="z-list" id="z-list"></ol>
+<p class="note" id="z-extra" hidden></p>
+<p class="src">מקורות: הלכה יומית, הלכה 957 (72 דקות זמניות); טבלת calj.net בשורות Rav Ovadia.</p>
+</main>
+<script src="controls.js"></script>
+<script type="module" src="zmanim-page.mjs"></script>
+</body>
+</html>

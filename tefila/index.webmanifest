@@ -1,6 +1,6 @@
 {
- "name": "תפילה",
- "short_name": "תפילה",
+ "name": "סידור",
+ "short_name": "סידור",
  "lang": "he",
  "dir": "rtl",
  "start_url": "./index.html",
