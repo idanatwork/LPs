@@ -14,4 +14,11 @@
   var mode = "yachid";
   try { if (localStorage.getItem("tefila-minyan") === "minyan") mode = "minyan"; } catch (e) {}
   document.documentElement.setAttribute("data-minyan", mode);
+  var accentIds = { gold: 1, blue: 1, olive: 1, bordeaux: 1, purple: 1, turquoise: 1 };
+  var accent = "blue";
+  try {
+    var savedAccent = localStorage.getItem("tefila-accent");
+    if (accentIds[savedAccent]) accent = savedAccent;
+  } catch (e) {}
+  document.documentElement.setAttribute("data-accent", accent);
 })();

@@ -1,0 +1,100 @@
+/* Chosen accent. Light colors clear WCAG AA (4.5:1) on #fdfbf6.
+   Dark colors clear 4.5:1 on #111111, including text sitting on the accent. */
+html[data-accent="gold"] body,
+html[data-accent="gold"] { --accent: #8a5a12 !important; }
+html[data-accent="blue"] body,
+html[data-accent="blue"] { --accent: #1e3a8a !important; }
+html[data-accent="olive"] body,
+html[data-accent="olive"] { --accent: #3f4f1a !important; }
+html[data-accent="bordeaux"] body,
+html[data-accent="bordeaux"] { --accent: #7f1d3a !important; }
+html[data-accent="purple"] body,
+html[data-accent="purple"] { --accent: #5b21b6 !important; }
+html[data-accent="turquoise"] body,
+html[data-accent="turquoise"] { --accent: #0f5f66 !important; }
+
+html[data-theme="dark"][data-accent="gold"] body,
+html[data-theme="dark"][data-accent="gold"] { --accent: #e9c46a !important; }
+html[data-theme="dark"][data-accent="blue"] body,
+html[data-theme="dark"][data-accent="blue"] { --accent: #93c5fd !important; }
+html[data-theme="dark"][data-accent="olive"] body,
+html[data-theme="dark"][data-accent="olive"] { --accent: #c6d48a !important; }
+html[data-theme="dark"][data-accent="bordeaux"] body,
+html[data-theme="dark"][data-accent="bordeaux"] { --accent: #f0a3b8 !important; }
+html[data-theme="dark"][data-accent="purple"] body,
+html[data-theme="dark"][data-accent="purple"] { --accent: #d8b4fe !important; }
+html[data-theme="dark"][data-accent="turquoise"] body,
+html[data-theme="dark"][data-accent="turquoise"] { --accent: #5eead4 !important; }
+
+@media (prefers-color-scheme: dark) {
+  html[data-accent="gold"]:not([data-theme="light"]) body,
+  html[data-accent="gold"]:not([data-theme="light"]) { --accent: #e9c46a !important; }
+  html[data-accent="blue"]:not([data-theme="light"]) body,
+  html[data-accent="blue"]:not([data-theme="light"]) { --accent: #93c5fd !important; }
+  html[data-accent="olive"]:not([data-theme="light"]) body,
+  html[data-accent="olive"]:not([data-theme="light"]) { --accent: #c6d48a !important; }
+  html[data-accent="bordeaux"]:not([data-theme="light"]) body,
+  html[data-accent="bordeaux"]:not([data-theme="light"]) { --accent: #f0a3b8 !important; }
+  html[data-accent="purple"]:not([data-theme="light"]) body,
+  html[data-accent="purple"]:not([data-theme="light"]) { --accent: #d8b4fe !important; }
+  html[data-accent="turquoise"]:not([data-theme="light"]) body,
+  html[data-accent="turquoise"]:not([data-theme="light"]) { --accent: #5eead4 !important; }
+}
+
+p.home { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.accent-pop { position: relative; display: inline-flex; }
+.accent-pop > button {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.accent-menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  gap: 8px;
+  margin: 0;
+  padding: 10px;
+  background: var(--bg, #fdfbf6);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 10px 28px color-mix(in srgb, #000 22%, transparent);
+}
+.accent-menu[hidden] { display: none !important; }
+.accent-menu button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  padding: 0;
+}
+.accent-menu button[data-set-accent="gold"] { background: #e9c46a; }
+.accent-menu button[data-set-accent="blue"] { background: #1e3a8a; }
+.accent-menu button[data-set-accent="olive"] { background: #6d7c32; }
+.accent-menu button[data-set-accent="bordeaux"] { background: #9f1239; }
+.accent-menu button[data-set-accent="purple"] { background: #6d28d9; }
+.accent-menu button[data-set-accent="turquoise"] { background: #0f766e; }
+.accent-menu button[aria-pressed="true"],
+html[data-accent="gold"] .accent-menu [data-set-accent="gold"],
+html[data-accent="blue"] .accent-menu [data-set-accent="blue"],
+html[data-accent="olive"] .accent-menu [data-set-accent="olive"],
+html[data-accent="bordeaux"] .accent-menu [data-set-accent="bordeaux"],
+html[data-accent="purple"] .accent-menu [data-set-accent="purple"],
+html[data-accent="turquoise"] .accent-menu [data-set-accent="turquoise"] {
+  border-color: var(--fg, #1c1915);
+  box-shadow: 0 0 0 2px var(--bg, #fdfbf6);
+}

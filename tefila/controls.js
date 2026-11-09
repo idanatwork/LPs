@@ -110,18 +110,66 @@
     toc.appendChild(box);
   }
 
+  var ACCENTS = ["gold", "blue", "olive", "bordeaux", "purple", "turquoise"];
+  function readAccent() {
+    var attr = document.documentElement.getAttribute("data-accent");
+    return ACCENTS.indexOf(attr) === -1 ? "blue" : attr;
+  }
+  function applyAccent(name, persist) {
+    if (ACCENTS.indexOf(name) === -1) name = "blue";
+    document.documentElement.setAttribute("data-accent", name);
+    document.querySelectorAll("[data-set-accent]").forEach(function (button) {
+      button.setAttribute("aria-pressed", button.getAttribute("data-set-accent") === name ? "true" : "false");
+    });
+    if (persist) {
+      try { localStorage.setItem("tefila-accent", name); } catch (e) {}
+    }
+  }
+  function closeAccentMenus() {
+    document.querySelectorAll(".accent-menu").forEach(function (menu) { menu.hidden = true; });
+    document.querySelectorAll("#accent-toggle, .accent-pop > button").forEach(function (button) {
+      button.setAttribute("aria-expanded", "false");
+    });
+  }
+
   function boot() {
-    ensureModeStatus();
-    ensureToc();
-    applyMode(readMode(), false);
+    if (document.getElementById("today-banner") || document.getElementById("toc") || document.querySelector(".mode-switch")) {
+      ensureModeStatus();
+      ensureToc();
+      applyMode(readMode(), false);
+    }
+    applyAccent(readAccent(), false);
     document.addEventListener("click", function (event) {
-      var button = event.target.closest && event.target.closest("[data-set-minyan]");
-      if (!button) return;
-      applyMode(button.getAttribute("data-set-minyan"), true);
+      var minyanButton = event.target.closest && event.target.closest("[data-set-minyan]");
+      if (minyanButton) {
+        applyMode(minyanButton.getAttribute("data-set-minyan"), true);
+        return;
+      }
+      var accentButton = event.target.closest && event.target.closest("[data-set-accent]");
+      if (accentButton) {
+        applyAccent(accentButton.getAttribute("data-set-accent"), true);
+        closeAccentMenus();
+        return;
+      }
+      var toggle = event.target.closest && event.target.closest(".accent-pop > button");
+      if (toggle) {
+        var menu = toggle.parentNode.querySelector(".accent-menu");
+        var willOpen = menu.hasAttribute("hidden");
+        closeAccentMenus();
+        if (willOpen) {
+          menu.hidden = false;
+          toggle.setAttribute("aria-expanded", "true");
+        }
+        return;
+      }
+      closeAccentMenus();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeAccentMenus();
     });
     window.addEventListener("storage", function (event) {
-      if (event.key !== KEY) return;
-      applyMode(event.newValue === "minyan" ? "minyan" : "yachid", false);
+      if (event.key === KEY) applyMode(event.newValue === "minyan" ? "minyan" : "yachid", false);
+      if (event.key === "tefila-accent") applyAccent(event.newValue, false);
     });
   }
 
