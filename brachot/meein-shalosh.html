@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-il="1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מעין שלוש">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" id="theme-color" content="#fdfbf6">
+<link rel="apple-touch-icon" sizes="180x180" href="../tefila/icon-tefila.png">
+<link rel="icon" type="image/png" href="../tefila/icon-tefila.png">
+<link rel="manifest" href="../tefila/index.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tefila/tefila.css">
+<title>ברכה מעין שלוש</title>
+<script type="importmap">
+{
+  "imports": {
+    "@hebcal/core": "https://cdn.jsdelivr.net/npm/@hebcal/core@6.15.0/+esm"
+  }
+}
+</script>
+<script src="../tefila/boot.js"></script>
+</head>
+<body >
+<header class="bar">
+  <div class="brand"><a href="../tefila/">בית</a><strong>מעין שלוש</strong></div>
+  <div class="szs">
+    <button type="button" id="minyan-toggle" aria-pressed="false">יחיד</button>
+    <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
+    <button type="button" id="font-dec" aria-label="הקטן אות">א−</button>
+    <button type="button" id="font-inc" aria-label="הגדל אות">א+</button>
+  </div>
+</header>
+<main>
+<p class="kicker">ברכה מעין שלוש</p>
+<div class="sep"></div>
+<div class="today" id="today-banner" hidden><p class="date"></p><p class="status"></p><p class="extra" hidden></p></div>
+<nav class="toc" id="toc" aria-label="תוכן"><a class="l2" href="#m1">ברכה מעין שלוש</a></nav>
+<h2 id="m1">ברכה מעין שלוש</h2>
+<p class="note">הנוסח מספריא, סידור עדות המזרח. בוחרים רק את מה שאכלו או שתו. מילות הארץ מסומנות בתוך הנוסח.</p>
+<p class="t">בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵֽינוּ מֶֽלֶךְ הָעוֹלָם</p>
+<div class="tg" id="foods">
+<button type="button" data-k="m" aria-pressed="true">מזונות</button>
+<button type="button" data-k="g" aria-pressed="false">יין</button>
+<button type="button" data-k="e" aria-pressed="false">פירות</button>
+<button type="button" id="il" aria-pressed="true">מארץ ישראל</button>
+</div>
+<p class="t" data-food="m">עַל הַמִּחְיָה וְעַל הַכַּלְכָּלָה</p><p class="t" data-food="g">(וְ)עַל הַגֶּֽפֶן וְעַל פְּרִי הַגֶּֽפֶן</p><p class="t" data-food="e">(וְ)עַל הָעֵץ וְעַל פְּרִי הָעֵץ</p>
+<p class="t">וְעַל תְּנוּבַת הַשָּׂדֶה, וְעַל אֶֽרֶץ חֶמְדָּה טוֹבָה וּרְחָבָה, שֶׁרָצִֽיתָ וְהִנְחַֽלְתָּ לַאֲבוֹתֵֽינוּ, לֶאֱכֹל מִפִּרְיָהּ וְלִשְׂבֹּֽעַ מִטּוּבָהּ. רַחֵם יְהֹוָה אֱלֹהֵֽינוּ עָלֵֽינוּ וְעַל יִשְׂרָאֵל עַמָּךְ, וְעַל יְרוּשָׁלַֽיִם עִירָךְ, וְעַל הַר צִיּוֹן מִשְׁכַּן כְּבוֹדָךְ, וְעַל מִזְבָּחָךְ וְעַל הֵיכָלָךְ. וּבְנֵה יְרוּשָׁלַֽיִם עִיר הַקֹּֽדֶשׁ בִּמְהֵרָה בְיָמֵֽינוּ, וְהַעֲלֵֽנוּ לְתוֹכָהּ, וְשַׂמְּחֵֽנוּ בְּבִנְיָנָהּ, וּנְבָֽרְכָֽךְ עָלֶֽיהָ בִּקְדֻשָּׁה וּבְטָהֳרָה:</p>
+<details class="add" data-open="shabbat"><summary>שבת</summary><p class="note">בשבת</p><p class="t">וּרְצֵה וְהַחֲלִיצֵֽנוּ בְּיוֹם הַשַּׁבָּת הַזֶּה.</p></details>
+<details class="add" data-open="yaaleh-rc"><summary>ראש חודש</summary><p class="note">בראש־חודש</p><p class="t">וְזָכְרֵֽנוּ לְטוֹבָה בְּיוֹם רֹאשׁ חֹֽדֶשׁ הַזֶּה.</p></details>
+<details class="add" data-open="rosh-hashana"><summary>ראש השנה</summary><p class="note">בראש־השנה</p><p class="t">וְזָכְרֵֽנוּ לְטוֹבָה בְּיוֹם הַזִּכָּרוֹן הַזֶּה.</p></details>
+<details class="add" data-open="pesach"><summary>פסח</summary><p class="note">בפסח</p><p class="t">וְשַׂמְּחֵֽנוּ בְּיוֹם חַג הַמַּצּוֹת הַזֶּה, בְּיוֹם (ביום טוב: טוֹב) מִקְרָא קֹדֶשׁ הַזֶּה.</p></details>
+<details class="add" data-open="shavuot"><summary>שבועות</summary><p class="note">בשבועות</p><p class="t">וְשַׂמְּחֵֽנוּ בְּיוֹם חַג הַשָּׁבוּעוֹת הַזֶּה בְּיוֹם טוֹב מִקְרָא קֹֽדֶשׁ הַזֶּה.</p></details>
+<details class="add" data-open="sukkot"><summary>סוכות</summary><p class="note">בסוכות</p><p class="t">וְשַׂמְּחֵֽנוּ בְּיוֹם הַסֻּכּוֹת הַזֶּה, בְּיוֹם (ביום טוב: טוֹב) מִקְרָא קֹֽדֶשׁ הַזֶּה.</p></details>
+<details class="add" data-open="shemini-atzeret"><summary>שמיני עצרת</summary><p class="note">בשמיני עצרת</p><p class="t">וְשַׂמְּחֵֽנוּ בְּיוֹם שְׁמִינִי חַג עֲצֶֽרֶת הַזֶּה בְּיוֹם טוֹב מִקְרָא קֹֽדֶשׁ הַזֶּה.</p></details>
+<p class="t">כִּי אַתָּה טוֹב וּמֵטִיב לַכֹּל, וְנוֹדֶה לְךָ עַל הָאָֽרֶץ</p>
+<p class="t" data-food="m"><span class="chutz">וְעַל הַמִּחְיָה וְעַל הַכַּלְכָּלָה</span><span class="baaretz">וְעַל מִחְיָתָהּ וְעַל כַּלְכָּלָתָהּ</span></p><p class="t" data-food="g"><span class="chutz">וְעַל פְּרִי הַגֶּֽפֶן</span><span class="baaretz">וְעַל פְּרִי גַפְנָהּ</span></p><p class="t" data-food="e"><span class="chutz">וְעַל הַפֵּרוֹת</span><span class="baaretz">וְעַל פֵּרוֹתֶֽיהָ</span></p>
+<p class="t">בָּרוּךְ אַתָּה יְהֹוָה, עַל הָאָֽרֶץ וְעַל</p>
+<p class="t" data-food="m"><span class="chutz">הַמִּחְיָה וְעַל הַכַּלְכָּלָה:</span><span class="baaretz">מִחְיָתָהּ וְעַל כַּלְכָּלָתָהּ:</span></p><p class="t" data-food="g"><span class="chutz">פְּרִי הַגֶּֽפֶן:</span><span class="baaretz">פְּרִי גַפְנָהּ:</span></p><p class="t" data-food="e"><span class="chutz">הַפֵּרוֹת:</span><span class="baaretz">פֵּרוֹתֶֽיהָ:</span></p>
+<p class="src"><a href="https://www.sefaria.org/Siddur_Edot_HaMizrach%2C_Al_Hamihya">ספריא: ברכה מעין שלוש</a></p>
+<script>
+document.querySelectorAll(".tg button").forEach(function (b) {
+  b.addEventListener("click", function () {
+    if (b.id !== "il") {
+      var on = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", on ? "false" : "true");
+    } else {
+      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+    }
+    paint();
+  });
+});
+function paint() {
+  var keys = Array.from(document.querySelectorAll("#foods button[data-k]")).filter(function (b) {
+    return b.getAttribute("aria-pressed") === "true";
+  }).map(function (b) { return b.dataset.k; });
+  if (!keys.length) keys = ["m"];
+  document.querySelectorAll("[data-food]").forEach(function (el) {
+    el.hidden = keys.indexOf(el.dataset.food) === -1;
+  });
+  var il = document.getElementById("il").getAttribute("aria-pressed") === "true";
+  document.documentElement.setAttribute("data-il", il ? "1" : "0");
+}
+paint();
+</script>
+
+</main>
+<a class="to-toc" href="#toc">תוכן</a>
+<script src="../tefila/controls.js"></script>
+<script type="module" src="../tefila/bracha-page.mjs"></script>
+</body>
+</html>

@@ -25,6 +25,23 @@
     root.style.setProperty("--fs", n + "px");
     try { localStorage.setItem("tefila-font", String(n)); } catch (e) {}
   };
+  var minyan = document.getElementById("minyan-toggle");
+  function paintMinyan(mode) {
+    document.documentElement.setAttribute("data-minyan", mode);
+    if (!minyan) return;
+    var on = mode === "minyan";
+    minyan.textContent = on ? "מניין" : "יחיד";
+    minyan.setAttribute("aria-pressed", on ? "true" : "false");
+    minyan.setAttribute("aria-label", on ? "מצב מניין" : "מצב יחיד");
+  }
+  paintMinyan(document.documentElement.getAttribute("data-minyan") === "minyan" ? "minyan" : "yachid");
+  if (minyan) {
+    minyan.addEventListener("click", function () {
+      var next = document.documentElement.getAttribute("data-minyan") === "minyan" ? "yachid" : "minyan";
+      paintMinyan(next);
+      try { localStorage.setItem("tefila-minyan", next); } catch (e) {}
+    });
+  }
   var dec = document.getElementById("font-dec");
   var inc = document.getElementById("font-inc");
   if (dec) dec.addEventListener("click", function () { applySize(read() - 2); });

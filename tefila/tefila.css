@@ -313,6 +313,57 @@ a.to-toc {
 }
 .cards a.now .now-tag { display: inline-block; }
 .index-main { padding-top: 18px; }
+#minyan-toggle { font-size: 15px; }
+html[data-minyan="yachid"] .minyan-only { display: none !important; }
+.minyan-label {
+  display: inline-block;
+  margin: 8px 0;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+html[data-il="1"] .chutz,
+html[data-il="0"] .baaretz { display: none; }
+.tg { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 14px; }
+.tg button {
+  font: inherit;
+  font-size: 16px;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: transparent;
+  min-height: 44px;
+}
+.tg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+.z-nav { display: flex; gap: 8px; align-items: center; margin: 8px 0 12px; }
+.z-nav input, .z-nav button {
+  font: inherit;
+  font-size: 16px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--fg);
+  padding: 6px 10px;
+}
+.z-list { list-style: none; padding: 0; margin: 8px 0 16px; }
+.z-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  font-size: 20px;
+  line-height: 1.4;
+}
+.z-strip { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
+.watch-list { padding-right: 18px; }
+.watch-list li { margin: 0 0 8px; line-height: 1.5; }
 
 :focus-visible {
   outline: 2px solid var(--accent);
