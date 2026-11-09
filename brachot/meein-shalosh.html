@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../tefila/tefila.css">
+<link rel="stylesheet" href="../tefila/tefila.css?v=3">
 <title>ברכה מעין שלוש</title>
 <script type="importmap">
 {
@@ -23,13 +23,13 @@
   }
 }
 </script>
-<script src="../tefila/boot.js"></script>
+<script src="../tefila/boot.js?v=3"></script>
 </head>
 <body >
 <header class="bar">
   <div class="brand"><a href="../tefila/">בית</a><strong>מעין שלוש</strong></div>
   <div class="szs">
-    <button type="button" id="minyan-toggle" aria-pressed="false">יחיד</button>
+    <div class="mode-switch" role="group" aria-label="יחיד או מניין"><button type="button" data-set-minyan="yachid" aria-pressed="true">יחיד</button><button type="button" data-set-minyan="minyan" aria-pressed="false">מניין</button></div>
     <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
     <button type="button" id="font-dec" aria-label="הקטן אות">א−</button>
     <button type="button" id="font-inc" aria-label="הגדל אות">א+</button>
@@ -91,7 +91,7 @@ paint();
 
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="../tefila/controls.js"></script>
-<script type="module" src="../tefila/bracha-page.mjs"></script>
+<script src="../tefila/controls.js?v=3"></script>
+<script type="module" src="../tefila/bracha-page.mjs?v=3"></script>
 </body>
 </html>

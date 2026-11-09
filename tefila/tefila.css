@@ -59,6 +59,7 @@ header.bar {
   top: 0;
   z-index: 20;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -79,7 +80,7 @@ header.bar {
   color: var(--accent);
   line-height: 1.2;
 }
-.szs { display: flex; gap: 8px; }
+.szs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
 .szs button {
   min-width: 44px;
   min-height: 44px;
@@ -313,8 +314,61 @@ a.to-toc {
 }
 .cards a.now .now-tag { display: inline-block; }
 .index-main { padding-top: 18px; }
-#minyan-toggle { font-size: 15px; }
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  overflow: hidden;
+  background: transparent;
+  flex: none;
+}
+.szs .mode-switch button,
+.mode-switch button {
+  min-width: 64px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 0 12px;
+}
+html[data-minyan="yachid"] .mode-switch [data-set-minyan="yachid"],
+html[data-minyan="minyan"] .mode-switch [data-set-minyan="minyan"] {
+  background: var(--accent);
+  color: var(--bg);
+}
+.mode-panel {
+  margin: 0 0 16px;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  text-align: center;
+}
+.mode-lead {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.mode-panel .mode-switch { margin-top: 10px; }
+.mode-panel .mode-switch button {
+  min-width: 124px;
+  min-height: 52px;
+  font-size: 22px;
+}
+.mode-status {
+  margin: 10px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.45;
+}
+html[data-minyan="minyan"] .minyan-only { display: block; }
 html[data-minyan="yachid"] .minyan-only { display: none !important; }
+.toc-minyan { margin-top: 8px; }
 .minyan-label {
   display: inline-block;
   margin: 8px 0;

@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css">
+<link rel="stylesheet" href="tefila.css?v=3">
 <title>סידור</title>
 <script type="importmap">
 {
@@ -43,7 +43,7 @@
 <header class="bar">
   <div class="brand"><strong>סידור</strong></div>
   <div class="szs">
-    <button type="button" id="minyan-toggle" aria-pressed="false">יחיד</button>
+    <div class="mode-switch" role="group" aria-label="יחיד או מניין"><button type="button" data-set-minyan="yachid" aria-pressed="true">יחיד</button><button type="button" data-set-minyan="minyan" aria-pressed="false">מניין</button></div>
     <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
   </div>
 </header>
@@ -53,12 +53,20 @@
   <p class="status"></p>
   <p class="extra" hidden></p>
 </div>
-<p class="note">נוסח עדות המזרח לימי חול. במצב יחיד הנוסח הוא כפי שהוא; במצב מניין נוספים קדיש, ברכו, חזרת הש״ץ וקריאת התורה.</p>
+<p class="note">נוסח עדות המזרח לימי חול. בחירה אחת כאן חלה על כל התפילות.</p>
+<div class="mode-panel" id="mode-panel">
+  <p class="mode-lead">איך מתפללים?</p>
+  <div class="mode-switch" role="group" aria-label="יחיד או מניין">
+    <button type="button" data-set-minyan="yachid" aria-pressed="true">יחיד</button>
+    <button type="button" data-set-minyan="minyan" aria-pressed="false">מניין</button>
+  </div>
+  <p class="mode-status" id="mode-status"></p>
+</div>
 <p class="z-strip" id="next-zman"></p>
 <nav class="cards" aria-label="התפילות">
-  <a id="card-shacharit" href="shacharit.html"><span>שחרית</span><span class="now-tag">עכשיו</span></a>
-  <a id="card-mincha" href="mincha.html"><span>מנחה</span><span class="now-tag">עכשיו</span></a>
-  <a id="card-arvit" href="arvit.html"><span>ערבית</span><span class="now-tag">עכשיו</span></a>
+  <a id="card-shacharit" href="shacharit.html"><span data-mode-label="שחרית">שחרית</span><span class="now-tag">עכשיו</span></a>
+  <a id="card-mincha" href="mincha.html"><span data-mode-label="מנחה">מנחה</span><span class="now-tag">עכשיו</span></a>
+  <a id="card-arvit" href="arvit.html"><span data-mode-label="ערבית">ערבית</span><span class="now-tag">עכשיו</span></a>
 </nav>
 <h2 class="hub-h">זמנים</h2>
 <nav class="cards small" aria-label="זמנים">
@@ -76,7 +84,7 @@
   <a href="../watch/">בשעון</a>
 </nav>
 </main>
-<script src="controls.js"></script>
-<script type="module" src="hub.mjs"></script>
+<script src="controls.js?v=3"></script>
+<script type="module" src="hub.mjs?v=3"></script>
 </body>
 </html>

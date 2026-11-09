@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css">
+<link rel="stylesheet" href="tefila.css?v=3">
 <title>מנחה</title>
 <script type="importmap">
 {
@@ -47,7 +47,7 @@
 <header class="bar">
   <div class="brand"><a href="index.html">בית</a><strong>מנחה</strong></div>
   <div class="szs">
-    <button type="button" id="minyan-toggle" aria-pressed="false">יחיד</button>
+    <div class="mode-switch" role="group" aria-label="יחיד או מניין"><button type="button" data-set-minyan="yachid" aria-pressed="true">יחיד</button><button type="button" data-set-minyan="minyan" aria-pressed="false">מניין</button></div>
     <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
     <button type="button" id="font-dec" aria-label="הקטן אות">א−</button>
     <button type="button" id="font-inc" aria-label="הגדל אות">א+</button>
@@ -198,7 +198,7 @@
 <p class="note">הוראה — ההגהות נעשו לפי המקורות המקושרים, ולא מיוחס כאן פסק לרב חיים דרוקמן בלי מקור מפורש. סדר זה מיועד לימי חול; פרטי שבת, יום טוב, ראש חודש ותעניות דורשים את סדר היום המתאים.</p>
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="controls.js"></script>
-<script type="module" src="browser.mjs"></script>
+<script src="controls.js?v=3"></script>
+<script type="module" src="browser.mjs?v=3"></script>
 </body>
 </html>
