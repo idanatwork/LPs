@@ -517,6 +517,11 @@ html[data-il="0"] .baaretz { display: none; }
 .install-card .lead { margin: 0; font-size: 17px; line-height: 1.5; }
 .install-card .shortcut-btn { width: 100%; margin-top: 12px; }
 .install-card .manual { margin: 12px 0 0; }
+.home-app { margin-top: 14px; }
+.home-app h3 { margin: 0 0 8px; font-size: 18px; color: var(--accent); }
+.home-app ol { margin: 0; padding-inline-start: 1.25em; }
+.home-app li { margin: 0 0 6px; font-size: 16px; line-height: 1.55; }
+.home-app .note { margin: 8px 0 0; }
 a.shortcut-btn[aria-disabled="true"] {
   background: transparent;
   color: var(--muted);

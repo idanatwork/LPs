@@ -77,6 +77,11 @@ async function noStart(page, where) {
   check("setup page title", (await page.locator("h1, .kicker").first().innerText()) === "קיצורים לאייפון");
   check("setup page explains the names", (await page.locator("main").innerText()).includes("תפילה ON") && (await page.locator("main").innerText()).includes("מצב המיקוד"));
   check("setup page manual fallback", (await page.locator("main").innerText()).includes("Set Focus") && (await page.locator("main").innerText()).includes("https://idanatwork.github.io/LPs/tefila/"));
+  const home = page.locator("#home-app");
+  const steps = await home.locator("li").allInnerTexts();
+  const pageText = await page.locator("main").innerText();
+  check("on card explains home screen", (await home.locator("h3").innerText()) === "שמירת הקיצור כאפליקציה במכשיר" && steps.length === 4 && steps[0].includes("קיצורים") && steps[1].includes("תפילה ON") && steps[2].includes("הוסף למסך הבית") && steps[3].includes("סידור") && steps[3].includes("הוסף") && (await home.locator(".note").innerText()).includes("כמו אפליקציה"));
+  check("no url paste or copy button", await page.locator("#copy-siddur-url, #url-setup").count() === 0 && !pageText.includes("פתח כתובות URL") && !pageText.includes("Safari"));
   await assertDownloads(page, "iPhone setup");
   const testRow = page.locator(".shortcut-row");
   check("iPhone setup shows the test row", await testRow.isVisible() && (await testRow.locator("[data-shortcut=start]").getAttribute("href")) === startHref && (await testRow.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
