@@ -1,7 +1,6 @@
-/* Shortcut names the iPhone Shortcuts app must match. Change them here only. */
+/* Shortcut name the Shortcuts app must match. Change it here only. */
 var TEFILA_SHORTCUTS = {
-  start: "פתח תפילה",
-  end: "סיים תפילה",
+  end: "תפילה OFF",
 };
 
 (function () {

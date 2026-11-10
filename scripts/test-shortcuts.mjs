@@ -6,9 +6,8 @@ const desktop = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like
 const mac = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15";
 const windows = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const ipadDesktop = mac;
-const startHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("פתח תפילה");
-const endHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("סיים תפילה");
-const startLabel = "הפעל קיצור, אתחיל תפילה";
+const prayers = ["shacharit.html", "mincha.html", "arvit.html"];
+const endHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפילה OFF");
 const endLabel = "הפעל קיצור, סיים תפילה";
 
 const checks = [];
@@ -34,55 +33,59 @@ async function open(ua, extra) {
   return { context, page };
 }
 
+async function noStart(page, where) {
+  const starts = await page.locator("[data-shortcut=start], .shortcut-start").count();
+  const text = await page.locator("body").innerText();
+  check(where + " has no start button", starts === 0 && !text.includes("אתחיל תפילה"));
+}
+
 {
   const { context, page } = await open(iphone);
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-  const links = page.locator(".shortcut-row a");
-  check("iPhone gate shows two buttons", await links.count() === 2 && await links.nth(0).isVisible() && await links.nth(1).isVisible());
-  check("iPhone gate start label", (await links.nth(0).innerText()) === startLabel && (await links.nth(0).getAttribute("aria-label")) === startLabel);
-  check("iPhone gate end label", (await links.nth(1).innerText()) === endLabel && (await links.nth(1).getAttribute("aria-label")) === endLabel);
-  check("iPhone gate start href", (await links.nth(0).getAttribute("href")) === startHref, await links.nth(0).getAttribute("href"));
-  check("iPhone gate end href", (await links.nth(1).getAttribute("href")) === endHref, await links.nth(1).getAttribute("href"));
-  const box = await links.nth(0).boundingBox();
-  check("start button is at least 48px", box && box.height >= 48, box && String(Math.round(box.height)));
-  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
-  const rows = page.locator(".shortcut-row");
-  check("shacharit has start and end", await rows.count() === 2);
-  check("shacharit start href", (await rows.nth(0).locator("a").getAttribute("href")) === startHref);
-  check("shacharit end href", (await rows.nth(1).locator("a").getAttribute("href")) === endHref);
-  for (const name of ["mincha.html", "arvit.html"]) {
+  check("gate has no shortcut row", await page.locator(".shortcut-row").count() === 0);
+  await noStart(page, "gate");
+  for (const name of prayers) {
     await page.goto(base + "/tefila/" + name, { waitUntil: "domcontentloaded" });
-    const pageRows = page.locator(".shortcut-row");
-    check(name + " start and end hrefs", await pageRows.count() === 2 && (await pageRows.nth(0).locator("a").getAttribute("href")) === startHref && (await pageRows.nth(1).locator("a").getAttribute("href")) === endHref);
+    const rows = page.locator(".shortcut-row");
+    const link = rows.locator("a");
+    check(name + " has one end button", await rows.count() === 1 && await link.count() === 1 && await link.isVisible());
+    check(name + " end label", (await link.innerText()) === endLabel && (await link.getAttribute("aria-label")) === endLabel);
+    check(name + " end href", (await link.getAttribute("href")) === endHref, await link.getAttribute("href"));
+    const box = await link.boundingBox();
+    check(name + " button is at least 48px", box && box.height >= 48, box && String(Math.round(box.height)));
+    const sources = page.locator("h2", { hasText: "מקורות" });
+    const linkBox = await link.boundingBox();
+    const sourcesBox = await sources.boundingBox();
+    check(name + " button is before the sources", linkBox && sourcesBox && linkBox.y < sourcesBox.y);
+    await noStart(page, name);
   }
   await context.close();
 }
 
 {
   const { context, page } = await open(desktop);
-  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-  check("desktop hides the gate buttons", await page.locator(".shortcut-row").isHidden());
-  await page.goto(base + "/tefila/index.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
-  check("desktop override shows the buttons", await page.locator(".shortcut-row").isVisible());
-  check("override keeps the start href", (await page.locator("[data-shortcut=start]").getAttribute("href")) === startHref);
+  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
+  check("desktop hides the end button", await page.locator(".shortcut-row").isHidden());
+  await page.goto(base + "/tefila/shacharit.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
+  check("desktop override shows the end button", await page.locator(".shortcut-row").isVisible());
+  check("override keeps the end href", (await page.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
   await context.close();
 }
 
 {
   const { context, page } = await open(mac);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-  const links = page.locator(".shortcut-row a");
-  check("Mac shows the gate buttons", await links.count() === 2 && await links.nth(0).isVisible() && await links.nth(1).isVisible());
-  check("Mac start label", (await links.nth(0).innerText()) === startLabel);
-  check("Mac end label", (await links.nth(1).innerText()) === endLabel);
+  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
+  const link = page.locator(".shortcut-row a");
+  check("Mac shows the end button", await link.count() === 1 && await link.isVisible());
+  check("Mac end label", (await link.innerText()) === endLabel);
   await context.close();
 }
 
 {
   const { context, page } = await open(windows);
-  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-  check("Windows hides the gate buttons", await page.locator(".shortcut-row").isHidden());
+  await page.goto(base + "/tefila/mincha.html", { waitUntil: "domcontentloaded" });
+  check("Windows hides the end button", await page.locator(".shortcut-row").isHidden());
   await context.close();
 }
 
@@ -90,8 +93,59 @@ async function open(ua, extra) {
   const { context, page } = await open(ipadDesktop, () => {
     Object.defineProperty(navigator, "maxTouchPoints", { get: () => 5 });
   });
+  await page.goto(base + "/tefila/arvit.html", { waitUntil: "domcontentloaded" });
+  check("iPad desktop mode shows the end button", await page.locator(".shortcut-row").isVisible());
+  await context.close();
+}
+
+const creditPages = [
+  "/tefila/index.html",
+  "/tefila/shacharit.html",
+  "/tefila/mincha.html",
+  "/tefila/arvit.html",
+  "/tefila/zmanim.html",
+  "/brachot/asher-yatzar.html",
+  "/brachot/borei-nefashot.html",
+  "/brachot/meein-shalosh.html",
+  "/brachot/birkat-hamazon.html",
+];
+const creditText = "נבנה ע\"י טק-מייט | Tech-Mate";
+
+{
+  const { context, page } = await open(iphone);
+  for (const path of creditPages) {
+    await page.goto(base + path, { waitUntil: "domcontentloaded" });
+    const credit = page.locator("main .site-credit");
+    const link = credit.locator("a");
+    check(path + " credit text", (await credit.innerText()) === creditText, await credit.innerText());
+    check(path + " credit link", (await link.getAttribute("href")) === "https://brand.page/Tech-Mate" && (await link.getAttribute("target")) === "_blank" && (await link.getAttribute("rel")) === "noopener");
+    check(path + " credit is the last line", await page.locator("main > :last-child").evaluate((el) => el.classList.contains("site-credit")));
+    const style = await credit.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { align: cs.textAlign, size: cs.fontSize, color: cs.color };
+    });
+    check(path + " credit is small and centered", style.align === "center" && style.size === "13px", JSON.stringify(style));
+  }
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-  check("iPad desktop mode shows the buttons", await page.locator(".shortcut-row").isVisible());
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
+  const dark = await page.locator(".site-credit").evaluate((el) => getComputedStyle(el).color);
+  check("gate credit uses the dark muted color", dark === "rgb(196, 184, 168)", dark);
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "light"));
+  const light = await page.locator(".site-credit").evaluate((el) => getComputedStyle(el).color);
+  check("gate credit uses the light muted color", light === "rgb(92, 83, 72)", light);
+  await context.close();
+}
+
+{
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    colorScheme: "dark",
+    userAgent: iphone,
+  });
+  const page = await context.newPage();
+  await page.goto(base + "/brachot/asher-yatzar.html", { waitUntil: "domcontentloaded" });
+  const color = await page.locator(".site-credit").evaluate((el) => getComputedStyle(el).color);
+  check("asher yatzar credit follows dark mode", color === "rgb(165, 157, 144)", color);
   await context.close();
 }
 
