@@ -11,6 +11,9 @@ const startHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפי�
 const endHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפילה OFF");
 const startLabel = "הפעל קיצור, אתחיל תפילה";
 const endLabel = "הפעל קיצור, סיים תפילה";
+const onIcloud = "https://www.icloud.com/shortcuts/8afce28b59cf4693889900fcef0bde29";
+const offIcloud = "https://www.icloud.com/shortcuts/fc207386d3f74a829b51ecf87941e40b";
+const pending = "קישור ההורדה יתווסף בקרוב";
 
 const checks = [];
 function check(name, ok, detail) {
@@ -35,6 +38,13 @@ async function open(ua, extra) {
   return { context, page };
 }
 
+async function assertDownloads(page, where) {
+  const on = page.locator("[data-icloud=on]");
+  const off = page.locator("[data-icloud=off]");
+  check(where + " on download", await on.isVisible() && (await on.innerText()) === "הוסף לאייפון" && (await on.getAttribute("href")) === onIcloud && (await on.getAttribute("target")) === "_blank" && (await on.getAttribute("rel")) === "noopener" && (await on.getAttribute("aria-disabled")) === null);
+  check(where + " off download", await off.isVisible() && (await off.innerText()) === "הוסף לאייפון" && (await off.getAttribute("href")) === offIcloud && (await off.getAttribute("target")) === "_blank" && (await off.getAttribute("rel")) === "noopener");
+}
+
 async function noStart(page, where) {
   const starts = await page.locator("[data-shortcut=start], .shortcut-start").count();
   const text = await page.locator("body").innerText();
@@ -55,9 +65,21 @@ async function noStart(page, where) {
   const endBox = await gateLinks.nth(1).boundingBox();
   check("gate buttons are at least 48px", startBox && endBox && startBox.height >= 48 && endBox.height >= 48, startBox && String(Math.round(startBox.height)));
   const brachotBox = await page.locator('nav[aria-label="ברכות"]').boundingBox();
+  const heading = page.locator("h2.hub-h", { hasText: "קיצורים לאייפון" });
+  const guide = page.locator('nav[aria-label="קיצורים לאייפון"] a');
+  const headingBox = await heading.boundingBox();
+  const guideBox = await guide.boundingBox();
   const rowBox = await gateRow.boundingBox();
   const watchBox = await page.locator("h2.hub-h", { hasText: "שעון" }).boundingBox();
-  check("gate shortcuts sit between brachot and watch", brachotBox && rowBox && watchBox && brachotBox.y + brachotBox.height <= rowBox.y && rowBox.y + rowBox.height <= watchBox.y);
+  check("gate shortcuts heading", (await heading.innerText()) === "קיצורים לאייפון" && (await guide.getAttribute("href")) === "shortcuts.html" && (await guide.innerText()) === "קיצורים לאייפון");
+  check("gate shortcuts sit between brachot and watch", brachotBox && headingBox && guideBox && rowBox && watchBox && brachotBox.y + brachotBox.height <= headingBox.y && headingBox.y < guideBox.y && guideBox.y + guideBox.height <= rowBox.y && rowBox.y + rowBox.height <= watchBox.y);
+  await page.goto(base + "/tefila/shortcuts.html", { waitUntil: "domcontentloaded" });
+  check("setup page title", (await page.locator("h1, .kicker").first().innerText()) === "קיצורים לאייפון");
+  check("setup page explains the names", (await page.locator("main").innerText()).includes("תפילה ON") && (await page.locator("main").innerText()).includes("מצב המיקוד"));
+  check("setup page manual fallback", (await page.locator("main").innerText()).includes("Set Focus") && (await page.locator("main").innerText()).includes("https://idanatwork.github.io/LPs/tefila/"));
+  await assertDownloads(page, "iPhone setup");
+  const testRow = page.locator(".shortcut-row");
+  check("iPhone setup shows the test row", await testRow.isVisible() && (await testRow.locator("[data-shortcut=start]").getAttribute("href")) === startHref && (await testRow.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
   for (const name of prayers) {
     await page.goto(base + "/tefila/" + name, { waitUntil: "domcontentloaded" });
     const rows = page.locator(".shortcut-row");
@@ -89,6 +111,16 @@ async function noStart(page, where) {
   await page.goto(base + "/tefila/shacharit.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
   check("desktop override shows the end button", await page.locator(".shortcut-row").isVisible());
   check("override keeps the end href", (await page.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
+  await page.goto(base + "/tefila/shortcuts.html", { waitUntil: "domcontentloaded" });
+  await assertDownloads(page, "desktop setup");
+  check("desktop hides the setup test row", await page.locator(".shortcut-row").isHidden());
+  await page.evaluate(() => {
+    ICLOUD_LINKS.on = "";
+    ICLOUD_LINKS.off = "  ";
+    applyIcloudLinks();
+  });
+  const cleared = page.locator("[data-icloud=on]");
+  check("empty download link stays disabled", (await cleared.getAttribute("aria-disabled")) === "true" && (await cleared.innerText()) === pending && (await cleared.getAttribute("href")) === null && (await page.locator("[data-icloud=off]").innerText()) === pending);
   await context.close();
 }
 
@@ -102,6 +134,9 @@ async function noStart(page, where) {
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
   const gateLinks = page.locator(".shortcut-row a");
   check("Mac shows both gate buttons", await gateLinks.count() === 2 && await gateLinks.nth(0).isVisible() && await gateLinks.nth(1).isVisible());
+  await page.goto(base + "/tefila/shortcuts.html", { waitUntil: "domcontentloaded" });
+  await assertDownloads(page, "Mac setup");
+  check("Mac shows the setup test row", await page.locator(".shortcut-row").isVisible());
   await context.close();
 }
 
@@ -111,6 +146,9 @@ async function noStart(page, where) {
   check("Windows hides the gate buttons", await page.locator(".shortcut-row").isHidden());
   await page.goto(base + "/tefila/mincha.html", { waitUntil: "domcontentloaded" });
   check("Windows hides the end button", await page.locator(".shortcut-row").isHidden());
+  await page.goto(base + "/tefila/shortcuts.html", { waitUntil: "domcontentloaded" });
+  await assertDownloads(page, "Windows setup");
+  check("Windows hides the setup test row", await page.locator(".shortcut-row").isHidden());
   await context.close();
 }
 
@@ -133,6 +171,7 @@ const creditPages = [
   "/brachot/borei-nefashot.html",
   "/brachot/meein-shalosh.html",
   "/brachot/birkat-hamazon.html",
+  "/tefila/shortcuts.html",
 ];
 const creditText = "נבנה ע\"י טק-מייט | Tech-Mate";
 
