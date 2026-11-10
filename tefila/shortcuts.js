@@ -10,7 +10,7 @@ var TEFILA_SHORTCUTS = {
     if (query.get("showShortcuts") === "1") return true;
     var ua = navigator.userAgent || "";
     if (/iPhone|iPad|iPod/i.test(ua)) return true;
-    if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) return true;
+    if (/Macintosh/i.test(ua)) return true;
     return false;
   }
 

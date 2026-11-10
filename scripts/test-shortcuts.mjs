@@ -3,9 +3,13 @@ import { chromium } from "playwright-core";
 const base = process.env.BASE_URL || "http://127.0.0.1:8765";
 const iphone = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
 const desktop = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-const ipadDesktop = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15";
+const mac = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15";
+const windows = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+const ipadDesktop = mac;
 const startHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("פתח תפילה");
 const endHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("סיים תפילה");
+const startLabel = "הפעל קיצור, אתחיל תפילה";
+const endLabel = "הפעל קיצור, סיים תפילה";
 
 const checks = [];
 function check(name, ok, detail) {
@@ -35,6 +39,8 @@ async function open(ua, extra) {
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
   const links = page.locator(".shortcut-row a");
   check("iPhone gate shows two buttons", await links.count() === 2 && await links.nth(0).isVisible() && await links.nth(1).isVisible());
+  check("iPhone gate start label", (await links.nth(0).innerText()) === startLabel && (await links.nth(0).getAttribute("aria-label")) === startLabel);
+  check("iPhone gate end label", (await links.nth(1).innerText()) === endLabel && (await links.nth(1).getAttribute("aria-label")) === endLabel);
   check("iPhone gate start href", (await links.nth(0).getAttribute("href")) === startHref, await links.nth(0).getAttribute("href"));
   check("iPhone gate end href", (await links.nth(1).getAttribute("href")) === endHref, await links.nth(1).getAttribute("href"));
   const box = await links.nth(0).boundingBox();
@@ -59,6 +65,24 @@ async function open(ua, extra) {
   await page.goto(base + "/tefila/index.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
   check("desktop override shows the buttons", await page.locator(".shortcut-row").isVisible());
   check("override keeps the start href", (await page.locator("[data-shortcut=start]").getAttribute("href")) === startHref);
+  await context.close();
+}
+
+{
+  const { context, page } = await open(mac);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
+  const links = page.locator(".shortcut-row a");
+  check("Mac shows the gate buttons", await links.count() === 2 && await links.nth(0).isVisible() && await links.nth(1).isVisible());
+  check("Mac start label", (await links.nth(0).innerText()) === startLabel);
+  check("Mac end label", (await links.nth(1).innerText()) === endLabel);
+  await context.close();
+}
+
+{
+  const { context, page } = await open(windows);
+  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
+  check("Windows hides the gate buttons", await page.locator(".shortcut-row").isHidden());
   await context.close();
 }
 
