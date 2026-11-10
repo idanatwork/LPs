@@ -72,8 +72,75 @@
   };
   var dec = document.getElementById("font-dec");
   var inc = document.getElementById("font-inc");
-  if (dec) dec.addEventListener("click", function () { applySize(nextSize(read(), -1)); });
-  if (inc) inc.addEventListener("click", function () { applySize(nextSize(read(), 1)); });
+  var slider = null;
+  var sliderValue = null;
+  var sliderFrame = 0;
+  var sliderPending = null;
+  function syncSlider(n) {
+    if (slider && String(slider.value) !== String(n)) slider.value = String(n);
+    if (sliderValue) sliderValue.textContent = String(n);
+  }
+  var applySizeAndSync = function (n) {
+    applySize(n);
+    syncSlider(read());
+  };
+  if (dec) dec.addEventListener("click", function () { applySizeAndSync(nextSize(read(), -1)); });
+  if (inc) inc.addEventListener("click", function () { applySizeAndSync(nextSize(read(), 1)); });
+  if (dec || inc) {
+    var pop = document.createElement("div");
+    pop.className = "font-pop";
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.id = "font-slider-toggle";
+    toggle.className = "font-slider-toggle";
+    toggle.setAttribute("aria-label", "גודל טקסט");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-controls", "font-panel");
+    toggle.textContent = "Aא";
+    var panel = document.createElement("div");
+    panel.id = "font-panel";
+    panel.className = "font-panel";
+    panel.hidden = true;
+    panel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">א</span><input type="range" id="font-slider" min="18" max="40" step="1" dir="rtl" aria-label="גודל טקסט"><span class="font-mark font-mark-lg" aria-hidden="true">א</span><button type="button" id="font-panel-close" aria-label="סגור">×</button></div><p class="font-value" id="font-value"></p>';
+    pop.appendChild(toggle);
+    var header = document.querySelector("header.bar");
+    if (dec && dec.parentNode) dec.parentNode.insertBefore(pop, dec);
+    else if (header) header.appendChild(pop);
+    if (header) header.appendChild(panel);
+    slider = panel.querySelector("#font-slider");
+    sliderValue = panel.querySelector("#font-value");
+    syncSlider(read());
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) slider.focus({ preventScroll: true });
+    }
+    toggle.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setOpen(panel.hidden);
+    });
+    panel.querySelector("#font-panel-close").addEventListener("click", function () { setOpen(false); });
+    document.addEventListener("pointerdown", function (event) {
+      if (panel.hidden) return;
+      if (panel.contains(event.target) || pop.contains(event.target)) return;
+      setOpen(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !panel.hidden) setOpen(false);
+    });
+    slider.addEventListener("input", function () {
+      sliderPending = parseInt(slider.value, 10);
+      if (sliderFrame) return;
+      sliderFrame = requestAnimationFrame(function () {
+        sliderFrame = 0;
+        var value = sliderPending;
+        sliderPending = null;
+        if (value == null) return;
+        applySize(value);
+        syncSlider(read());
+      });
+    });
+  }
 
   function readMode() {
     var attr = document.documentElement.getAttribute("data-minyan");

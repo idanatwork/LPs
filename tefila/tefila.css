@@ -108,6 +108,85 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
   padding: 0 12px;
 }
 .szs button:active { background: var(--accent); color: var(--bg); }
+.font-slider-toggle {
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  padding: 0 10px;
+}
+.font-panel {
+  position: absolute;
+  top: 100%;
+  inset-inline: 10px;
+  z-index: 30;
+  margin-top: 6px;
+  padding: 10px 12px 8px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--bg) 94%, var(--accent));
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--fg) 14%, transparent);
+}
+.font-panel[hidden] { display: none !important; }
+.font-panel-row { display: flex; align-items: center; gap: 8px; }
+.font-mark { color: var(--accent); font-weight: 700; line-height: 1; flex: none; }
+.font-mark-sm { font-size: 14px; }
+.font-mark-lg { font-size: 26px; }
+.font-value {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+#font-panel-close {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 22px;
+  line-height: 1;
+}
+#font-slider {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  margin: 0;
+  background: transparent;
+  touch-action: none;
+  direction: rtl;
+  accent-color: var(--accent);
+}
+#font-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+}
+#font-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  margin-top: -12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--fg) 28%, transparent);
+}
+#font-slider::-moz-range-track {
+  height: 4px;
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 999px;
+  border: 0;
+}
+#font-slider::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+}
 #theme-toggle {
   display: inline-flex;
   align-items: center;
