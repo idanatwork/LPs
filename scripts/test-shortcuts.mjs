@@ -45,12 +45,6 @@ async function assertDownloads(page, where) {
   check(where + " off download", await off.isVisible() && (await off.innerText()) === "הוסף לאייפון" && (await off.getAttribute("href")) === offIcloud && (await off.getAttribute("target")) === "_blank" && (await off.getAttribute("rel")) === "noopener");
 }
 
-async function noStart(page, where) {
-  const starts = await page.locator("[data-shortcut=start], .shortcut-start").count();
-  const text = await page.locator("body").innerText();
-  check(where + " has no start button", starts === 0 && !text.includes("אתחיל תפילה"));
-}
-
 {
   const { context, page } = await open(iphone);
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
@@ -81,25 +75,49 @@ async function noStart(page, where) {
   const steps = await home.locator("li").allInnerTexts();
   const pageText = await page.locator("main").innerText();
   check("on card explains home screen", (await home.locator("h3").innerText()) === "שמירת הקיצור כאפליקציה במכשיר" && steps.length === 4 && steps[0].includes("קיצורים") && steps[1].includes("תפילה ON") && steps[2].includes("הוסף למסך הבית") && steps[3].includes("סידור") && steps[3].includes("הוסף") && (await home.locator(".note").innerText()).includes("כמו אפליקציה"));
-  check("no url paste or copy button", await page.locator("#copy-siddur-url, #url-setup").count() === 0 && !pageText.includes("פתח כתובות URL") && !pageText.includes("Safari"));
+  check("on card gives the focus url", (await page.locator("#focus-url").innerText()).includes("פתח כתובות URL") && (await page.locator("#focus-url-text").innerText()) === "https://idanatwork.github.io/LPs/tefila/?focus=on" && !pageText.includes("Safari"));
+  check("auto-off tip", (await page.locator("#focus-timeout").innerText()).includes("כיבוי אוטומטי אם שכחתי לסיים") && (await page.locator("#focus-timeout").innerText()).includes("שתף בין מכשירים"));
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.locator("#copy-focus-url").click();
+  await page.locator("#copy-focus-url", { hasText: "הועתק" }).waitFor({ timeout: 2000 });
+  check("focus url copied", (await page.evaluate(() => navigator.clipboard.readText())) === "https://idanatwork.github.io/LPs/tefila/?focus=on");
   await assertDownloads(page, "iPhone setup");
   const testRow = page.locator(".shortcut-row");
   check("iPhone setup shows the test row", await testRow.isVisible() && (await testRow.locator("[data-shortcut=start]").getAttribute("href")) === startHref && (await testRow.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
   for (const name of prayers) {
     await page.goto(base + "/tefila/" + name, { waitUntil: "domcontentloaded" });
-    const rows = page.locator(".shortcut-row");
-    const link = rows.locator("a");
-    check(name + " has one end button", await rows.count() === 1 && await link.count() === 1 && await link.isVisible());
-    check(name + " end label", (await link.innerText()) === endLabel && (await link.getAttribute("aria-label")) === endLabel);
-    check(name + " end href", (await link.getAttribute("href")) === endHref, await link.getAttribute("href"));
-    const box = await link.boundingBox();
+    const end = page.locator("[data-shortcut=end]");
+    const start = page.locator(".shortcut-focus-start [data-shortcut=start]");
+    check(name + " has one end button", await end.count() === 1 && await end.isVisible());
+    check(name + " end label", (await end.innerText()) === endLabel && (await end.getAttribute("aria-label")) === endLabel);
+    check(name + " end href", (await end.getAttribute("href")) === endHref, await end.getAttribute("href"));
+    const box = await end.boundingBox();
     check(name + " button is at least 48px", box && box.height >= 48, box && String(Math.round(box.height)));
+    check(name + " shows start without focus", await start.isVisible() && (await start.innerText()) === startLabel && (await start.getAttribute("href")) === startHref);
+    check(name + " status hidden without focus", await page.locator(".focus-status").isHidden());
     const sources = page.locator("h2", { hasText: "מקורות" });
-    const linkBox = await link.boundingBox();
     const sourcesBox = await sources.boundingBox();
-    check(name + " button is before the sources", linkBox && sourcesBox && linkBox.y < sourcesBox.y);
-    await noStart(page, name);
+    check(name + " button is before the sources", box && sourcesBox && box.y < sourcesBox.y);
   }
+  await page.goto(base + "/tefila/shacharit.html?focus=on&showShortcuts=1", { waitUntil: "domcontentloaded" });
+  check("focus=on is stripped", !page.url().includes("focus="));
+  check("shacharit start hides after focus=on", await page.locator(".shortcut-focus-start").isHidden());
+  check("shacharit shows active status", (await page.locator(".focus-status").innerText()) === "מצב תפילה פעיל" && await page.locator(".focus-status").isVisible());
+  check("shacharit end stays visible while focus is on", await page.locator("[data-shortcut=end]").isVisible());
+  await page.locator("[data-shortcut=end]").evaluate((el) => {
+    el.addEventListener("click", function (event) { event.preventDefault(); }, true);
+    el.click();
+  });
+  check("shacharit start returns after end", await page.locator(".shortcut-focus-start [data-shortcut=start]").isVisible());
+  check("shacharit status hides after end", await page.locator(".focus-status").isHidden());
+  await page.evaluate(() => localStorage.setItem("tefilaFocus", JSON.stringify({ on: true, ts: Date.now() - 91 * 60 * 1000 })));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  check("expired focus shows the start button", await page.locator(".shortcut-focus-start [data-shortcut=start]").isVisible());
+  await page.goto(base + "/tefila/index.html?focus=on", { waitUntil: "domcontentloaded" });
+  check("gate start hides when focus is on", await page.locator("[data-shortcut=start]").isHidden());
+  check("gate end stays when focus is on", await page.locator("[data-shortcut=end]").isVisible());
+  await page.goto(base + "/tefila/shacharit.html?focus=off", { waitUntil: "domcontentloaded" });
+  check("focus=off clears the state", !page.url().includes("focus=") && await page.locator(".shortcut-focus-start [data-shortcut=start]").isVisible());
   await context.close();
 }
 
@@ -112,9 +130,9 @@ async function noStart(page, where) {
   check("override keeps the start href", (await page.locator("[data-shortcut=start]").getAttribute("href")) === startHref);
   check("override keeps the gate end href", (await page.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
   await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
-  check("desktop hides the end button", await page.locator(".shortcut-row").isHidden());
+  check("desktop hides the end button", await page.locator("[data-shortcut=end]").isHidden());
   await page.goto(base + "/tefila/shacharit.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
-  check("desktop override shows the end button", await page.locator(".shortcut-row").isVisible());
+  check("desktop override shows the end button", await page.locator("[data-shortcut=end]").isVisible() && await page.locator(".shortcut-focus-start").isVisible());
   check("override keeps the end href", (await page.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
   await page.goto(base + "/tefila/shortcuts.html", { waitUntil: "domcontentloaded" });
   await assertDownloads(page, "desktop setup");
@@ -133,7 +151,7 @@ async function noStart(page, where) {
   const { context, page } = await open(mac);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
-  const link = page.locator(".shortcut-row a");
+  const link = page.locator("[data-shortcut=end]");
   check("Mac shows the end button", await link.count() === 1 && await link.isVisible());
   check("Mac end label", (await link.innerText()) === endLabel);
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
@@ -150,7 +168,9 @@ async function noStart(page, where) {
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
   check("Windows hides the gate buttons", await page.locator(".shortcut-row").isHidden());
   await page.goto(base + "/tefila/mincha.html", { waitUntil: "domcontentloaded" });
-  check("Windows hides the end button", await page.locator(".shortcut-row").isHidden());
+  check("Windows hides the end button", await page.locator("[data-shortcut=end]").isHidden());
+  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
+  check("Windows hides the top start button", await page.locator(".shortcut-focus-start").isHidden());
   await page.goto(base + "/tefila/shortcuts.html", { waitUntil: "domcontentloaded" });
   await assertDownloads(page, "Windows setup");
   check("Windows hides the setup test row", await page.locator(".shortcut-row").isHidden());
@@ -162,7 +182,7 @@ async function noStart(page, where) {
     Object.defineProperty(navigator, "maxTouchPoints", { get: () => 5 });
   });
   await page.goto(base + "/tefila/arvit.html", { waitUntil: "domcontentloaded" });
-  check("iPad desktop mode shows the end button", await page.locator(".shortcut-row").isVisible());
+  check("iPad desktop mode shows the end button", await page.locator("[data-shortcut=end]").isVisible());
   await context.close();
 }
 
