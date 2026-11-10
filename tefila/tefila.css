@@ -472,6 +472,36 @@ html[data-il="0"] .baaretz { display: none; }
 .halacha-title { font-size: 20px; }
 .halacha-body { margin: 0 0 8px; font-size: 17px; line-height: 1.6; }
 .halacha-src { margin: 0; font-size: 14px; color: var(--muted); }
+.shortcut-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+.shortcut-row[hidden] { display: none !important; }
+.shortcut-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+}
+.shortcut-start {
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+}
+.shortcut-end {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
 .z-strip { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
 .watch-list { padding-right: 18px; }
 .watch-list li { margin: 0 0 8px; line-height: 1.5; }

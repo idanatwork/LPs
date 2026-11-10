@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=6">
+<link rel="stylesheet" href="tefila.css?v=7">
 <link rel="stylesheet" href="accent.css?v=6">
 <title>סידור</title>
 <script type="importmap">
@@ -74,6 +74,10 @@
   <p class="mode-status" id="mode-status"></p>
 </div>
 <p class="z-strip" id="next-zman"></p>
+<div class="shortcut-row" hidden>
+  <a class="shortcut-btn shortcut-start" data-shortcut="start" href="#">אפעל קיצור, אתחיל תפילה</a>
+  <a class="shortcut-btn shortcut-end" data-shortcut="end" href="#">אפעל קיצור, סיים תפילה</a>
+</div>
 <nav class="cards" aria-label="התפילות">
   <a id="card-shacharit" href="shacharit.html"><span data-mode-label="שחרית">שחרית</span><span class="now-tag">עכשיו</span></a>
   <a id="card-mincha" href="mincha.html"><span data-mode-label="מנחה">מנחה</span><span class="now-tag">עכשיו</span></a>
@@ -95,6 +99,7 @@
   <a href="../watch/">בשעון</a>
 </nav>
 </main>
+<script src="shortcuts.js?v=7"></script>
 <script src="controls.js?v=6"></script>
 <script type="module" src="hub.mjs?v=6"></script>
 </body>
