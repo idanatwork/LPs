@@ -220,7 +220,7 @@ summary small, .sum-note {
 p.src { margin: 0 0 8px; font-size: 15px; line-height: 1.5; }
 p.src a { text-decoration: none; }
 
-details.add, details.sec {
+details.add, details.sec, details.manual-build {
   margin: 12px 0;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 14px;
@@ -228,8 +228,8 @@ details.add, details.sec {
   background: color-mix(in srgb, var(--accent) 6%, transparent);
   text-align: right;
 }
-details.add[open], details.sec[open] { padding-bottom: 8px; }
-details.add > summary, details.sec > summary {
+details.add[open], details.sec[open], details.manual-build[open] { padding-bottom: 8px; }
+details.add > summary, details.sec > summary, details.manual-build > summary {
   cursor: pointer;
   color: var(--accent);
   font-weight: 700;
@@ -241,14 +241,18 @@ details.add > summary, details.sec > summary {
 }
 details.sec > summary { font-size: 22px; }
 details.add > summary::-webkit-details-marker,
-details.sec > summary::-webkit-details-marker { display: none; }
+details.sec > summary::-webkit-details-marker,
+details.manual-build > summary::-webkit-details-marker { display: none; }
 details.add > summary::before,
-details.sec > summary::before {
+details.sec > summary::before,
+details.manual-build > summary::before {
   content: "◂ ";
   font-weight: 400;
 }
 details.add[open] > summary::before,
-details.sec[open] > summary::before { content: "▾ "; }
+details.sec[open] > summary::before,
+details.manual-build[open] > summary::before { content: "▾ "; }
+details.manual-build .focus-url { margin-top: 4px; }
 details.is-today {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);

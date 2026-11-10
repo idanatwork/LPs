@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=11">
+<link rel="stylesheet" href="tefila.css?v=12">
 <link rel="stylesheet" href="accent.css?v=6">
 <title>קיצורים לאייפון</title>
 <script src="boot.js?v=6"></script>
@@ -36,16 +36,6 @@
   <h2>תפילה ON</h2>
   <p class="lead">מפעיל מצב מיקוד תפילה ופותח את הסידור</p>
   <a class="shortcut-btn shortcut-start" data-icloud="on" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
-  <section class="focus-url" id="focus-url">
-    <h3>כתובת שהקיצור פותח</h3>
-    <ol>
-      <li>בקיצור ״תפילה ON״, בפעולה ״פתח כתובות URL״, שמים את הכתובת הזו. כך הסידור יודע שמצב התפילה כבר פעיל.</li>
-    </ol>
-    <div class="url-copy">
-      <code dir="ltr" id="focus-url-text">https://idanatwork.github.io/LPs/tefila/?focus=on</code>
-      <button type="button" id="copy-focus-url">העתקת הכתובת</button>
-    </div>
-  </section>
   <section class="home-app" id="home-app" aria-labelledby="home-app-title">
     <h3 id="home-app-title">שמירת הקיצור כאפליקציה במכשיר</h3>
     <ol>
@@ -56,20 +46,30 @@
     </ol>
     <p class="note">מכאן, לחיצה על האייקון מדליקה את מצב המיקוד ופותחת את הסידור כמו אפליקציה.</p>
   </section>
-  <section class="focus-tip" id="focus-timeout">
-    <h3>כיבוי אוטומטי אם שכחתי לסיים</h3>
-    <p>הקיצור ״תפילה ON״ להורדה כבר מכבה את מצב המיקוד לבד אחרי שעה.</p>
-    <p class="note">בבנייה ידנית: בהגדרות מצב המיקוד, או בקיצור, ״קבע מצב ריכוז״ → עד → שעה.</p>
-    <p class="note">הפעלת ״שתף בין מכשירים״ מסנכרנת את המצב לשעון ולמק.</p>
-  </section>
-  <p class="note manual">בנייה ידנית: <bdi>Set Focus</bdi> → תפילה → <bdi>On</bdi>, ואחר כך <bdi>Open URL</bdi> <a dir="ltr" href="https://idanatwork.github.io/LPs/tefila/?focus=on">https://idanatwork.github.io/LPs/tefila/?focus=on</a></p>
+  <p class="note" id="focus-auto">הקיצור ״תפילה ON״ להורדה כבר מכבה את מצב המיקוד לבד אחרי שעה.</p>
+  <p class="note" id="focus-sync">הפעלת ״שתף בין מכשירים״ מסנכרנת את המצב לשעון ולמק.</p>
 </article>
 <article class="install-card">
   <h2>תפילה OFF</h2>
   <p class="lead">מכבה את מצב המיקוד</p>
   <a class="shortcut-btn shortcut-start" data-icloud="off" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
-  <p class="note manual">בנייה ידנית: <bdi>Set Focus</bdi> → תפילה → <bdi>Off</bdi></p>
 </article>
+<details class="manual-build">
+  <summary>בנייה ידנית (רק למי שלא מוריד)</summary>
+  <section class="focus-url" id="focus-url">
+    <h3>כתובת שהקיצור פותח</h3>
+    <ol>
+      <li>בקיצור ״תפילה ON״, בפעולה ״פתח כתובות URL״, שמים את הכתובת הזו. כך הסידור יודע שמצב התפילה כבר פעיל.</li>
+    </ol>
+    <div class="url-copy">
+      <code dir="ltr" id="focus-url-text">https://idanatwork.github.io/LPs/tefila/?focus=on</code>
+      <button type="button" id="copy-focus-url">העתקת הכתובת</button>
+    </div>
+  </section>
+  <p class="note">בהגדרות מצב המיקוד, או בקיצור, ״קבע מצב ריכוז״ → עד → שעה.</p>
+  <p class="note manual">בנייה ידנית: <bdi>Set Focus</bdi> → תפילה → <bdi>On</bdi>, ואחר כך <bdi>Open URL</bdi> <a dir="ltr" href="https://idanatwork.github.io/LPs/tefila/?focus=on">https://idanatwork.github.io/LPs/tefila/?focus=on</a></p>
+  <p class="note manual">בנייה ידנית: <bdi>Set Focus</bdi> → תפילה → <bdi>Off</bdi></p>
+</details>
 <div class="shortcut-row" hidden>
   <p class="hub-h">בדיקה</p>
   <a class="shortcut-btn shortcut-start" data-shortcut="start" href="#" aria-label="הפעל קיצור, אתחיל תפילה">הפעל קיצור, אתחיל תפילה</a>
