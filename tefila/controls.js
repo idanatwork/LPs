@@ -23,15 +23,57 @@
 
   var root = document.documentElement;
   var read = function () { return parseInt(getComputedStyle(root).getPropertyValue("--fs"), 10) || 22; };
+  function nextSize(current, dir) {
+    var next = Math.round(current * (dir > 0 ? 1.09 : 1 / 1.09));
+    if (next === current) next = current + dir;
+    if (next < 18) next = 18;
+    if (next > 40) next = 40;
+    return next;
+  }
+  function readingAnchor() {
+    var nodes = document.querySelectorAll("p.t");
+    var line = window.innerHeight * 0.3;
+    var best = null;
+    var bestDist = Infinity;
+    for (var i = 0; i < nodes.length; i++) {
+      var rect = nodes[i].getBoundingClientRect();
+      if (rect.height < 8 || rect.bottom < 0 || rect.top > window.innerHeight) continue;
+      if (rect.top <= line && rect.bottom >= line) return { el: nodes[i], top: rect.top };
+      var dist = Math.abs(rect.top - line);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = nodes[i];
+      }
+    }
+    return best ? { el: best, top: best.getBoundingClientRect().top } : null;
+  }
+  function pinReading(anchor, top) {
+    if (!anchor || !anchor.isConnected) return;
+    root.style.scrollBehavior = "auto";
+    var delta = anchor.getBoundingClientRect().top - top;
+    if (Math.abs(delta) > 0.5) window.scrollTo({ top: window.scrollY + delta, left: 0, behavior: "auto" });
+  }
   var applySize = function (n) {
     n = Math.max(18, Math.min(40, n));
+    if (n === read()) return;
+    var anchor = readingAnchor();
+    var top = anchor ? anchor.top : 0;
+    root.style.overflowAnchor = "none";
+    root.style.scrollBehavior = "auto";
     root.style.setProperty("--fs", n + "px");
     try { localStorage.setItem("tefila-font", String(n)); } catch (e) {}
+    if (anchor) pinReading(anchor.el, top);
+    requestAnimationFrame(function () {
+      if (anchor) pinReading(anchor.el, top);
+      requestAnimationFrame(function () {
+        if (anchor) pinReading(anchor.el, top);
+      });
+    });
   };
   var dec = document.getElementById("font-dec");
   var inc = document.getElementById("font-inc");
-  if (dec) dec.addEventListener("click", function () { applySize(read() - 2); });
-  if (inc) inc.addEventListener("click", function () { applySize(read() + 2); });
+  if (dec) dec.addEventListener("click", function () { applySize(nextSize(read(), -1)); });
+  if (inc) inc.addEventListener("click", function () { applySize(nextSize(read(), 1)); });
 
   function readMode() {
     var attr = document.documentElement.getAttribute("data-minyan");

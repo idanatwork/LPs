@@ -37,6 +37,7 @@ html[data-theme="light"] body[data-service="arvit"] { --accent: #312e81; }
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--header);
+  overflow-anchor: none;
 }
 html, body {
   margin: 0;
@@ -183,6 +184,7 @@ p.t {
   line-height: 2.05;
   margin: 0 0 0.9em;
   text-align: right;
+  transition: none;
 }
 .today {
   margin: 0 0 16px;
