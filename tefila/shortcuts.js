@@ -6,7 +6,7 @@ var TEFILA_SHORTCUTS = {
 
 /* iCloud share links. Leave a string empty until that link exists. */
 var ICLOUD_LINKS = {
-  on: "https://www.icloud.com/shortcuts/8afce28b59cf4693889900fcef0bde29",
+  on: "https://www.icloud.com/shortcuts/e8dac08beb1f47f3934e84dd95a7e028",
   off: "https://www.icloud.com/shortcuts/fc207386d3f74a829b51ecf87941e40b",
 };
 

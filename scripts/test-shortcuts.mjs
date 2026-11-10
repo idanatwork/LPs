@@ -11,7 +11,7 @@ const startHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפי�
 const endHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפילה OFF");
 const startLabel = "הפעל קיצור, אתחיל תפילה";
 const endLabel = "הפעל קיצור, סיים תפילה";
-const onIcloud = "https://www.icloud.com/shortcuts/8afce28b59cf4693889900fcef0bde29";
+const onIcloud = "https://www.icloud.com/shortcuts/e8dac08beb1f47f3934e84dd95a7e028";
 const offIcloud = "https://www.icloud.com/shortcuts/fc207386d3f74a829b51ecf87941e40b";
 const pending = "קישור ההורדה יתווסף בקרוב";
 
@@ -76,7 +76,8 @@ async function assertDownloads(page, where) {
   const pageText = await page.locator("main").innerText();
   check("on card explains home screen", (await home.locator("h3").innerText()) === "שמירת הקיצור כאפליקציה במכשיר" && steps.length === 4 && steps[0].includes("קיצורים") && steps[1].includes("תפילה ON") && steps[2].includes("הוסף למסך הבית") && steps[3].includes("סידור") && steps[3].includes("הוסף") && (await home.locator(".note").innerText()).includes("כמו אפליקציה"));
   check("on card gives the focus url", (await page.locator("#focus-url").innerText()).includes("פתח כתובות URL") && (await page.locator("#focus-url-text").innerText()) === "https://idanatwork.github.io/LPs/tefila/?focus=on" && !pageText.includes("Safari"));
-  check("auto-off tip", (await page.locator("#focus-timeout").innerText()).includes("כיבוי אוטומטי אם שכחתי לסיים") && (await page.locator("#focus-timeout").innerText()).includes("שתף בין מכשירים"));
+  const tip = await page.locator("#focus-timeout").innerText();
+  check("auto-off tip", tip.includes("כיבוי אוטומטי אם שכחתי לסיים") && tip.includes("כבר מכבה") && tip.includes("אחרי שעה") && tip.includes("קבע מצב ריכוז") && tip.includes("שתף בין מכשירים"));
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.locator("#copy-focus-url").click();
   await page.locator("#copy-focus-url", { hasText: "הועתק" }).waitFor({ timeout: 2000 });
