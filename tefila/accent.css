@@ -42,6 +42,86 @@ html[data-theme="dark"][data-accent="turquoise"] { --accent: #5eead4 !important;
 }
 
 p.home { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+a.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+}
+a.home-btn svg { width: 22px; height: 22px; flex: none; display: block; }
+
+/* Printed-siddur frame. The ink is the accent at low opacity, masked into a thin ornament, so it never sits on the letters. */
+body.siddur-frame main { position: relative; }
+@media (min-width: 760px) {
+  body.siddur-frame main { padding-inline: 46px; }
+  body.siddur-frame main::before,
+  body.siddur-frame main::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    width: 20px;
+    pointer-events: none;
+    background-color: var(--accent);
+    opacity: 0.38;
+    -webkit-mask: url("ornament-side.svg") center top / 20px 80px repeat-y;
+    mask: url("ornament-side.svg") center top / 20px 80px repeat-y;
+  }
+  body.siddur-frame main::before { inset-inline-start: 8px; }
+  body.siddur-frame main::after { inset-inline-end: 8px; transform: scaleX(-1); }
+  body.siddur-frame h2::after {
+    content: "";
+    display: block;
+    height: 14px;
+    margin-top: 4px;
+    background-color: var(--accent);
+    opacity: 0.4;
+    -webkit-mask: url("ornament-rule.svg") center / 180px 14px no-repeat;
+    mask: url("ornament-rule.svg") center / 180px 14px no-repeat;
+  }
+}
+@media (max-width: 759px) {
+  body.siddur-frame main::before,
+  body.siddur-frame main::after {
+    content: "";
+    display: block;
+    height: 14px;
+    margin: 2px auto 12px;
+    width: min(240px, 70%);
+    pointer-events: none;
+    background-color: var(--accent);
+    opacity: 0.45;
+    -webkit-mask: url("ornament-rule.svg") center / 100% 14px no-repeat;
+    mask: url("ornament-rule.svg") center / 100% 14px no-repeat;
+  }
+  body.siddur-frame main::after { margin: 16px auto 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.siddur-frame main::before,
+  body.siddur-frame main::after,
+  body.siddur-frame h2::after {
+    animation: none;
+    transition: none;
+  }
+}
+@media print {
+  body.siddur-frame main::before,
+  body.siddur-frame main::after,
+  body.siddur-frame h2::after {
+    opacity: 0.3;
+  }
+}
 .accent-pop { position: relative; display: inline-flex; }
 .accent-pop > button {
   width: 44px;

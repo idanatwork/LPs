@@ -5,7 +5,8 @@
   },
   "scripts": {
     "test:dates": "node scripts/test-tefila-dates.mjs && node scripts/test-zmanim.mjs && python3 scripts/test_solo_text.py",
-    "test:minyan": "node scripts/test-minyan.mjs"
+    "test:minyan": "node scripts/test-minyan.mjs",
+    "test:zmanim-ui": "node scripts/test-zmanim-ui.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.49.1"

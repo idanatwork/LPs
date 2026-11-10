@@ -44,7 +44,7 @@ nav.top a,.tg button{font:inherit;font-size:16px;color:var(--accent);border:1px 
 h2{font-size:clamp(24px,7vw,34px);color:var(--accent);margin:40px 0 6px}
 .src{margin-top:28px;font-size:12px;color:var(--muted);direction:ltr}
 </style>
-<link rel="stylesheet" href="../tefila/accent.css?v=4">
+<link rel="stylesheet" href="../tefila/accent.css?v=5">
 <script>
 (function () {
   var accentIds = { gold: 1, blue: 1, olive: 1, bordeaux: 1, purple: 1, turquoise: 1 };
@@ -57,9 +57,9 @@ h2{font-size:clamp(24px,7vw,34px);color:var(--accent);margin:40px 0 6px}
 })();
 </script>
 </head>
-<body>
+<body class="siddur-frame">
 <main>
-<p class="home"><a href="../tefila/">בית</a><div class="accent-pop"><button type="button" id="accent-toggle" aria-expanded="false" aria-label="צבע הדגשה"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="8" r="3" fill="currentColor" opacity=".45"/><circle cx="11.8" cy="16" r="3" fill="currentColor" opacity=".75"/></svg></button><div class="accent-menu" hidden role="listbox" aria-label="צבעים"><button type="button" role="option" data-set-accent="gold" aria-label="זהב"></button><button type="button" role="option" data-set-accent="blue" aria-label="כחול"></button><button type="button" role="option" data-set-accent="olive" aria-label="ירוק זית"></button><button type="button" role="option" data-set-accent="bordeaux" aria-label="בורדו"></button><button type="button" role="option" data-set-accent="purple" aria-label="סגול"></button><button type="button" role="option" data-set-accent="turquoise" aria-label="פירוז"></button></div></div></p>
+<p class="home"><a class="home-btn" href="../tefila/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><div class="accent-pop"><button type="button" id="accent-toggle" aria-expanded="false" aria-label="צבע הדגשה"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="8" r="3" fill="currentColor" opacity=".45"/><circle cx="11.8" cy="16" r="3" fill="currentColor" opacity=".75"/></svg></button><div class="accent-menu" hidden role="listbox" aria-label="צבעים"><button type="button" role="option" data-set-accent="gold" aria-label="זהב"></button><button type="button" role="option" data-set-accent="blue" aria-label="כחול"></button><button type="button" role="option" data-set-accent="olive" aria-label="ירוק זית"></button><button type="button" role="option" data-set-accent="bordeaux" aria-label="בורדו"></button><button type="button" role="option" data-set-accent="purple" aria-label="סגול"></button><button type="button" role="option" data-set-accent="turquoise" aria-label="פירוז"></button></div></div></p>
 <nav class="top"><a href="#borei-nefashot">בורא נפשות</a><a href="#mein-shalosh">מעין שלוש</a></nav>
 <h1 id="borei-nefashot">בִּרְכַּת בּוֹרֵא נְפָשׁוֹת</h1>
 <div class="sep"></div>
@@ -101,6 +101,6 @@ document.querySelectorAll('.tg button').forEach(b=>b.onclick=()=>{b.setAttribute
 r();
 </script>
 </main>
-<script src="../tefila/controls.js?v=4"></script>
+<script src="../tefila/controls.js?v=5"></script>
 </body>
 </html>

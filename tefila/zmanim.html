@@ -7,8 +7,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" id="theme-color" content="#fdfbf6">
-<link rel="stylesheet" href="tefila.css?v=4">
-<link rel="stylesheet" href="accent.css?v=4">
+<link rel="stylesheet" href="tefila.css?v=5">
+<link rel="stylesheet" href="accent.css?v=5">
 <title>זמני היום</title>
 <script type="importmap">
 {
@@ -17,11 +17,11 @@
   }
 }
 </script>
-<script src="boot.js?v=4"></script>
+<script src="boot.js?v=5"></script>
 </head>
 <body>
 <header class="bar">
-  <div class="brand"><a href="index.html">בית</a><strong>זמנים</strong></div>
+  <div class="brand"><a class="home-btn" href="index.html"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><strong>זמנים</strong></div>
   <div class="szs">
     <div class="mode-switch" role="group" aria-label="יחיד או מניין"><button type="button" data-set-minyan="yachid" aria-pressed="true">יחיד</button><button type="button" data-set-minyan="minyan" aria-pressed="false">מניין</button></div>
     <div class="accent-pop"><button type="button" id="accent-toggle" aria-expanded="false" aria-label="צבע הדגשה"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="8" r="3" fill="currentColor" opacity=".45"/><circle cx="11.8" cy="16" r="3" fill="currentColor" opacity=".75"/></svg></button><div class="accent-menu" hidden role="listbox" aria-label="צבעים"><button type="button" role="option" data-set-accent="gold" aria-label="זהב"></button><button type="button" role="option" data-set-accent="blue" aria-label="כחול"></button><button type="button" role="option" data-set-accent="olive" aria-label="ירוק זית"></button><button type="button" role="option" data-set-accent="bordeaux" aria-label="בורדו"></button><button type="button" role="option" data-set-accent="purple" aria-label="סגול"></button><button type="button" role="option" data-set-accent="turquoise" aria-label="פירוז"></button></div></div>
@@ -31,7 +31,13 @@
 <main>
 <p class="kicker">זמני היום באורנית</p>
 <div class="sep"></div>
-<p class="note">לפי הרב עובדיה יוסף: שעה זמנית גר״א מהנץ עד השקיעה. עלות השחר 72 דקות זמניות לפני הנץ, צאת הכוכבים 13.5 אחרי השקיעה, ר״ת 72 אחרי השקיעה. שעה זמנית מג״א מעלות עד ר״ת. פלג המנחה לפי ילקוט יוסף: צאת הכוכבים פחות 75 דקות זמניות. סוף זמן ק״ש ותפילה למג״א הוא לכתחילה, ולגר״א בדיעבד. הדלקת נרות: 20 דקות קבועות לפני השקיעה.</p>
+<p class="note">לפי הרב עובדיה יוסף: שעה זמנית גר״א מהנץ עד השקיעה. עלות השחר 72 דקות זמניות לפני הנץ, צאת הכוכבים 13.5 אחרי השקיעה, ר״ת 72 אחרי השקיעה. שעה זמנית מג״א מעלות עד ר״ת. פלג המנחה לפי ילקוט יוסף: צאת הכוכבים פחות 75 דקות זמניות. סוף זמן ק״ש למג״א הוא לכתחילה, ולגר״א בדיעבד. סוף זמן תפילה כגר״א. הדלקת נרות: 20 דקות קבועות לפני השקיעה.</p>
+<details class="add" id="gra-mga">
+  <summary>מה זה גר״א ומג״א?</summary>
+  <p>שעה זמנית היא חלק אחד מתוך שתים עשרה של אורך היום. היום מתארך ומתקצר בין קיץ לחורף, ולכן גם אורך השעה משתנה.</p>
+  <p>הגר״א מונה את היום מהנץ עד השקיעה. המג״א מונה מעלות השחר עד צאת הכוכבים. אצלנו עלות השחר היא שבעים ושתים דקות זמניות לפני הנץ, וסוף היום למג״א הוא צאת ר״ת, שבעים ושתים דקות זמניות אחרי השקיעה. לכן זמני המג״א מוקדמים מזמני הגר״א.</p>
+  <p>לדעת הרב עובדיה יוסף, בקריאת שמע של שחרית לכתחילה מחמירים כמג״א, ובדיעבד סומכים על הגר״א. סוף זמן תפילה הוא כגר״א.</p>
+</details>
 <div class="z-nav">
   <button type="button" id="z-prev" aria-label="היום הקודם">הקודם</button>
   <input id="z-date" type="date" aria-label="תאריך">
@@ -42,7 +48,7 @@
 <p class="note" id="z-extra" hidden></p>
 <p class="src">מקורות: הלכה יומית, הלכה 957 (72 דקות זמניות); טבלת calj.net בשורות Rav Ovadia.</p>
 </main>
-<script src="controls.js?v=4"></script>
-<script type="module" src="zmanim-page.mjs?v=4"></script>
+<script src="controls.js?v=5"></script>
+<script type="module" src="zmanim-page.mjs?v=5"></script>
 </body>
 </html>
