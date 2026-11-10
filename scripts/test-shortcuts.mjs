@@ -7,7 +7,9 @@ const mac = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.1
 const windows = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const ipadDesktop = mac;
 const prayers = ["shacharit.html", "mincha.html", "arvit.html"];
+const startHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפילה ON");
 const endHref = "shortcuts://run-shortcut?name=" + encodeURIComponent("תפילה OFF");
+const startLabel = "הפעל קיצור, אתחיל תפילה";
 const endLabel = "הפעל קיצור, סיים תפילה";
 
 const checks = [];
@@ -42,8 +44,20 @@ async function noStart(page, where) {
 {
   const { context, page } = await open(iphone);
   await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-  check("gate has no shortcut row", await page.locator(".shortcut-row").count() === 0);
-  await noStart(page, "gate");
+  const gateRow = page.locator(".shortcut-row");
+  const gateLinks = gateRow.locator("a");
+  check("iPhone gate shows both buttons", await gateRow.count() === 1 && await gateLinks.count() === 2 && await gateLinks.nth(0).isVisible() && await gateLinks.nth(1).isVisible());
+  check("iPhone gate start label", (await gateLinks.nth(0).innerText()) === startLabel && (await gateLinks.nth(0).getAttribute("aria-label")) === startLabel);
+  check("iPhone gate end label", (await gateLinks.nth(1).innerText()) === endLabel && (await gateLinks.nth(1).getAttribute("aria-label")) === endLabel);
+  check("iPhone gate start href", (await gateLinks.nth(0).getAttribute("href")) === startHref, await gateLinks.nth(0).getAttribute("href"));
+  check("iPhone gate end href", (await gateLinks.nth(1).getAttribute("href")) === endHref, await gateLinks.nth(1).getAttribute("href"));
+  const startBox = await gateLinks.nth(0).boundingBox();
+  const endBox = await gateLinks.nth(1).boundingBox();
+  check("gate buttons are at least 48px", startBox && endBox && startBox.height >= 48 && endBox.height >= 48, startBox && String(Math.round(startBox.height)));
+  const brachotBox = await page.locator('nav[aria-label="ברכות"]').boundingBox();
+  const rowBox = await gateRow.boundingBox();
+  const watchBox = await page.locator("h2.hub-h", { hasText: "שעון" }).boundingBox();
+  check("gate shortcuts sit between brachot and watch", brachotBox && rowBox && watchBox && brachotBox.y + brachotBox.height <= rowBox.y && rowBox.y + rowBox.height <= watchBox.y);
   for (const name of prayers) {
     await page.goto(base + "/tefila/" + name, { waitUntil: "domcontentloaded" });
     const rows = page.locator(".shortcut-row");
@@ -64,6 +78,12 @@ async function noStart(page, where) {
 
 {
   const { context, page } = await open(desktop);
+  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
+  check("desktop hides the gate buttons", await page.locator(".shortcut-row").isHidden());
+  await page.goto(base + "/tefila/index.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
+  check("desktop override shows both gate buttons", await page.locator(".shortcut-row a").count() === 2 && await page.locator("[data-shortcut=start]").isVisible());
+  check("override keeps the start href", (await page.locator("[data-shortcut=start]").getAttribute("href")) === startHref);
+  check("override keeps the gate end href", (await page.locator("[data-shortcut=end]").getAttribute("href")) === endHref);
   await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
   check("desktop hides the end button", await page.locator(".shortcut-row").isHidden());
   await page.goto(base + "/tefila/shacharit.html?showShortcuts=1", { waitUntil: "domcontentloaded" });
@@ -79,11 +99,16 @@ async function noStart(page, where) {
   const link = page.locator(".shortcut-row a");
   check("Mac shows the end button", await link.count() === 1 && await link.isVisible());
   check("Mac end label", (await link.innerText()) === endLabel);
+  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
+  const gateLinks = page.locator(".shortcut-row a");
+  check("Mac shows both gate buttons", await gateLinks.count() === 2 && await gateLinks.nth(0).isVisible() && await gateLinks.nth(1).isVisible());
   await context.close();
 }
 
 {
   const { context, page } = await open(windows);
+  await page.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
+  check("Windows hides the gate buttons", await page.locator(".shortcut-row").isHidden());
   await page.goto(base + "/tefila/mincha.html", { waitUntil: "domcontentloaded" });
   check("Windows hides the end button", await page.locator(".shortcut-row").isHidden());
   await context.close();

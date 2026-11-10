@@ -1,5 +1,6 @@
-/* Shortcut name the Shortcuts app must match. Change it here only. */
+/* Shortcut names the Shortcuts app must match. Change them here only. */
 var TEFILA_SHORTCUTS = {
+  start: "תפילה ON",
   end: "תפילה OFF",
 };
 

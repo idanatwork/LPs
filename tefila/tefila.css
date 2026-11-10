@@ -492,6 +492,11 @@ html[data-il="0"] .baaretz { display: none; }
   text-align: center;
   text-decoration: none;
 }
+.shortcut-start {
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+}
 .shortcut-end {
   background: transparent;
   color: var(--accent);
