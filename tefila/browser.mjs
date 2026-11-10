@@ -1,4 +1,5 @@
-import { statusFor } from "./day-status.mjs";
+import { statusFor } from "./day-status.mjs?v=6";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=6";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
@@ -32,6 +33,18 @@ function showBanner(status) {
   box.hidden = false;
 }
 
+function showHalacha(status) {
+  const box = document.getElementById("halacha-yomit");
+  if (!box || !status.hd) return;
+  const item = halachaForHDate(status.hd);
+  const title = document.getElementById("halacha-title");
+  const body = document.getElementById("halacha-body");
+  const source = document.getElementById("halacha-src");
+  if (title) title.textContent = item.title;
+  if (body) body.textContent = item.body;
+  if (source) source.textContent = item.source;
+}
+
 function init() {
   const service = document.body && document.body.dataset.service;
   if (!service) return;
@@ -39,6 +52,7 @@ function init() {
     const status = statusFor(new Date(), service);
     showBanner(status);
     openMatching(status.flags);
+    showHalacha(status);
   } catch (e) {
     const box = document.getElementById("today-banner");
     if (box) {
@@ -49,4 +63,11 @@ function init() {
   }
 }
 
+function refresh() {
+  if (document.visibilityState === "hidden") return;
+  init();
+}
+
 init();
+document.addEventListener("visibilitychange", refresh);
+window.addEventListener("pageshow", refresh);

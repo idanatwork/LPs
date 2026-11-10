@@ -460,6 +460,18 @@ html[data-il="0"] .baaretz { display: none; }
   font-weight: 400;
   line-height: 1.55;
 }
+.halacha-yomit {
+  margin: 16px 0 20px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.halacha-kicker, .halacha-title { margin: 0 0 6px; color: var(--accent); font-weight: 700; }
+.halacha-kicker { font-size: 14px; }
+.halacha-title { font-size: 20px; }
+.halacha-body { margin: 0 0 8px; font-size: 17px; line-height: 1.6; }
+.halacha-src { margin: 0; font-size: 14px; color: var(--muted); }
 .z-strip { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
 .watch-list { padding-right: 18px; }
 .watch-list li { margin: 0 0 8px; line-height: 1.5; }

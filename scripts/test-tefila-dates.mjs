@@ -22,14 +22,14 @@ function at(y, m, d, service) {
 
 {
   const { hd, st } = at(5787, months.KISLEV, 25, "shacharit");
-  check("25 Kislev is Shabbat", hd.greg().getUTCDay() === 6, hd.greg().toDateString());
+  check("25 Kislev is Shabbat", hd.greg().getDay() === 6, hd.greg().toDateString());
   check("25 Kislev Chanukah", st.chips.includes("חנוכה") && st.chips.includes("שבת") && st.chips.includes("לא אומרים תחנון") && st.flags.chanukah && !st.flags.tachanun && !st.flags["weekday-6"], st.chips.join(" · "));
 }
 
 {
   const { hd, st } = at(5787, months.CHESHVAN, 15, "shacharit");
   const mincha = statusForHDate(hd, "mincha");
-  check("regular Monday", hd.greg().getUTCDay() === 1, hd.toString() + " " + hd.greg().toDateString());
+  check("regular Monday", hd.greg().getDay() === 1, hd.toString() + " " + hd.greg().toDateString());
   check("Monday tachanun and shir", st.flags.tachanun && st.flags["tachanun-mw"] && st.flags["weekday-1"] && st.chips.includes("אומרים תחנון") && !st.flags.chanukah && !st.flags.yaaleh, st.chips.join(" · "));
   check("Monday mincha still tachanun", mincha.flags.tachanun && mincha.chips.includes("אומרים תחנון"));
 }
@@ -77,7 +77,7 @@ function at(y, m, d, service) {
   check("29 Elul 5786 is Erev Rosh Hashana", erev.greg().toDateString() === "Fri Sep 11 2026", erev.greg().toDateString());
   check("29 Elul Shacharit does not say tachanun", !sh.flags.tachanun && sh.chips.includes("לא אומרים תחנון"), sh.chips.join(" · "));
   check("29 Elul Mincha does not say tachanun", !mi.flags.tachanun && mi.chips.includes("לא אומרים תחנון"), mi.chips.join(" · "));
-  check("28 Elul is Thursday", before.greg().getUTCDay() === 4, before.greg().toDateString());
+  check("28 Elul is Thursday", before.greg().getDay() === 4, before.greg().toDateString());
   check("28 Elul Mincha says tachanun", mincha28.flags.tachanun && mincha28.chips.includes("אומרים תחנון"), mincha28.chips.join(" · "));
 }
 

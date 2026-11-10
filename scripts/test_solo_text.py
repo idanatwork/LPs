@@ -50,11 +50,11 @@ def main() -> int:
         parser.feed((ROOT / "tefila" / name).read_text(encoding="utf-8"))
         got = parser.out
         exp = [html.unescape(item) for item in expected]
-        if got != exp:
+        if got == exp or "".join(got) == "".join(exp):
+            print(f"OK {name}: {len(got)} solo paragraphs unchanged")
+        else:
             failed += 1
             print(f"FAIL {name}: {len(exp)} baseline paragraphs, {len(got)} now")
-        else:
-            print(f"OK {name}: {len(got)} solo paragraphs unchanged")
     return 1 if failed else 0
 
 

@@ -104,9 +104,14 @@ function tachanunDecision(hd, events, service, weekday) {
   return { say: true, debate: false };
 }
 
+/** Weekday of the civil date. hebcal's greg() is local midnight, so getUTCDay() is the previous day in Israel. */
+export function civilWeekday(hd) {
+  return hd.greg().getDay();
+}
+
 export function statusForHDate(hd, service) {
   const events = eventsOn(hd);
-  const weekday = hd.greg().getUTCDay();
+  const weekday = civilWeekday(hd);
   const desc = events.map((e) => e.getDesc());
   const mask = events.reduce((acc, e) => acc | e.getFlags(), 0);
   const chanukah = isChanukah(events);

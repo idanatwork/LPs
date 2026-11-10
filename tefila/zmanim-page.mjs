@@ -1,5 +1,5 @@
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
-import { statusForHDate } from "./day-status.mjs";
+import { civilWeekday, statusForHDate } from "./day-status.mjs?v=6";
 import { ORANIT, ZMAN_ROWS, computeFromSun, formatHM } from "./zmanim-calc.mjs";
 
 const input = document.getElementById("z-date");
@@ -112,7 +112,7 @@ function render(iso) {
   for (const [key, label] of ZMAN_ROWS) {
     list.append(row(key, label, formatHM(times[key])));
   }
-  const weekday = hd.greg().getUTCDay();
+  const weekday = civilWeekday(hd);
   if (weekday === 5) list.append(row("candles", "הדלקת נרות", formatHM(times.candles)));
   if (weekday === 6) list.append(row("havdalah", "הבדלה", formatHM(times.tzeit)));
   if (status.flags.fast) {
@@ -135,15 +135,26 @@ list.addEventListener("click", (event) => {
   }
 });
 
-const today = jerusalemToday();
-input.value = today;
-input.addEventListener("change", () => render(input.value || today));
+let shownToday = jerusalemToday();
+input.value = shownToday;
+input.addEventListener("change", () => render(input.value || shownToday));
 document.getElementById("z-prev").addEventListener("click", () => {
-  input.value = shift(input.value || today, -1);
+  input.value = shift(input.value || shownToday, -1);
   render(input.value);
 });
 document.getElementById("z-next").addEventListener("click", () => {
-  input.value = shift(input.value || today, 1);
+  input.value = shift(input.value || shownToday, 1);
   render(input.value);
 });
-render(today);
+function refreshZmanim() {
+  if (document.visibilityState === "hidden") return;
+  const nextToday = jerusalemToday();
+  if (input.value === shownToday) {
+    shownToday = nextToday;
+    input.value = shownToday;
+    render(shownToday);
+  }
+}
+render(shownToday);
+document.addEventListener("visibilitychange", refreshZmanim);
+window.addEventListener("pageshow", refreshZmanim);

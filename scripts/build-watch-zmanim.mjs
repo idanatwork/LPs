@@ -2,7 +2,7 @@ import { mkdirSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
-import { statusForHDate } from "../tefila/day-status.mjs";
+import { civilWeekday, statusForHDate } from "../tefila/day-status.mjs";
 import { ORANIT, computeFromSun, formatHM } from "../tefila/zmanim-calc.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -56,7 +56,7 @@ function textFor(when) {
   const status = statusForHDate(hd, "shacharit");
   const lines = [status.hebrewDate, status.chips.join(" · "), ""];
   for (const [key, label] of SHORT) lines.push(`${label} ${formatHM(times[key])}`);
-  const weekday = hd.greg().getUTCDay();
+  const weekday = civilWeekday(hd);
   if (weekday === 5) lines.push(`נרות ${formatHM(times.candles)}`);
   if (weekday === 6) lines.push(`הבדלה ${formatHM(times.tzeit)}`);
   if (status.flags.fast) {
