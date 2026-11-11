@@ -364,6 +364,11 @@
     document.addEventListener("visibilitychange", function () {
       if (document.visibilityState === "visible" && playing) acquireWake();
     });
+    window.tefilaBusy = function () {
+      var font = document.getElementById("font-panel");
+      var scroll = document.getElementById("scroll-panel");
+      return playing || (font && !font.hidden) || (scroll && !scroll.hidden);
+    };
   }
 
   function readMode() {
