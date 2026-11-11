@@ -113,19 +113,45 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
   letter-spacing: 0.02em;
   padding: 0 10px;
 }
-.font-panel {
-  position: absolute;
-  top: 100%;
+.font-panel, .scroll-panel {
+  position: fixed;
   inset-inline: 10px;
-  z-index: 30;
-  margin-top: 6px;
+  z-index: 40;
+  margin-top: 0;
   padding: 10px 12px 8px;
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   background: color-mix(in srgb, var(--bg) 94%, var(--accent));
   box-shadow: 0 8px 22px color-mix(in srgb, var(--fg) 14%, transparent);
 }
-.font-panel[hidden] { display: none !important; }
+.font-panel[hidden], .scroll-panel[hidden] { display: none !important; }
+.scroll-float {
+  position: fixed;
+  z-index: 45;
+  bottom: calc(env(safe-area-inset-bottom) + 18px);
+  inset-inline-start: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 20px;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--fg) 20%, transparent);
+}
+.scroll-float[hidden] { display: none !important; }
+.scroll-hint { margin: 6px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.scroll-actions { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.scroll-actions button {
+  min-width: 44px;
+  min-height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+}
 .font-panel-row { display: flex; align-items: center; gap: 8px; }
 .font-mark { color: var(--accent); font-weight: 700; line-height: 1; flex: none; }
 .font-mark-sm { font-size: 14px; }

@@ -106,15 +106,33 @@
     var header = document.querySelector("header.bar");
     if (dec && dec.parentNode) dec.parentNode.insertBefore(pop, dec);
     else if (header) header.appendChild(pop);
-    if (header) header.appendChild(panel);
+    document.body.appendChild(panel);
     slider = panel.querySelector("#font-slider");
     sliderValue = panel.querySelector("#font-value");
     syncSlider(read());
-    function setOpen(open) {
-      panel.hidden = !open;
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) slider.focus({ preventScroll: true });
+    function placePanel(node) {
+      var bar = document.querySelector("header.bar");
+      var top = bar ? bar.getBoundingClientRect().bottom + 6 : 8;
+      node.style.top = top + "px";
     }
+    function holdScroll(fn) {
+      var y = window.scrollY;
+      root.style.scrollBehavior = "auto";
+      fn();
+      window.scrollTo({ top: y, left: 0, behavior: "auto" });
+      requestAnimationFrame(function () {
+        window.scrollTo({ top: y, left: 0, behavior: "auto" });
+      });
+    }
+    function setOpen(open) {
+      holdScroll(function () {
+        if (open && window.tefilaCloseScrollPanel) window.tefilaCloseScrollPanel();
+        panel.hidden = !open;
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) placePanel(panel);
+      });
+    }
+    window.tefilaCloseFontPanel = function () { if (!panel.hidden) setOpen(false); };
     toggle.addEventListener("click", function (event) {
       event.stopPropagation();
       setOpen(panel.hidden);
@@ -139,6 +157,173 @@
         applySize(value);
         syncSlider(read());
       });
+    });
+
+    var speedKey = "tefila-scroll-lpm:" + (document.body.getAttribute("data-service") || location.pathname);
+    var speedMin = 6;
+    var speedMax = 30;
+    var lpm = 12;
+    try {
+      var savedSpeed = parseInt(localStorage.getItem(speedKey), 10);
+      if (savedSpeed >= speedMin && savedSpeed <= speedMax) lpm = savedSpeed;
+    } catch (e) {}
+    var scrollPop = document.createElement("div");
+    scrollPop.className = "font-pop";
+    var scrollToggle = document.createElement("button");
+    scrollToggle.type = "button";
+    scrollToggle.id = "scroll-toggle";
+    scrollToggle.className = "font-slider-toggle";
+    scrollToggle.setAttribute("aria-label", "גלילה אוטומטית");
+    scrollToggle.setAttribute("aria-pressed", "false");
+    scrollToggle.setAttribute("aria-controls", "scroll-panel");
+    scrollToggle.textContent = "▶";
+    var scrollPanel = document.createElement("div");
+    scrollPanel.id = "scroll-panel";
+    scrollPanel.className = "scroll-panel";
+    scrollPanel.hidden = true;
+    scrollPanel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">איטי</span><input type="range" id="scroll-speed" min="6" max="30" step="1" dir="rtl" aria-label="מהירות גלילה"><span class="font-mark font-mark-lg" aria-hidden="true">מהיר</span><button type="button" id="scroll-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions"><button type="button" id="scroll-slower" aria-label="לאט יותר">−</button><button type="button" id="scroll-play" aria-label="נגן">▶</button><button type="button" id="scroll-faster" aria-label="מהר יותר">+</button></div><p class="font-value" id="scroll-value"></p><p class="scroll-hint" id="scroll-wake-hint" hidden>אם המסך נכבה, בטלו את הנעילה האוטומטית.</p>';
+    var scrollFloat = document.createElement("button");
+    scrollFloat.type = "button";
+    scrollFloat.id = "scroll-float";
+    scrollFloat.className = "scroll-float";
+    scrollFloat.hidden = true;
+    scrollFloat.setAttribute("aria-label", "השהה גלילה");
+    scrollFloat.textContent = "⏸";
+    scrollPop.appendChild(scrollToggle);
+    if (pop.parentNode) pop.parentNode.insertBefore(scrollPop, pop);
+    document.body.appendChild(scrollPanel);
+    document.body.appendChild(scrollFloat);
+    var speedInput = scrollPanel.querySelector("#scroll-speed");
+    var speedLabel = scrollPanel.querySelector("#scroll-value");
+    var playBtn = scrollPanel.querySelector("#scroll-play");
+    var wakeHint = scrollPanel.querySelector("#scroll-wake-hint");
+    var playing = false;
+    var acc = 0;
+    var lastTick = 0;
+    var rafId = 0;
+    var wakeSentinel = null;
+    function showSpeed() {
+      speedInput.value = String(lpm);
+      speedLabel.textContent = lpm + " שורות לדקה";
+    }
+    function saveSpeed() {
+      try { localStorage.setItem(speedKey, String(lpm)); } catch (e) {}
+    }
+    function linePx() {
+      var sample = document.querySelector("p.t");
+      if (!sample) return read() * 2.05;
+      var measured = parseFloat(getComputedStyle(sample).lineHeight);
+      return measured > 0 ? measured : read() * 2.05;
+    }
+    function atEnd() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      return window.scrollY >= max - 2;
+    }
+    function paintPlay(on) {
+      playing = on;
+      scrollToggle.textContent = on ? "⏸" : "▶";
+      scrollToggle.setAttribute("aria-pressed", on ? "true" : "false");
+      playBtn.textContent = on ? "⏸" : "▶";
+      playBtn.setAttribute("aria-label", on ? "השהה" : "נגן");
+      scrollFloat.hidden = !on || !scrollPanel.hidden;
+    }
+    function releaseWake() {
+      if (wakeSentinel) {
+        wakeSentinel.release().catch(function () {});
+        wakeSentinel = null;
+      }
+    }
+    function acquireWake() {
+      if (!navigator.wakeLock) {
+        wakeHint.hidden = false;
+        return;
+      }
+      navigator.wakeLock.request("screen").then(function (sentinel) {
+        wakeSentinel = sentinel;
+        wakeHint.hidden = true;
+      }).catch(function () {
+        wakeHint.hidden = false;
+      });
+    }
+    function tick(now) {
+      if (!playing) return;
+      if (!lastTick) lastTick = now;
+      var dt = Math.min(0.05, (now - lastTick) / 1000);
+      lastTick = now;
+      if (atEnd()) { pauseScroll(); return; }
+      acc += (lpm / 60) * linePx() * dt;
+      if (acc >= 0.2) {
+        var before = window.scrollY;
+        root.style.scrollBehavior = "auto";
+        window.scrollTo(0, before + acc);
+        acc -= window.scrollY - before;
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+    function pauseScroll() {
+      playing = false;
+      lastTick = 0;
+      acc = 0;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+      releaseWake();
+      paintPlay(false);
+    }
+    function playScroll() {
+      if (atEnd()) return;
+      paintPlay(true);
+      scrollPanel.hidden = true;
+      scrollToggle.setAttribute("aria-expanded", "false");
+      scrollFloat.hidden = false;
+      lastTick = 0;
+      acc = 0;
+      acquireWake();
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(tick);
+    }
+    function setScrollOpen(open) {
+      holdScroll(function () {
+        if (open && window.tefilaCloseFontPanel) window.tefilaCloseFontPanel();
+        scrollPanel.hidden = !open;
+        scrollToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        if (open) placePanel(scrollPanel);
+        scrollFloat.hidden = !playing || !scrollPanel.hidden;
+      });
+    }
+    window.tefilaCloseScrollPanel = function () { if (!scrollPanel.hidden) setScrollOpen(false); };
+    showSpeed();
+    scrollToggle.addEventListener("click", function (event) {
+      event.stopPropagation();
+      setScrollOpen(scrollPanel.hidden);
+    });
+    scrollPanel.querySelector("#scroll-panel-close").addEventListener("click", function () { setScrollOpen(false); });
+    playBtn.addEventListener("click", function () { if (playing) pauseScroll(); else playScroll(); });
+    scrollFloat.addEventListener("click", function () { pauseScroll(); });
+    function setLpm(next) {
+      lpm = Math.max(speedMin, Math.min(speedMax, next));
+      showSpeed();
+      saveSpeed();
+    }
+    scrollPanel.querySelector("#scroll-slower").addEventListener("click", function () { setLpm(lpm - 1); });
+    scrollPanel.querySelector("#scroll-faster").addEventListener("click", function () { setLpm(lpm + 1); });
+    speedInput.addEventListener("input", function () { setLpm(parseInt(speedInput.value, 10)); });
+    document.addEventListener("pointerdown", function (event) {
+      if (scrollPanel.hidden) return;
+      if (scrollPanel.contains(event.target) || scrollPop.contains(event.target)) return;
+      setScrollOpen(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !scrollPanel.hidden) setScrollOpen(false);
+    });
+    function manualPause(event) {
+      if (!playing) return;
+      if (event.target.closest && event.target.closest("header.bar, #scroll-panel, #scroll-float, #font-panel")) return;
+      pauseScroll();
+    }
+    document.addEventListener("touchstart", manualPause, { passive: true });
+    document.addEventListener("wheel", manualPause, { passive: true });
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible" && playing) acquireWake();
     });
   }
 
