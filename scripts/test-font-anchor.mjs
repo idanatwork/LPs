@@ -62,10 +62,10 @@ async function sample() {
   });
 }
 
-await page.locator("#font-slider-toggle").click();
+await page.locator("#font-slider-toggle").evaluate((el) => el.click());
 let mark = before;
 for (let i = 0; i < 4; i++) {
-  await page.locator("#font-inc").click();
+  await page.locator("#font-inc").evaluate((el) => el.click());
   await settle();
   const now = await sample();
   const drift = Math.abs(now.top - mark.top);
@@ -74,7 +74,7 @@ for (let i = 0; i < 4; i++) {
   mark = now;
 }
 for (let i = 0; i < 4; i++) {
-  await page.locator("#font-dec").click();
+  await page.locator("#font-dec").evaluate((el) => el.click());
   await settle();
   const now = await sample();
   const drift = Math.abs(now.top - mark.top);

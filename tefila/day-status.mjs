@@ -171,7 +171,11 @@ export function statusForHDate(hd, service) {
     anenu: openAnenu,
     nachem: tisha && service === "mincha",
     "twice-elohim": service === "shacharit" && (aseret || (hd.getMonth() === months.TISHREI && hd.getDate() === 21)),
-    hallel: service === "shacharit" && (rc || chanukah),
+    hallel: service === "shacharit" && (rc || chanukah || (hd.getMonth() === months.NISAN && hd.getDate() >= 15 && hd.getDate() <= 21) || (hd.getMonth() === months.SIVAN && hd.getDate() === 6) || (hd.getMonth() === months.TISHREI && hd.getDate() >= 15 && hd.getDate() <= 22)),
+    "hallel-full": service === "shacharit" && (chanukah || (hd.getMonth() === months.NISAN && hd.getDate() === 15) || (hd.getMonth() === months.SIVAN && hd.getDate() === 6) || (hd.getMonth() === months.TISHREI && hd.getDate() >= 15 && hd.getDate() <= 22)),
+    "musaf-rc": service === "shacharit" && rc && weekday !== 6,
+    "musaf-shabbat-note": service === "shacharit" && rc && weekday === 6,
+    "barchi-nafshi": service === "shacharit" && rc,
     tachanun: service !== "arvit" && tachanun.say,
     "tachanun-mw": service === "shacharit" && tachanun.say && (weekday === 1 || weekday === 4),
     shabbat: weekday === 6,
@@ -232,10 +236,10 @@ export function isNightService(now, service) {
   return !!(sunset && now >= sunset);
 }
 
-export function formatHeaderDate(status, night) {
-  const g = status.hd.greg();
-  const greg = `${g.getDate()}.${g.getMonth() + 1}.${g.getFullYear()}`;
-  const weekday = "יום " + WEEKDAYS[civilWeekday(status.hd)];
+export function formatHeaderDate(status, night, now) {
+  const civil = now instanceof Date ? now : new Date();
+  const greg = `${civil.getDate()}.${civil.getMonth() + 1}.${civil.getFullYear()}`;
+  const weekday = "יום " + WEEKDAYS[civil.getDay()];
   const heb = (night ? "ליל " : "") + status.hebrewDate;
   const occasions = OCCASIONS.filter((name) => status.chips.includes(name));
   const line1 = [heb, ...occasions].join(" · ");

@@ -73,15 +73,15 @@ async function assertDownloads(page, where) {
   const manual = page.locator("details.manual-build");
   const closedText = await page.locator("main").innerText();
   check("manual build starts closed", await manual.count() === 1 && !(await manual.evaluate((el) => el.open)) && (await manual.locator("summary").innerText()) === "בנייה ידנית (רק למי שלא מוריד)");
-  check("closed page hides the manual steps", !closedText.includes("Set Focus") && !closedText.includes("פתח כתובות URL"));
+  check("closed page hides the manual steps", !closedText.includes("קבע מצב ריכוז") && !closedText.includes("פתח כתובת"));
   check("visible auto-off and sync notes", (await page.locator("#focus-auto").innerText()).includes("כבר מכבה") && (await page.locator("#focus-auto").innerText()).includes("אחרי שעה") && (await page.locator("#focus-sync").innerText()).includes("שתף בין מכשירים") && await page.locator("#focus-auto").isVisible());
   const home = page.locator("#home-app");
   const steps = await home.locator("li").allInnerTexts();
   check("on card explains home screen", (await home.locator("h3").innerText()) === "שמירת הקיצור כאפליקציה במכשיר" && steps.length === 4 && steps[0].includes("קיצורים") && steps[1].includes("תפילה ON") && steps[2].includes("הוסף למסך הבית") && steps[3].includes("סידור") && steps[3].includes("הוסף") && (await home.locator(".note").innerText()).includes("כמו אפליקציה"));
   await manual.locator("summary").click();
   const openText = await manual.innerText();
-  check("manual build opens", await manual.evaluate((el) => el.open) && openText.includes("Set Focus") && openText.includes("Off") && openText.includes("קבע מצב ריכוז") && openText.includes("https://idanatwork.github.io/LPs/tefila/"));
-  check("on card gives the focus url", (await page.locator("#focus-url").innerText()).includes("פתח כתובות URL") && (await page.locator("#focus-url-text").innerText()) === "https://idanatwork.github.io/LPs/tefila/?focus=on" && !openText.includes("Safari"));
+  check("manual build opens", await manual.evaluate((el) => el.open) && openText.includes("קבע מצב ריכוז") && openText.includes("כיבוי") && openText.includes("הדלקה") && openText.includes("https://idanatwork.github.io/LPs/tefila/"));
+  check("on card gives the focus url", (await page.locator("#focus-url").innerText()).includes("פתח כתובת") && (await page.locator("#focus-url-text").innerText()) === "https://idanatwork.github.io/LPs/tefila/?focus=on" && !openText.includes("Safari"));
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.locator("#copy-focus-url").click();
   await page.locator("#copy-focus-url", { hasText: "הועתק" }).waitFor({ timeout: 2000 });
@@ -239,7 +239,7 @@ const creditText = "נבנה ע\"י טק-מייט | Tech-Mate";
   const page = await context.newPage();
   await page.goto(base + "/brachot/asher-yatzar.html", { waitUntil: "domcontentloaded" });
   const color = await page.locator(".site-credit").evaluate((el) => getComputedStyle(el).color);
-  check("asher yatzar credit follows dark mode", color === "rgb(165, 157, 144)", color);
+  check("asher yatzar credit follows dark mode", color === "rgb(196, 184, 168)", color);
   await context.close();
 }
 

@@ -184,7 +184,9 @@
     scrollToggle.setAttribute("aria-label", "גלילה אוטומטית");
     scrollToggle.setAttribute("aria-pressed", "false");
     scrollToggle.setAttribute("aria-controls", "scroll-panel");
-    scrollToggle.textContent = "▶";
+    var playIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+    var pauseIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+    scrollToggle.innerHTML = playIcon;
     var scrollPanel = document.createElement("div");
     scrollPanel.id = "scroll-panel";
     scrollPanel.className = "scroll-panel";
@@ -196,7 +198,7 @@
     scrollFloat.className = "scroll-float";
     scrollFloat.hidden = true;
     scrollFloat.setAttribute("aria-label", "השהה גלילה");
-    scrollFloat.textContent = "⏸";
+    scrollFloat.innerHTML = pauseIcon;
     scrollPop.appendChild(scrollToggle);
     if (pop.parentNode) pop.parentNode.insertBefore(scrollPop, pop);
     document.body.appendChild(scrollPanel);
@@ -215,28 +217,22 @@
       var fs = read();
       var width = window.innerWidth;
       if (paceCache.fs === fs && paceCache.width === width) return paceCache.value;
-      var nodes = [];
+      var list = [];
       document.querySelectorAll("p.t").forEach(function (node) {
-        var rect = node.getBoundingClientRect();
-        if (rect.height < 8) return;
-        if (rect.bottom > 0 && rect.top < window.innerHeight) nodes.push(node);
+        if (node.getBoundingClientRect().height >= 8) list.push(node);
       });
-      if (!nodes.length) {
-        document.querySelectorAll("p.t").forEach(function (node) {
-          if (nodes.length < 6 && node.getBoundingClientRect().height >= 8) nodes.push(node);
-        });
-      }
-      var words = 0;
-      var lines = 0;
-      nodes.slice(0, 6).forEach(function (node) {
+      var rates = [];
+      var step = Math.max(1, Math.floor(list.length / 24));
+      for (var i = 0; i < list.length; i += step) {
+        var node = list[i];
         var text = (node.innerText || "").replace(/\s+/g, " ").trim();
-        if (!text) return;
-        var count = text.split(" ").length;
+        if (!text) continue;
         var lh = parseFloat(getComputedStyle(node).lineHeight) || 1;
-        words += count;
-        lines += Math.max(1, node.getBoundingClientRect().height / lh);
-      });
-      var value = lines ? Math.max(2, words / lines) : 8;
+        var lines = Math.max(1, node.getBoundingClientRect().height / lh);
+        rates.push(text.split(" ").length / lines);
+      }
+      rates.sort(function (a, b) { return a - b; });
+      var value = rates.length ? Math.max(2, rates[Math.floor(rates.length / 2)]) : 8;
       paceCache = { fs: fs, width: width, value: value };
       return value;
     }
@@ -259,9 +255,9 @@
     }
     function paintPlay(on) {
       playing = on;
-      scrollToggle.textContent = on ? "⏸" : "▶";
+      scrollToggle.innerHTML = on ? pauseIcon : playIcon;
       scrollToggle.setAttribute("aria-pressed", on ? "true" : "false");
-      playBtn.textContent = on ? "⏸" : "▶";
+      playBtn.innerHTML = on ? pauseIcon : playIcon;
       playBtn.setAttribute("aria-label", on ? "השהה" : "נגן");
       scrollFloat.hidden = !on || !scrollPanel.hidden;
     }
@@ -411,6 +407,7 @@
 
   function ensureModeStatus() {
     if (document.getElementById("mode-status")) return;
+    if (!document.body || !document.body.getAttribute("data-service")) return;
     var el = document.createElement("p");
     el.id = "mode-status";
     el.className = "mode-status";
@@ -511,6 +508,18 @@
     });
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
-  else boot();
+  function watchHeader() {
+    var bar = document.querySelector("header.bar");
+    if (!bar) return;
+    var apply = function () {
+      var height = Math.ceil(bar.getBoundingClientRect().height);
+      if (height > 0) document.documentElement.style.setProperty("--header", height + "px");
+    };
+    apply();
+    if (window.ResizeObserver) new ResizeObserver(apply).observe(bar);
+    window.addEventListener("resize", apply);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { boot(); watchHeader(); });
+  else { boot(); watchHeader(); }
 })();

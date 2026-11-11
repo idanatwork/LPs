@@ -70,12 +70,22 @@
     (document.body || document.documentElement).appendChild(button);
   }
 
+  function stripBust() {
+    try {
+      var url = new URL(location.href);
+      if (!url.searchParams.has("_")) return;
+      url.searchParams.delete("_");
+      var search = url.searchParams.toString();
+      history.replaceState(null, "", url.pathname + (search ? "?" + search : "") + url.hash);
+    } catch (e) {}
+  }
+
   function consider(remote) {
-    if (!remote || remote === BUILD) return;
+    if (!remote || remote === BUILD) { stripBust(); return; }
     pendingVersion = remote;
     var tried = "";
     try { tried = sessionStorage.getItem("tefila-reloaded") || ""; } catch (e) {}
-    if (busy() || tried === remote) showToast();
+    if (busy() || tried === remote) { showToast(); stripBust(); }
     else reloadFor(remote);
   }
 
@@ -89,10 +99,9 @@
     }).catch(function () {});
   }
 
-  if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-    navigator.serviceWorker.getRegistrations().then(function (regs) {
-      regs.forEach(function (reg) { reg.unregister(); });
-    }).catch(function () {});
+  if (navigator.serviceWorker && location.protocol !== "file:") {
+    var scopeBase = location.pathname.replace(/\/(tefila|brachot|watch)\/.*$/, "/");
+    navigator.serviceWorker.register(scopeBase + "sw.js").catch(function () {});
   }
 
   restoreScroll();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="18">
+<meta name="tefila-build" content="19">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -16,13 +16,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=18">
-<link rel="stylesheet" href="accent.css?v=18">
+<link rel="stylesheet" href="tefila.css?v=19">
+<link rel="stylesheet" href="accent.css?v=19">
 <title>סידור</title>
 <script type="importmap">
 {
   "imports": {
-    "@hebcal/core": "https://cdn.jsdelivr.net/npm/@hebcal/core@6.15.0/+esm"
+    "@hebcal/core": "./vendor/hebcal-core.js"
   }
 }
 </script>
@@ -49,6 +49,7 @@
 
 })();
 </script>
+<script src="boot.js?v=19"></script>
 </head>
 <body class="siddur-frame">
 <header class="bar">
@@ -91,6 +92,7 @@
   <a href="../brachot/meein-shalosh.html">מעין שלוש</a>
   <a href="../brachot/birkat-hamazon.html">ברכת המזון</a>
 </nav>
+<section id="focus-hub" hidden>
 <h2 class="hub-h">פוקוס תפילה</h2>
 <nav class="cards small" aria-label="פוקוס תפילה">
   <a href="shortcuts.html">איך מתקינים ←</a>
@@ -100,14 +102,15 @@
   <a class="shortcut-btn shortcut-start" data-shortcut="start" href="#" aria-label="🔕 הפעל פוקוס תפילה">🔕 הפעל פוקוס תפילה</a>
   <a class="shortcut-btn shortcut-end" data-shortcut="end" href="#" aria-label="🔔 כבה פוקוס תפילה">🔔 כבה פוקוס תפילה</a>
 </div>
+</section>
 <h2 class="hub-h">שעון</h2>
 <nav class="cards small" aria-label="שעון">
   <a href="../watch/">בשעון</a>
 </nav>
 </main>
-<script src="shortcuts.js?v=18"></script>
-<script src="controls.js?v=18"></script>
-<script src="credit.js?v=18"></script>
-<script type="module" src="hub.mjs?v=18"></script>
+<script src="shortcuts.js?v=19"></script>
+<script src="controls.js?v=19"></script>
+<script src="credit.js?v=19"></script>
+<script type="module" src="hub.mjs?v=19"></script>
 </body>
 </html>

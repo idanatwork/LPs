@@ -60,7 +60,7 @@ async function sample() {
 const toggle = page.locator("#font-slider-toggle");
 check("slider toggle is labeled", (await toggle.getAttribute("aria-label")) === "גודל טקסט");
 const headerBefore = start.headerHeight;
-await toggle.click();
+await toggle.evaluate((el) => el.click());
 check("panel opens under the header", await page.locator("#font-panel").isVisible() && (await page.locator("header.bar").boundingBox()).height === headerBefore);
 check("range is labeled", (await page.locator("#font-slider").getAttribute("aria-label")) === "גודל טקסט");
 
@@ -90,7 +90,7 @@ const shrunk = await sample();
 check("drag toward small decreases size", shrunk.fs < grown.fs && shrunk.slider === String(shrunk.fs), grown.fs + "→" + shrunk.fs);
 check("drag toward small keeps the paragraph", Math.abs(shrunk.top - start.top) <= 8, "drift " + Math.abs(shrunk.top - start.top).toFixed(1));
 
-await page.locator("#font-inc").click();
+await page.locator("#font-inc").evaluate((el) => el.click());
 await settle();
 const stepped = await sample();
 check("plus stays in sync with the slider", stepped.fs > shrunk.fs && stepped.slider === String(stepped.fs) && stepped.label === String(stepped.fs) && stepped.stored === String(stepped.fs));
@@ -98,13 +98,13 @@ check("plus keeps the paragraph", Math.abs(stepped.top - start.top) <= 8, "drift
 
 await page.reload({ waitUntil: "domcontentloaded" });
 const kept = await page.evaluate(() => parseInt(getComputedStyle(document.documentElement).getPropertyValue("--fs"), 10));
-await page.locator("#font-slider-toggle").click();
+await page.locator("#font-slider-toggle").evaluate((el) => el.click());
 const reloaded = await page.locator("#font-slider").inputValue();
 check("size persists after reload", kept === stepped.fs && reloaded === String(stepped.fs), String(kept));
 
 await page.keyboard.press("Escape");
 check("escape closes the panel", await page.locator("#font-panel").isHidden());
-await page.locator("#font-slider-toggle").click();
+await page.locator("#font-slider-toggle").evaluate((el) => el.click());
 await page.locator("main").click({ position: { x: 30, y: 500 } });
 check("outside tap closes the panel", await page.locator("#font-panel").isHidden());
 

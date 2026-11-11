@@ -143,7 +143,7 @@ body.siddur-frame main { position: relative; }
   top: calc(100% + 8px);
   inset-inline-end: 0;
   display: grid;
-  grid-template-columns: repeat(3, 36px);
+  grid-template-columns: repeat(3, 44px);
   gap: 8px;
   margin: 0;
   padding: 10px;
@@ -154,10 +154,10 @@ body.siddur-frame main { position: relative; }
 }
 .accent-menu[hidden] { display: none !important; }
 .accent-menu button {
-  width: 36px;
-  min-width: 36px;
-  height: 36px;
-  min-height: 36px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
   border-radius: 999px;
   border: 2px solid transparent;
   padding: 0;

@@ -1,4 +1,4 @@
-import { formatHeaderDate, hebrewNow, isNightService, mountHeaderDate, statusForHDate } from "./day-status.mjs?v=18";
+import { formatHeaderDate, hebrewNow, isNightService, mountHeaderDate, statusForHDate } from "./day-status.mjs?v=19";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
@@ -9,9 +9,13 @@ function openMatching(flags) {
     const keys = el.dataset.open.split(/\s+/);
     if (!keys.some((k) => flags[k])) return;
     el.classList.add("is-today");
-    let p = el;
+    el.open = true;
+    let p = el.parentElement;
     while (p) {
-      if (p.tagName === "DETAILS") p.open = true;
+      if (p.tagName === "DETAILS") {
+        if (p.dataset.open && !p.dataset.open.split(/\s+/).some((k) => flags[k])) break;
+        p.open = true;
+      }
       p = p.parentElement;
     }
   });
@@ -22,13 +26,14 @@ function paint() {
   try {
     const now = new Date();
     const status = statusForHDate(hebrewNow(now), "shacharit");
-    mountHeaderDate(formatHeaderDate(status, isNightService(now, "shacharit")));
+    mountHeaderDate(formatHeaderDate(status, isNightService(now, "shacharit"), now));
+    const occasion = ["ראש חודש", "שבת", "חנוכה", "פורים", "חול המועד", "עשרת ימי תשובה"].filter((name) => status.chips.includes(name));
     if (box) {
       const date = box.querySelector(".date");
       const line = box.querySelector(".status");
       const note = box.querySelector(".extra");
       if (date) date.textContent = status.hebrewDate;
-      if (line) line.textContent = status.chips.join(" · ");
+      if (line) line.textContent = occasion.join(" · ");
       if (note) {
         note.textContent = status.note || "";
         note.hidden = !status.note;

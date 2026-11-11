@@ -139,6 +139,9 @@ function applyIcloudLinks() {
     if (document.visibilityState === "visible") applyFocusUi();
   });
 
+  var focusHub = document.getElementById("focus-hub");
+  if (focusHub) focusHub.hidden = !showShortcuts();
+
   if (showShortcuts()) {
     shortcutsVisible = true;
     document.querySelectorAll("a[data-shortcut]").forEach(function (link) {

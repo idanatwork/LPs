@@ -1,5 +1,5 @@
-import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=18";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=18";
+import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=19";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=19";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
@@ -10,9 +10,13 @@ function openMatching(flags) {
     const keys = el.dataset.open.split(/\s+/);
     if (!keys.some((k) => flags[k])) return;
     el.classList.add("is-today");
-    let p = el;
+    el.open = true;
+    let p = el.parentElement;
     while (p) {
-      if (p.tagName === "DETAILS") p.open = true;
+      if (p.tagName === "DETAILS") {
+        if (p.dataset.open && !p.dataset.open.split(/\s+/).some((k) => flags[k])) break;
+        p.open = true;
+      }
       p = p.parentElement;
     }
   });
@@ -51,7 +55,7 @@ function init() {
   try {
     const now = new Date();
     const status = statusFor(now, service);
-    mountHeaderDate(formatHeaderDate(status, isNightService(now, service)));
+    mountHeaderDate(formatHeaderDate(status, isNightService(now, service), now));
     showBanner(status);
     openMatching(status.flags);
     showHalacha(status);

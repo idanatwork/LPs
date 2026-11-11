@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="18">
+<meta name="tefila-build" content="19">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -11,51 +11,44 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="אשר יצר">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#fbf7ef" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" id="theme-color" content="#fdfbf6">
 <link rel="manifest" href="asher-yatzar.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tefila/tefila.css?v=19">
+<link rel="stylesheet" href="../tefila/accent.css?v=19">
 <title>אשר יצר</title>
-<style>
-:root{--bg:#fbf7ef;--fg:#1b1b1b;--muted:#6b6257;--accent:#1e3a8a;color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root{--bg:#111111;--fg:#f3eee4;--muted:#a59d90;--accent:#e9c46a}}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--fg);-webkit-text-size-adjust:100%}
-body{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;
-padding:calc(env(safe-area-inset-top) + 24px) calc(env(safe-area-inset-right) + 20px) calc(env(safe-area-inset-bottom) + 32px) calc(env(safe-area-inset-left) + 20px);
-font-family:"Frank Ruhl Libre","Taamey Frank CLM","SBL Hebrew","Times New Roman","Arial Hebrew",serif}
-main{width:100%;max-width:640px;text-align:center}
-h1{font-size:clamp(28px,8vw,40px);color:var(--accent);margin:8px 0 6px;font-weight:700;line-height:1.4}
-.sep{width:64px;height:2px;background:var(--accent);opacity:.6;margin:10px auto 18px;border-radius:2px}
-.home{margin:0 0 10px;text-align:right;font-size:16px}
-.home a{color:var(--accent);text-decoration:none;font-weight:700}
-.note{font-size:15px;color:var(--muted);line-height:1.6;margin:0 0 18px}
-.text{font-size:clamp(26px,7.2vw,36px);line-height:1.95;text-align:center;margin:0}
-.text b{color:var(--accent)}
-.src{margin-top:28px;font-size:12px;color:var(--muted);direction:ltr}
-</style>
-<link rel="stylesheet" href="../tefila/accent.css?v=18">
-<script>
-(function () {
-  var accentIds = { gold: 1, blue: 1, olive: 1, bordeaux: 1, purple: 1, turquoise: 1 };
-  var accent = "blue";
-  try {
-    var savedAccent = localStorage.getItem("tefila-accent");
-    if (accentIds[savedAccent]) accent = savedAccent;
-  } catch (e) {}
-  document.documentElement.setAttribute("data-accent", accent);
-})();
+<script type="importmap">
+{
+  "imports": {
+    "@hebcal/core": "../tefila/vendor/hebcal-core.js"
+  }
+}
 </script>
+<script src="../tefila/boot.js?v=19"></script>
 </head>
 <body class="siddur-frame">
+<header class="bar">
+  <div class="brand"><a class="home-btn" href="../tefila/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><p class="header-date" id="header-date" hidden></p><strong>אשר יצר</strong></div>
+  <div class="szs">
+    <div class="accent-pop"><button type="button" id="accent-toggle" aria-expanded="false" aria-label="צבע הדגשה"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="8" r="3" fill="currentColor" opacity=".45"/><circle cx="11.8" cy="16" r="3" fill="currentColor" opacity=".75"/></svg></button><div class="accent-menu" hidden role="listbox" aria-label="צבעים"><button type="button" role="option" data-set-accent="gold" aria-label="זהב"></button><button type="button" role="option" data-set-accent="blue" aria-label="כחול"></button><button type="button" role="option" data-set-accent="olive" aria-label="ירוק זית"></button><button type="button" role="option" data-set-accent="bordeaux" aria-label="בורדו"></button><button type="button" role="option" data-set-accent="purple" aria-label="סגול"></button><button type="button" role="option" data-set-accent="turquoise" aria-label="פירוז"></button></div></div>
+    <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
+    <button type="button" id="font-dec" aria-label="הקטן אות">א−</button>
+    <button type="button" id="font-inc" aria-label="הגדל אות">א+</button>
+  </div>
+</header>
 <main>
-<p class="home"><a class="home-btn" href="../tefila/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><div class="accent-pop"><button type="button" id="accent-toggle" aria-expanded="false" aria-label="צבע הדגשה"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="8" r="3" fill="currentColor" opacity=".45"/><circle cx="11.8" cy="16" r="3" fill="currentColor" opacity=".75"/></svg></button><div class="accent-menu" hidden role="listbox" aria-label="צבעים"><button type="button" role="option" data-set-accent="gold" aria-label="זהב"></button><button type="button" role="option" data-set-accent="blue" aria-label="כחול"></button><button type="button" role="option" data-set-accent="olive" aria-label="ירוק זית"></button><button type="button" role="option" data-set-accent="bordeaux" aria-label="בורדו"></button><button type="button" role="option" data-set-accent="purple" aria-label="סגול"></button><button type="button" role="option" data-set-accent="turquoise" aria-label="פירוז"></button></div></div></p>
-<h1>בִּרְכַּת אֲשֶׁר יָצַר</h1>
+<p class="kicker">ברכת אשר יצר</p>
 <div class="sep"></div>
+<div class="today" id="today-banner" hidden><p class="date"></p><p class="status"></p><p class="extra" hidden></p></div>
+<h2>בִּרְכַּת אֲשֶׁר יָצַר</h2>
 <p class="note">אם הטיל מים או עשה צרכיו, יברך מיד לאחר שיצא מבית הכיסא. אם שכח, יברך עד 72 דקות, כל עוד לא הוצרך להתפנות שוב (יחוה דעת ח"ד)</p>
-<p class="text"><b>בָּרוּךְ</b> אַתָּה יְהוָֹה, אֱלֹהֵֽינוּ מֶֽלֶךְ הָעוֹלָם, אֲשֶׁר יָצַר אֶת הָאָדָם בְּחָכְמָה, וּבָרָא בוֹ נְקָבִים נְקָבִים, חֲלוּלִים חֲלוּלִים, גָּלוּי וְיָדוּעַ לִפְנֵי כִסֵּא כְבוֹדֶךָ, שֶׁאִם יִסָּתֵם אֶחָד מֵהֶם, אוֹ אִם יִפָּתֵח אֶחָד מֵהֶם, אֵי אֶפְשָׁר לְהִתְקַיֵּם אַפִלּוּ שָׁעָה אֶחָת. בָּרוּךְ אַתָּה יְהֹוָה, רוֹפֵא כָל־בָּשָׂר וּמַפְלִיא לַעֲשׂוֹת:</p>
-<div class="src">נוסח עדות המזרח · Sefaria: Siddur_Edot_HaMizrach, Preparatory Prayers, Morning Blessings 5</div>
+<p class="t">בָּרוּךְ אַתָּה יְהוָֹה, אֱלֹהֵֽינוּ מֶֽלֶךְ הָעוֹלָם, אֲשֶׁר יָצַר אֶת הָאָדָם בְּחָכְמָה, וּבָרָא בוֹ נְקָבִים נְקָבִים, חֲלוּלִים חֲלוּלִים, גָּלוּי וְיָדוּעַ לִפְנֵי כִסֵּא כְבוֹדֶךָ, שֶׁאִם יִסָּתֵם אֶחָד מֵהֶם, אוֹ אִם יִפָּתֵח אֶחָד מֵהֶם, אֵי אֶפְשָׁר לְהִתְקַיֵּם אַפִלּוּ שָׁעָה אֶחָת. בָּרוּךְ אַתָּה יְהֹוָה, רוֹפֵא כָל־בָּשָׂר וּמַפְלִיא לַעֲשׂוֹת:</p>
+<p class="src">נוסח עדות המזרח · <a href="https://www.sefaria.org/Siddur_Edot_HaMizrach%2C_Preparatory_Prayers%2C_Morning_Blessings.5">ספריא</a></p>
 </main>
-<script src="../tefila/controls.js?v=18"></script>
-<script src="../tefila/credit.js?v=18"></script>
+<script src="../tefila/controls.js?v=19"></script>
+<script src="../tefila/credit.js?v=19"></script>
+<script type="module" src="../tefila/bracha-page.mjs?v=19"></script>
 </body>
 </html>

@@ -130,8 +130,8 @@ const anchor = await page.evaluate(() => {
   el.dataset.fontAnchor = "1";
   return el.getBoundingClientRect().top;
 });
-await page.locator("#font-slider-toggle").click();
-await page.locator("#font-inc").click();
+await page.locator("#font-slider-toggle").evaluate((el) => el.click());
+await page.locator("#font-inc").evaluate((el) => el.click());
 await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 const drift = await page.evaluate((top) => Math.abs(document.querySelector("[data-font-anchor]").getBoundingClientRect().top - top), anchor);
 check("text size mid-scroll does not jump", drift <= 8, "drift " + drift.toFixed(1));

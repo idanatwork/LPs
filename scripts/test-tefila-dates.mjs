@@ -107,8 +107,8 @@ function at(y, m, d, service) {
   const nightStatus = statusFor(after, "shacharit");
   const minchaStatus = statusFor(after, "mincha");
   const arvitStatus = statusFor(after, "arvit");
-  const daytimeLine = formatHeaderDate(dayStatus, isNightService(before, "shacharit"));
-  check("header date matches the shacharit day", daytimeLine === formatHebrewDate(day) + "\nיום ראשון · " + day.greg().getDate() + "." + (day.greg().getMonth() + 1) + "." + day.greg().getFullYear(), daytimeLine);
+  const daytimeLine = formatHeaderDate(dayStatus, isNightService(before, "shacharit"), before);
+  check("header date matches the shacharit day", daytimeLine === formatHebrewDate(day) + "\nיום ראשון · " + before.getUTCDate() + "." + (before.getUTCMonth() + 1) + "." + before.getUTCFullYear(), daytimeLine);
   check("evening shacharit is marked as night", isNightService(after, "shacharit") && formatHeaderDate(nightStatus, true).startsWith("ליל " + formatHebrewDate(rolled)), formatHeaderDate(nightStatus, true));
   check("mincha after sunset is not marked as night", !isNightService(after, "mincha") && formatHeaderDate(minchaStatus, false).startsWith(formatHebrewDate(minchaLate)), formatHeaderDate(minchaStatus, false));
   check("arvit header is the night of its computed day", isNightService(before, "arvit") && formatHeaderDate(arvitStatus, true).startsWith("ליל " + formatHebrewDate(arvitNight)), formatHeaderDate(arvitStatus, true));

@@ -24,10 +24,13 @@ await page.route("**/version.json*", (route) => {
     body: JSON.stringify({ v: "999" }),
   });
 });
+const seen = [];
+page.on("framenavigated", (frame) => { if (frame === page.mainFrame()) seen.push(frame.url()); });
 await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
-await page.waitForURL(/[?&]_=\d+/, { timeout: 8000 });
-check("old build reloads once", /[?&]_=\d+/.test(page.url()), page.url());
 await page.waitForSelector("#version-toast", { timeout: 8000 });
+check("old build reloads once", seen.some((url) => /[?&]_=\d+/.test(url)), seen.join(" "));
+await page.waitForFunction(() => !location.search.includes("_="));
+check("the reload drops the temporary address parameter", !page.url().includes("_="), page.url());
 check("a second mismatch shows the toast instead of looping", await page.locator("#version-toast").innerText() === "גרסה חדשה זמינה — הקש לרענון");
 await page.evaluate(() => window.scrollTo(0, 900));
 await page.locator("#version-toast").click();
