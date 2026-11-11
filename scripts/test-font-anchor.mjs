@@ -62,6 +62,7 @@ async function sample() {
   });
 }
 
+await page.locator("#font-slider-toggle").click();
 let mark = before;
 for (let i = 0; i < 4; i++) {
   await page.locator("#font-inc").click();

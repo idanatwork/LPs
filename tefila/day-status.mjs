@@ -238,7 +238,9 @@ export function formatHeaderDate(status, night) {
   const weekday = "יום " + WEEKDAYS[civilWeekday(status.hd)];
   const heb = (night ? "ליל " : "") + status.hebrewDate;
   const occasions = OCCASIONS.filter((name) => status.chips.includes(name));
-  return [heb, ...occasions, weekday, greg].join(" · ");
+  const line1 = [heb, ...occasions].join(" · ");
+  const line2 = weekday + " · " + greg;
+  return line1 + "\n" + line2;
 }
 
 export function mountHeaderDate(text) {
@@ -252,7 +254,12 @@ export function mountHeaderDate(text) {
     el.className = "header-date";
     header.appendChild(el);
   }
-  el.textContent = text;
+  const parts = String(text || "").split("\n");
+  el.replaceChildren();
+  parts.forEach(function (part, index) {
+    if (index) el.appendChild(document.createElement("br"));
+    el.appendChild(document.createTextNode(part));
+  });
   el.hidden = !text;
 }
 

@@ -46,6 +46,25 @@ for (const name of ["shacharit", "mincha", "arvit"]) {
     if (!separated) overlap = true;
   }
   check(name + " date does not cover the header controls", !overlap && dateBox && dateBox.width <= 390);
+  const home = await page.locator("a.home-btn").boundingBox();
+  const title = await page.locator(".brand strong").boundingBox();
+  const between = dateBox.x < home.x ? dateBox.x + dateBox.width <= home.x + 2 && title.x + title.width <= dateBox.x + 2 : dateBox.x + dateBox.width <= title.x + 2 && home.x + home.width <= dateBox.x + 2;
+  check(name + " date sits between home and title", between);
+  const tops = await page.locator("header.bar .szs button, header.bar .szs .mode-switch").evaluateAll((nodes) => {
+    const visible = nodes.filter((node) => {
+      const rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && getComputedStyle(node).visibility !== "hidden";
+    });
+    return [...new Set(visible.map((node) => Math.round(node.getBoundingClientRect().top / 8) * 8))];
+  });
+  check(name + " controls stay on one row", tops.length === 1, tops.join(","));
+}
+for (const width of [375, 393]) {
+  await page.setViewportSize({ width, height: 800 });
+  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "networkidle" });
+  const height = Math.round((await page.locator("header.bar").boundingBox()).height);
+  console.log("HEADER", width, height);
+  check("header at " + width + " is one brand row plus one control row", height < 150, String(height));
 }
 
 await page.goto(base + "/brachot/birkat-hamazon.html", { waitUntil: "networkidle" });
