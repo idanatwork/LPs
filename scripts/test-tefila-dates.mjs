@@ -1,5 +1,5 @@
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
-import { statusForHDate, resolveHDate, formatHebrewDate, activeService } from "../tefila/day-status.mjs";
+import { statusForHDate, resolveHDate, formatHebrewDate, formatHeaderDate, isNightService, statusFor, activeService } from "../tefila/day-status.mjs";
 
 const checks = [];
 function check(name, ok, detail) {
@@ -103,6 +103,14 @@ function at(y, m, d, service) {
   check("arvit before sunset is the coming day", formatHebrewDate(arvitDay).startsWith("כ״ט"), formatHebrewDate(arvitDay));
   check("arvit after sunset is that new day", formatHebrewDate(arvitNight).startsWith("כ״ט"), formatHebrewDate(arvitNight));
   check("arvit after midnight does not skip another day", formatHebrewDate(arvitAfterMidnight).startsWith("כ״ט"), formatHebrewDate(arvitAfterMidnight));
+  const dayStatus = statusFor(before, "shacharit");
+  const nightStatus = statusFor(after, "shacharit");
+  const minchaStatus = statusFor(after, "mincha");
+  const arvitStatus = statusFor(after, "arvit");
+  check("header date matches the shacharit day", formatHeaderDate(dayStatus, isNightService(before, "shacharit")) === formatHebrewDate(day) + " · יום ראשון · " + day.greg().getDate() + "." + (day.greg().getMonth() + 1) + "." + day.greg().getFullYear(), formatHeaderDate(dayStatus, false));
+  check("evening shacharit is marked as night", isNightService(after, "shacharit") && formatHeaderDate(nightStatus, true).startsWith("ליל " + formatHebrewDate(rolled)), formatHeaderDate(nightStatus, true));
+  check("mincha after sunset is not marked as night", !isNightService(after, "mincha") && formatHeaderDate(minchaStatus, false).startsWith(formatHebrewDate(minchaLate)), formatHeaderDate(minchaStatus, false));
+  check("arvit header is the night of its computed day", isNightService(before, "arvit") && formatHeaderDate(arvitStatus, true).startsWith("ליל " + formatHebrewDate(arvitNight)), formatHeaderDate(arvitStatus, true));
 }
 
 {

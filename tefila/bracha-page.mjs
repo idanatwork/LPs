@@ -1,4 +1,4 @@
-import { hebrewNow, statusForHDate } from "./day-status.mjs?v=6";
+import { formatHeaderDate, hebrewNow, isNightService, mountHeaderDate, statusForHDate } from "./day-status.mjs?v=7";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
@@ -20,7 +20,9 @@ function openMatching(flags) {
 function paint() {
   const box = document.getElementById("today-banner");
   try {
-    const status = statusForHDate(hebrewNow(new Date()), "shacharit");
+    const now = new Date();
+    const status = statusForHDate(hebrewNow(now), "shacharit");
+    mountHeaderDate(formatHeaderDate(status, isNightService(now, "shacharit")));
     if (box) {
       const date = box.querySelector(".date");
       const line = box.querySelector(".status");

@@ -25,6 +25,9 @@ export function eventsOn(hd) {
   });
 }
 
+const WEEKDAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
+const OCCASIONS = ["ראש חודש", "חנוכה", "פורים", "שושן פורים", "פורים קטן", "שושן פורים קטן", "יום העצמאות", "יום ירושלים", "תענית ציבור", "עשרת ימי תשובה", "חול המועד"];
+
 export function formatHebrewDate(hd) {
   const parts = hd.renderGematriya(true).split(" ");
   if (parts.length < 3) return hd.renderGematriya(true);
@@ -219,6 +222,38 @@ export function activeService(now) {
   if (!alot || !mid || !sunset || now < alot || now >= sunset) return "arvit";
   if (now < mid) return "shacharit";
   return "mincha";
+}
+
+/** Evening indication when this page's Hebrew day is the night, not the daytime date. */
+export function isNightService(now, service) {
+  if (service === "mincha") return false;
+  if (service === "arvit") return true;
+  const sunset = new Zmanim(oranit(), now, false).sunset();
+  return !!(sunset && now >= sunset);
+}
+
+export function formatHeaderDate(status, night) {
+  const g = status.hd.greg();
+  const greg = `${g.getDate()}.${g.getMonth() + 1}.${g.getFullYear()}`;
+  const weekday = "יום " + WEEKDAYS[civilWeekday(status.hd)];
+  const heb = (night ? "ליל " : "") + status.hebrewDate;
+  const occasions = OCCASIONS.filter((name) => status.chips.includes(name));
+  return [heb, ...occasions, weekday, greg].join(" · ");
+}
+
+export function mountHeaderDate(text) {
+  if (typeof document === "undefined") return;
+  let el = document.getElementById("header-date");
+  if (!el) {
+    const header = document.querySelector("header.bar");
+    if (!header) return;
+    el = document.createElement("p");
+    el.id = "header-date";
+    el.className = "header-date";
+    header.appendChild(el);
+  }
+  el.textContent = text;
+  el.hidden = !text;
 }
 
 export function hebrewNow(now) {

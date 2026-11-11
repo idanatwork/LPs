@@ -1,4 +1,4 @@
-import { statusFor } from "./day-status.mjs?v=6";
+import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=7";
 import { halachaForHDate } from "./halacha-yomit.mjs?v=6";
 
 function openMatching(flags) {
@@ -49,7 +49,9 @@ function init() {
   const service = document.body && document.body.dataset.service;
   if (!service) return;
   try {
-    const status = statusFor(new Date(), service);
+    const now = new Date();
+    const status = statusFor(now, service);
+    mountHeaderDate(formatHeaderDate(status, isNightService(now, service)));
     showBanner(status);
     openMatching(status.flags);
     showHalacha(status);
