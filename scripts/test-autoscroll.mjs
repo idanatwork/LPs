@@ -68,9 +68,16 @@ async function measure(ms) {
 }
 async function setSpeed(n) {
   await page.locator("#scroll-speed").evaluate((el, value) => {
-    el.value = String(value);
+    var min = 20;
+    var max = 500;
+    var u = Math.log(value / min) / Math.log(max / min);
+    el.value = String(Math.round(Math.max(0, Math.min(100, u * 100))));
     el.dispatchEvent(new Event("input", { bubbles: true }));
   }, n);
+}
+async function openSpeed() {
+  if (await page.locator("#scroll-pace").isVisible()) await page.locator("#scroll-pace").evaluate((el) => el.click());
+  else if (await page.locator("#scroll-panel").isHidden()) await page.locator("#scroll-toggle").evaluate((el) => el.click());
 }
 
 async function paceSample() {
@@ -101,9 +108,9 @@ const slowExpected = (80 / pace.wpl) * pace.lh / 60 * 1.2;
 check("steady scroll at 80 words/minute", slow > 4 && Math.abs(slow - slowExpected) / slowExpected < 0.4, slow.toFixed(1) + " vs " + slowExpected.toFixed(1));
 check("playing collapses to the pause button", await page.locator("#scroll-panel").isHidden() && await page.locator("#scroll-float").isVisible());
 
-await page.locator("#scroll-toggle").click();
+await openSpeed();
 await setSpeed(160);
-await page.locator("#scroll-panel-close").click();
+await page.locator("#scroll-panel-close").evaluate((el) => el.click());
 const fast = await measure(1200);
 const fastExpected = (160 / pace.wpl) * pace.lh / 60 * 1.2;
 check("faster setting scrolls about twice as fast", fast > slow * 1.6 && Math.abs(fast - fastExpected) / fastExpected < 0.4, fast.toFixed(1) + " vs " + fastExpected.toFixed(1));
@@ -112,15 +119,16 @@ const yPause = await scrollY();
 await page.evaluate(() => document.body.dispatchEvent(new Event("touchstart", { bubbles: true })));
 const afterTouch = await measure(500);
 check("touch pauses auto-scroll", afterTouch < 4, afterTouch.toFixed(1) + " after " + Math.round(yPause));
+check("touch pause leaves the floating play button", await page.locator("#scroll-float").isVisible() && await page.locator("#scroll-panel").isHidden() && (await page.locator("#scroll-float").getAttribute("aria-label")) === "המשך");
 
-await page.locator("#scroll-toggle").click();
-await page.locator("#scroll-play").click();
+await page.locator("#scroll-float").evaluate((el) => el.click());
 const resumed = await measure(700);
-check("play resumes auto-scroll", resumed > 4, resumed.toFixed(1));
+check("play resumes auto-scroll", resumed > 4 && (await page.locator("#scroll-float").getAttribute("aria-label")) === "עצור", resumed.toFixed(1));
 
-await page.evaluate(() => document.body.dispatchEvent(new Event("touchstart", { bubbles: true })));
-await page.locator("#scroll-toggle").click();
-await page.locator("#scroll-play").click();
+await page.locator("#scroll-float").evaluate((el) => el.click());
+const paused = await measure(400);
+check("floating button pauses without opening the panel", paused < 3 && await page.locator("#scroll-panel").isHidden() && (await page.locator("#scroll-float").getAttribute("aria-label")) === "המשך", paused.toFixed(1));
+await page.locator("#scroll-float").evaluate((el) => el.click());
 const anchor = await page.evaluate(() => {
   const mark = window.innerHeight * 0.3;
   const el = [...document.querySelectorAll("p.t")].find((node) => {
@@ -138,10 +146,10 @@ check("text size mid-scroll does not jump", drift <= 8, "drift " + drift.toFixed
 
 const stored = await page.evaluate(() => localStorage.getItem("tefila-scroll-wpm:shacharit"));
 await page.reload({ waitUntil: "domcontentloaded" });
-await page.locator("#scroll-toggle").click();
-const again = await page.locator("#scroll-speed").inputValue();
+await page.locator("#scroll-toggle").evaluate((el) => el.click());
+const again = await page.locator("#scroll-value").innerText();
 const idle = await measure(400);
-check("speed is remembered and playback is not", again === stored && idle < 3, again + " idle " + idle.toFixed(1));
+check("speed is remembered and playback is not", again.startsWith(stored + " ") && idle < 3, again + " idle " + idle.toFixed(1));
 
 async function wordsPerMinute(size) {
   await page.evaluate((value) => {
@@ -149,9 +157,9 @@ async function wordsPerMinute(size) {
     window.scrollTo(0, 2500);
   }, size);
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-  if (await page.locator("#scroll-panel").isHidden()) await page.locator("#scroll-toggle").click();
+  await openSpeed();
   await setSpeed(110);
-  await page.locator("#scroll-play").click();
+  await page.locator("#scroll-play").evaluate((el) => el.click());
   const moved = await measure(1000);
   await page.evaluate(() => document.body.dispatchEvent(new Event("touchstart", { bubbles: true })));
   const sample = await page.evaluate(() => {
@@ -178,9 +186,9 @@ const slowFont = await wordsPerMinute(18);
 const largeFont = await wordsPerMinute(40);
 check("same setting keeps words per minute across font sizes", Math.abs(slowFont - largeFont) / Math.max(slowFont, largeFont) < 0.1, slowFont.toFixed(0) + " vs " + largeFont.toFixed(0));
 await page.evaluate(() => document.documentElement.style.setProperty("--fs", "18px"));
-if (await page.locator("#scroll-panel").isHidden()) await page.locator("#scroll-toggle").click();
-await setSpeed(250);
-await page.locator("#scroll-play").click();
+await openSpeed();
+await setSpeed(500);
+await page.locator("#scroll-play").evaluate((el) => el.click());
 const fastestPx = await measure(1000);
 const fastestPace = await page.evaluate((moved) => {
   const nodes = [...document.querySelectorAll("p.t")].filter((node) => node.getBoundingClientRect().height >= 8).slice(0, 6);
@@ -197,7 +205,7 @@ const fastestPace = await page.evaluate((moved) => {
   });
   return (moved / lh) * (words / lines) * 60;
 }, fastestPx);
-check("fastest setting at small text is genuinely fast", fastestPace > 180, fastestPace.toFixed(0) + " wpm, " + fastestPx.toFixed(0) + "px");
+check("fastest setting at small text is genuinely fast", fastestPace > 350, fastestPace.toFixed(0) + " wpm, " + fastestPx.toFixed(0) + "px");
 
 await browser.close();
 const failed = checks.filter((item) => !item.ok);

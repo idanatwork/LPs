@@ -9,7 +9,7 @@
   if (meta) meta.setAttribute("content", theme === "dark" ? "#111111" : "#fdfbf6");
   try {
     var s = localStorage.getItem("tefila-font");
-    if (s) document.documentElement.style.setProperty("--fs", Math.max(18, Math.min(40, parseInt(s, 10))) + "px");
+    if (s) document.documentElement.style.setProperty("--fs", Math.max(16, Math.min(64, parseInt(s, 10))) + "px");
   } catch (e) {}
   var mode = "yachid";
   try { if (localStorage.getItem("tefila-minyan") === "minyan") mode = "minyan"; } catch (e) {}

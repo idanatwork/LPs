@@ -82,25 +82,44 @@ async function drag(fromX, toX) {
 const beforeGrow = await sample();
 await drag(box.x + box.width - 14, box.x + 14);
 const grown = await sample();
-check("drag toward large increases size", grown.fs > beforeGrow.fs && grown.slider === String(grown.fs) && grown.label === String(grown.fs), beforeGrow.fs + "→" + grown.fs);
+check("drag toward large increases size", grown.fs > beforeGrow.fs && grown.fs <= 64 && grown.label === String(grown.fs), beforeGrow.fs + "→" + grown.fs);
 check("drag toward large keeps the paragraph", Math.abs(grown.top - start.top) <= 8, "drift " + Math.abs(grown.top - start.top).toFixed(1));
 
 await drag(box.x + 14, box.x + box.width - 14);
 const shrunk = await sample();
-check("drag toward small decreases size", shrunk.fs < grown.fs && shrunk.slider === String(shrunk.fs), grown.fs + "→" + shrunk.fs);
+check("drag toward small decreases size", shrunk.fs < grown.fs && shrunk.fs >= 16 && shrunk.label === String(shrunk.fs), grown.fs + "→" + shrunk.fs);
 check("drag toward small keeps the paragraph", Math.abs(shrunk.top - start.top) <= 8, "drift " + Math.abs(shrunk.top - start.top).toFixed(1));
 
+const beforeStep = await page.evaluate(() => {
+  const line = window.innerHeight * 0.3;
+  const el = [...document.querySelectorAll("p.t")].find((node) => {
+    const rect = node.getBoundingClientRect();
+    return rect.height > 8 && rect.top <= line && rect.bottom >= line;
+  });
+  el.dataset.fontAnchor = "step";
+  return el.getBoundingClientRect().top;
+});
 await page.locator("#font-inc").evaluate((el) => el.click());
 await settle();
 const stepped = await sample();
-check("plus stays in sync with the slider", stepped.fs > shrunk.fs && stepped.slider === String(stepped.fs) && stepped.label === String(stepped.fs) && stepped.stored === String(stepped.fs));
-check("plus keeps the paragraph", Math.abs(stepped.top - start.top) <= 8, "drift " + Math.abs(stepped.top - start.top).toFixed(1));
+const stepTop = await page.evaluate(() => document.querySelector("[data-font-anchor='step']").getBoundingClientRect().top);
+check("plus stays in sync with the slider", stepped.fs > shrunk.fs && stepped.label === String(stepped.fs) && stepped.stored === String(stepped.fs));
+check("plus keeps the paragraph", Math.abs(stepTop - beforeStep) <= 8, "drift " + Math.abs(stepTop - beforeStep).toFixed(1));
+const fits = await page.evaluate(() => {
+  document.documentElement.style.setProperty("--fs", "64px");
+  const header = document.querySelector("header.bar").getBoundingClientRect().height;
+  return {
+    overflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+    header,
+  };
+});
+check("largest text stays within the screen", fits.overflow && fits.header < 150, JSON.stringify(fits));
 
 await page.reload({ waitUntil: "domcontentloaded" });
 const kept = await page.evaluate(() => parseInt(getComputedStyle(document.documentElement).getPropertyValue("--fs"), 10));
 await page.locator("#font-slider-toggle").evaluate((el) => el.click());
-const reloaded = await page.locator("#font-slider").inputValue();
-check("size persists after reload", kept === stepped.fs && reloaded === String(stepped.fs), String(kept));
+const reloaded = await page.locator("#font-value").innerText();
+check("size persists after reload", kept === stepped.fs && reloaded === String(stepped.fs), kept + " " + reloaded);
 
 await page.keyboard.press("Escape");
 check("escape closes the panel", await page.locator("#font-panel").isHidden());

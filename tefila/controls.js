@@ -22,12 +22,23 @@
   }
 
   var root = document.documentElement;
+  var sizeMin = 16;
+  var sizeMax = 64;
   var read = function () { return parseInt(getComputedStyle(root).getPropertyValue("--fs"), 10) || 22; };
+  function fromCurve(t, min, max) {
+    var u = Math.max(0, Math.min(100, t)) / 100;
+    return Math.round(min * Math.pow(max / min, u));
+  }
+  function toCurve(value, min, max) {
+    var v = Math.max(min, Math.min(max, value));
+    var u = Math.log(v / min) / Math.log(max / min);
+    return Math.round(Math.max(0, Math.min(100, u * 100)));
+  }
   function nextSize(current, dir) {
     var next = Math.round(current * (dir > 0 ? 1.09 : 1 / 1.09));
     if (next === current) next = current + dir;
-    if (next < 18) next = 18;
-    if (next > 40) next = 40;
+    if (next < sizeMin) next = sizeMin;
+    if (next > sizeMax) next = sizeMax;
     return next;
   }
   function readingAnchor() {
@@ -53,10 +64,10 @@
     var delta = anchor.getBoundingClientRect().top - top;
     if (Math.abs(delta) > 0.5) window.scrollTo({ top: window.scrollY + delta, left: 0, behavior: "auto" });
   }
-  var applySize = function (n) {
-    n = Math.max(18, Math.min(40, n));
+  var applySize = function (n, fixed) {
+    n = Math.max(sizeMin, Math.min(sizeMax, n));
     if (n === read()) return;
-    var anchor = readingAnchor();
+    var anchor = fixed || readingAnchor();
     var top = anchor ? anchor.top : 0;
     root.style.overflowAnchor = "none";
     root.style.scrollBehavior = "auto";
@@ -77,15 +88,20 @@
   var sliderFrame = 0;
   var sliderPending = null;
   function syncSlider(n) {
-    if (slider && String(slider.value) !== String(n)) slider.value = String(n);
+    if (slider && document.activeElement !== slider) slider.value = String(toCurve(n, sizeMin, sizeMax));
     if (sliderValue) sliderValue.textContent = String(n);
   }
   var applySizeAndSync = function (n) {
     applySize(n);
     syncSlider(read());
   };
-  if (dec) dec.addEventListener("click", function () { applySizeAndSync(nextSize(read(), -1)); });
-  if (inc) inc.addEventListener("click", function () { applySizeAndSync(nextSize(read(), 1)); });
+  function stepButton(button, dir) {
+    if (!button) return;
+    button.addEventListener("pointerdown", function (event) { event.preventDefault(); });
+    button.addEventListener("click", function () { applySizeAndSync(nextSize(read(), dir)); });
+  }
+  stepButton(dec, -1);
+  stepButton(inc, 1);
   if (dec || inc) {
     var pop = document.createElement("div");
     pop.className = "font-pop";
@@ -101,7 +117,7 @@
     panel.id = "font-panel";
     panel.className = "font-panel";
     panel.hidden = true;
-    panel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">א</span><input type="range" id="font-slider" min="18" max="40" step="1" dir="rtl" aria-label="גודל טקסט"><span class="font-mark font-mark-lg" aria-hidden="true">א</span><button type="button" id="font-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions" id="font-step-row"></div><p class="font-value" id="font-value"></p>';
+    panel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">א</span><input type="range" id="font-slider" min="0" max="100" step="1" dir="rtl" aria-label="גודל טקסט"><span class="font-mark font-mark-lg" aria-hidden="true">א</span><button type="button" id="font-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions" id="font-step-row"></div><p class="font-value" id="font-value"></p>';
     pop.appendChild(toggle);
     var header = document.querySelector("header.bar");
     if (dec && dec.parentNode) dec.parentNode.insertBefore(pop, dec);
@@ -149,6 +165,10 @@
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && !panel.hidden) setOpen(false);
     });
+    var dragAnchor = null;
+    slider.addEventListener("pointerdown", function () { dragAnchor = readingAnchor(); });
+    slider.addEventListener("pointerup", function () { dragAnchor = null; });
+    slider.addEventListener("pointercancel", function () { dragAnchor = null; });
     slider.addEventListener("input", function () {
       sliderPending = parseInt(slider.value, 10);
       if (sliderFrame) return;
@@ -157,22 +177,25 @@
         var value = sliderPending;
         sliderPending = null;
         if (value == null) return;
-        applySize(value);
-        syncSlider(read());
+        applySize(fromCurve(value, sizeMin, sizeMax), dragAnchor);
+        if (sliderValue) sliderValue.textContent = String(read());
       });
     });
 
     var speedService = document.body.getAttribute("data-service") || location.pathname;
     var speedKey = "tefila-scroll-wpm:" + speedService;
-    var speedMin = 40;
-    var speedMax = 250;
+    var speedMin = 20;
+    var speedMax = 500;
     var wpm = 110;
+    function clampWpm(value) {
+      return Math.max(speedMin, Math.min(speedMax, Math.round(value)));
+    }
     try {
       var savedSpeed = parseInt(localStorage.getItem(speedKey), 10);
-      if (savedSpeed >= speedMin && savedSpeed <= speedMax) wpm = savedSpeed;
+      if (savedSpeed >= 1) wpm = clampWpm(savedSpeed);
       else {
         var oldLines = parseInt(localStorage.getItem("tefila-scroll-lpm:" + speedService), 10);
-        if (oldLines >= 6 && oldLines <= 30) wpm = Math.max(speedMin, Math.min(speedMax, oldLines * 9));
+        if (oldLines >= 6 && oldLines <= 30) wpm = clampWpm(oldLines * 9);
       }
     } catch (e) {}
     var scrollPop = document.createElement("div");
@@ -191,23 +214,32 @@
     scrollPanel.id = "scroll-panel";
     scrollPanel.className = "scroll-panel";
     scrollPanel.hidden = true;
-    scrollPanel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">איטי</span><input type="range" id="scroll-speed" min="40" max="250" step="5" dir="rtl" aria-label="מהירות גלילה"><span class="font-mark font-mark-lg" aria-hidden="true">מהיר</span><button type="button" id="scroll-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions"><button type="button" id="scroll-slower" aria-label="לאט יותר">−</button><button type="button" id="scroll-play" aria-label="נגן">▶</button><button type="button" id="scroll-faster" aria-label="מהר יותר">+</button></div><p class="font-value" id="scroll-value"></p><p class="scroll-hint" id="scroll-wake-hint" hidden>אם המסך נכבה, בטלו את הנעילה האוטומטית.</p>';
+    scrollPanel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">איטי</span><input type="range" id="scroll-speed" min="0" max="100" step="1" dir="rtl" aria-label="מהירות גלילה"><span class="font-mark font-mark-lg" aria-hidden="true">מהיר</span><button type="button" id="scroll-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions"><button type="button" id="scroll-slower" aria-label="לאט יותר">−</button><button type="button" id="scroll-play" aria-label="המשך">▶</button><button type="button" id="scroll-faster" aria-label="מהר יותר">+</button></div><p class="font-value" id="scroll-value"></p><p class="scroll-hint" id="scroll-wake-hint" hidden>אם המסך נכבה, בטלו את הנעילה האוטומטית.</p>';
     var scrollFloat = document.createElement("button");
     scrollFloat.type = "button";
     scrollFloat.id = "scroll-float";
     scrollFloat.className = "scroll-float";
     scrollFloat.hidden = true;
-    scrollFloat.setAttribute("aria-label", "השהה גלילה");
-    scrollFloat.innerHTML = pauseIcon;
+    scrollFloat.setAttribute("aria-label", "המשך");
+    scrollFloat.innerHTML = playIcon;
+    var paceBtn = document.createElement("button");
+    paceBtn.type = "button";
+    paceBtn.id = "scroll-pace";
+    paceBtn.className = "scroll-pace";
+    paceBtn.hidden = true;
+    paceBtn.setAttribute("aria-label", "מהירות גלילה");
+    paceBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 16h4v3H4zm6-5h4v8h-4zm6-4h4v12h-4z"/></svg>';
     scrollPop.appendChild(scrollToggle);
     if (pop.parentNode) pop.parentNode.insertBefore(scrollPop, pop);
     document.body.appendChild(scrollPanel);
     document.body.appendChild(scrollFloat);
+    document.body.appendChild(paceBtn);
     var speedInput = scrollPanel.querySelector("#scroll-speed");
     var speedLabel = scrollPanel.querySelector("#scroll-value");
     var playBtn = scrollPanel.querySelector("#scroll-play");
     var wakeHint = scrollPanel.querySelector("#scroll-wake-hint");
     var playing = false;
+    var started = false;
     var acc = 0;
     var lastTick = 0;
     var rafId = 0;
@@ -237,7 +269,7 @@
       return value;
     }
     function showSpeed() {
-      speedInput.value = String(wpm);
+      if (document.activeElement !== speedInput) speedInput.value = String(toCurve(wpm, speedMin, speedMax));
       speedLabel.textContent = wpm + " מילים לדקה";
     }
     function saveSpeed() {
@@ -253,13 +285,21 @@
       var max = document.documentElement.scrollHeight - window.innerHeight;
       return window.scrollY >= max - 2;
     }
+    function paintFloat() {
+      var show = started && scrollPanel.hidden;
+      scrollFloat.hidden = !show;
+      paceBtn.hidden = !show;
+      scrollFloat.innerHTML = playing ? pauseIcon : playIcon;
+      scrollFloat.setAttribute("aria-label", playing ? "עצור" : "המשך");
+    }
     function paintPlay(on) {
       playing = on;
       scrollToggle.innerHTML = on ? pauseIcon : playIcon;
       scrollToggle.setAttribute("aria-pressed", on ? "true" : "false");
+      scrollToggle.setAttribute("aria-label", started ? (on ? "עצור" : "המשך") : "גלילה אוטומטית");
       playBtn.innerHTML = on ? pauseIcon : playIcon;
-      playBtn.setAttribute("aria-label", on ? "השהה" : "נגן");
-      scrollFloat.hidden = !on || !scrollPanel.hidden;
+      playBtn.setAttribute("aria-label", on ? "עצור" : "המשך");
+      paintFloat();
     }
     function releaseWake() {
       if (wakeSentinel) {
@@ -305,10 +345,10 @@
     }
     function playScroll() {
       if (atEnd()) return;
-      paintPlay(true);
+      started = true;
       scrollPanel.hidden = true;
       scrollToggle.setAttribute("aria-expanded", "false");
-      scrollFloat.hidden = false;
+      paintPlay(true);
       lastTick = 0;
       acc = 0;
       acquireWake();
@@ -321,26 +361,60 @@
         scrollPanel.hidden = !open;
         scrollToggle.setAttribute("aria-expanded", open ? "true" : "false");
         if (open) placePanel(scrollPanel);
-        scrollFloat.hidden = !playing || !scrollPanel.hidden;
+        paintFloat();
       });
     }
     window.tefilaCloseScrollPanel = function () { if (!scrollPanel.hidden) setScrollOpen(false); };
+    function armPress(el, onTap, onLong) {
+      var timer = 0;
+      var long = false;
+      el.addEventListener("pointerdown", function () {
+        long = false;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          long = true;
+          onLong();
+        }, 500);
+      });
+      function cancel() { clearTimeout(timer); }
+      el.addEventListener("pointerup", cancel);
+      el.addEventListener("pointercancel", cancel);
+      el.addEventListener("click", function (event) {
+        event.stopPropagation();
+        if (long) { long = false; return; }
+        onTap();
+      });
+    }
     showSpeed();
-    scrollToggle.addEventListener("click", function (event) {
+    playBtn.innerHTML = playIcon;
+    armPress(scrollToggle, function () {
+      if (!started) setScrollOpen(scrollPanel.hidden);
+      else if (playing) pauseScroll();
+      else playScroll();
+    }, function () { setScrollOpen(true); });
+    armPress(scrollFloat, function () {
+      if (playing) pauseScroll();
+      else playScroll();
+    }, function () { setScrollOpen(true); });
+    paceBtn.addEventListener("click", function (event) {
       event.stopPropagation();
-      setScrollOpen(scrollPanel.hidden);
+      setScrollOpen(true);
     });
     scrollPanel.querySelector("#scroll-panel-close").addEventListener("click", function () { setScrollOpen(false); });
     playBtn.addEventListener("click", function () { if (playing) pauseScroll(); else playScroll(); });
-    scrollFloat.addEventListener("click", function () { pauseScroll(); });
     function setWpm(next) {
-      wpm = Math.max(speedMin, Math.min(speedMax, next));
+      wpm = clampWpm(next);
       showSpeed();
       saveSpeed();
     }
-    scrollPanel.querySelector("#scroll-slower").addEventListener("click", function () { setWpm(wpm - 5); });
-    scrollPanel.querySelector("#scroll-faster").addEventListener("click", function () { setWpm(wpm + 5); });
-    speedInput.addEventListener("input", function () { setWpm(parseInt(speedInput.value, 10)); });
+    function stepWpm(dir) {
+      var next = Math.round(wpm * (dir > 0 ? 1.09 : 1 / 1.09));
+      if (next === wpm) next = wpm + dir;
+      setWpm(next);
+    }
+    scrollPanel.querySelector("#scroll-slower").addEventListener("click", function () { stepWpm(-1); });
+    scrollPanel.querySelector("#scroll-faster").addEventListener("click", function () { stepWpm(1); });
+    speedInput.addEventListener("input", function () { setWpm(fromCurve(parseInt(speedInput.value, 10), speedMin, speedMax)); });
     window.addEventListener("resize", function () { paceCache.width = 0; });
     document.addEventListener("pointerdown", function (event) {
       if (scrollPanel.hidden) return;
@@ -352,7 +426,7 @@
     });
     function manualPause(event) {
       if (!playing) return;
-      if (event.target.closest && event.target.closest("header.bar, #scroll-panel, #scroll-float, #font-panel")) return;
+      if (event.target.closest && event.target.closest("header.bar, #scroll-panel, #scroll-float, #scroll-pace, #font-panel")) return;
       pauseScroll();
     }
     document.addEventListener("touchstart", manualPause, { passive: true });

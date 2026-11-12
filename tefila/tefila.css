@@ -44,6 +44,7 @@ html, body {
   background: var(--bg);
   color: var(--fg);
   text-align: right;
+  overflow-x: clip;
   -webkit-text-size-adjust: 100%;
 }
 body {
@@ -144,21 +145,33 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
   box-shadow: 0 8px 22px color-mix(in srgb, var(--fg) 14%, transparent);
 }
 .font-panel[hidden], .scroll-panel[hidden] { display: none !important; }
-.scroll-float {
+.scroll-float, .scroll-pace {
   position: fixed;
   z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   bottom: calc(env(safe-area-inset-bottom) + 18px);
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--fg) 20%, transparent);
+  padding: 0;
+}
+.scroll-float {
   inset-inline-start: 16px;
   width: 52px;
   height: 52px;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
   background: var(--accent);
   color: var(--bg);
-  font-size: 20px;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--fg) 20%, transparent);
 }
-.scroll-float[hidden] { display: none !important; }
+.scroll-pace {
+  inset-inline-start: 76px;
+  width: 44px;
+  height: 44px;
+  background: var(--bg);
+  color: var(--accent);
+}
+.scroll-float[hidden], .scroll-pace[hidden] { display: none !important; }
 .scroll-hint { margin: 6px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
 .scroll-actions { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .scroll-actions button {
@@ -311,6 +324,7 @@ p.t {
   line-height: 2.05;
   margin: 0 0 0.9em;
   text-align: right;
+  overflow-wrap: anywhere;
   transition: none;
 }
 .today {
