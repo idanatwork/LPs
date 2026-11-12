@@ -591,21 +591,25 @@
           event.preventDefault();
           var id = (item.getAttribute("href") || "").slice(1);
           var target = document.getElementById(id);
+          cancelAnimationFrame(holdFrame);
           paint(false);
           if (!target) return;
-          target.scrollIntoView({ block: "start", behavior: "smooth" });
+          document.documentElement.style.scrollBehavior = "auto";
+          target.scrollIntoView({ block: "start", behavior: "auto" });
           try { history.replaceState(null, "", "#" + id); } catch (e) {}
         });
         nav.appendChild(item);
       });
     }
+    var holdFrame = 0;
     function holdScroll(fn) {
       var y = window.scrollY;
       var root = document.documentElement;
       root.style.scrollBehavior = "auto";
       fn();
       window.scrollTo({ top: y, left: 0, behavior: "auto" });
-      requestAnimationFrame(function () {
+      cancelAnimationFrame(holdFrame);
+      holdFrame = requestAnimationFrame(function () {
         window.scrollTo({ top: y, left: 0, behavior: "auto" });
       });
     }

@@ -74,8 +74,10 @@ for (const [path, anchor] of pages) {
 
 await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
 await middle();
-await page.locator("#toc-toggle").evaluate((el) => el.click());
-await page.locator("#toc-panel a[href='#s9']").evaluate((el) => el.click());
+await page.evaluate(() => {
+  document.getElementById("toc-toggle").click();
+  document.querySelector("#toc-panel a[href='#s9']").click();
+});
 await page.waitForFunction(() => {
   const header = document.querySelector("header.bar").getBoundingClientRect().bottom;
   const title = document.getElementById("s9").getBoundingClientRect().top;
