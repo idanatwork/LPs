@@ -152,6 +152,7 @@
       });
     }
     window.tefilaCloseFontPanel = function () { if (!panel.hidden) setOpen(false); };
+    toggle.addEventListener("pointerdown", function (event) { event.preventDefault(); });
     toggle.addEventListener("click", function (event) {
       event.stopPropagation();
       setOpen(panel.hidden);
@@ -368,7 +369,8 @@
     function armPress(el, onTap, onLong) {
       var timer = 0;
       var long = false;
-      el.addEventListener("pointerdown", function () {
+      el.addEventListener("pointerdown", function (event) {
+        event.preventDefault();
         long = false;
         clearTimeout(timer);
         timer = setTimeout(function () {
@@ -541,6 +543,97 @@
     });
   }
 
+  function mountTocOverlay() {
+    var opener = document.querySelector("a.to-toc");
+    var source = document.getElementById("toc");
+    if (!opener || !source || document.getElementById("toc-panel")) return;
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "to-toc";
+    button.id = "toc-toggle";
+    button.textContent = "תוכן";
+    button.setAttribute("aria-label", "תוכן");
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-controls", "toc-panel");
+    opener.replaceWith(button);
+    var panel = document.createElement("div");
+    panel.id = "toc-panel";
+    panel.className = "toc-panel";
+    panel.hidden = true;
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", "תוכן העניינים");
+    var bar = document.createElement("div");
+    bar.className = "toc-panel-bar";
+    var title = document.createElement("p");
+    title.className = "toc-title";
+    title.textContent = "תוכן";
+    var close = document.createElement("button");
+    close.type = "button";
+    close.id = "toc-panel-close";
+    close.setAttribute("aria-label", "סגור");
+    close.textContent = "×";
+    bar.appendChild(title);
+    bar.appendChild(close);
+    var nav = document.createElement("nav");
+    nav.className = "toc";
+    nav.setAttribute("aria-label", "תוכן העניינים");
+    panel.appendChild(bar);
+    panel.appendChild(nav);
+    document.body.appendChild(panel);
+
+    function fill() {
+      nav.replaceChildren();
+      var minyan = document.documentElement.getAttribute("data-minyan") === "minyan";
+      source.querySelectorAll("a[href^='#']").forEach(function (anchor) {
+        if (!minyan && anchor.closest(".minyan-only")) return;
+        var item = anchor.cloneNode(true);
+        item.addEventListener("click", function (event) {
+          event.preventDefault();
+          var id = (item.getAttribute("href") || "").slice(1);
+          var target = document.getElementById(id);
+          paint(false);
+          if (!target) return;
+          target.scrollIntoView({ block: "start", behavior: "smooth" });
+          try { history.replaceState(null, "", "#" + id); } catch (e) {}
+        });
+        nav.appendChild(item);
+      });
+    }
+    function holdScroll(fn) {
+      var y = window.scrollY;
+      var root = document.documentElement;
+      root.style.scrollBehavior = "auto";
+      fn();
+      window.scrollTo({ top: y, left: 0, behavior: "auto" });
+      requestAnimationFrame(function () {
+        window.scrollTo({ top: y, left: 0, behavior: "auto" });
+      });
+    }
+    function paint(open) {
+      if (open) fill();
+      panel.hidden = !open;
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    function setOpen(open) {
+      holdScroll(function () { paint(open); });
+    }
+    button.addEventListener("pointerdown", function (event) { event.preventDefault(); });
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(panel.hidden);
+    });
+    close.addEventListener("click", function () { setOpen(false); });
+    document.addEventListener("pointerdown", function (event) {
+      if (panel.hidden) return;
+      if (panel.contains(event.target) || button.contains(event.target)) return;
+      setOpen(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !panel.hidden) setOpen(false);
+    });
+  }
+
   function boot() {
     if (document.getElementById("today-banner") || document.getElementById("toc") || document.querySelector(".mode-switch")) {
       ensureModeStatus();
@@ -548,6 +641,7 @@
       applyMode(readMode(), false);
     }
     applyAccent(readAccent(), false);
+    mountTocOverlay();
     document.addEventListener("click", function (event) {
       var minyanButton = event.target.closest && event.target.closest("[data-set-minyan]");
       if (minyanButton) {

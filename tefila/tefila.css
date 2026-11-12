@@ -195,7 +195,7 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
   font-size: 13px;
   color: var(--muted);
 }
-#font-panel-close, #scroll-panel-close {
+#font-panel-close, #scroll-panel-close, #toc-panel-close {
   width: 44px;
   min-width: 44px;
   height: 44px;
@@ -415,7 +415,7 @@ details.is-today > summary::after {
 }
 details.sec details.add { margin-right: 0; }
 
-a.to-toc {
+.to-toc {
   position: fixed;
   z-index: 30;
   bottom: calc(env(safe-area-inset-bottom) + 16px);
@@ -423,8 +423,10 @@ a.to-toc {
   background: var(--accent);
   color: var(--bg);
   text-decoration: none;
+  font: inherit;
   font-weight: 700;
   font-size: 15px;
+  border: 0;
   border-radius: 999px;
   padding: 10px 16px;
   min-height: 44px;
@@ -432,6 +434,22 @@ a.to-toc {
   align-items: center;
   box-shadow: 0 6px 18px color-mix(in srgb, var(--fg) 18%, transparent);
 }
+.toc-panel {
+  position: fixed;
+  z-index: 40;
+  top: calc(var(--header) + 8px);
+  inset-inline: 10px;
+  max-height: calc(100dvh - var(--header) - 24px);
+  overflow: auto;
+  padding: 10px 12px 8px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--bg) 94%, var(--accent));
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--fg) 14%, transparent);
+}
+.toc-panel[hidden] { display: none !important; }
+.toc-panel-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.toc-panel nav.toc { margin: 0; padding: 0; border: 0; background: transparent; }
 
 .hub-h {
   margin: 26px 0 10px;
