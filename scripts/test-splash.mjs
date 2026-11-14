@@ -47,18 +47,42 @@ async function opacity(page) {
 const shown = await open(false);
 const splash = shown.page.locator("#memorial-splash");
 check("splash is visible on load", await splash.isVisible());
+await shown.page.waitForTimeout(180);
 const fadeIn = await shown.page.evaluate(() => parseFloat(getComputedStyle(document.querySelector(".memorial-card")).opacity));
-check("dedication text fades in", fadeIn > 0 && fadeIn < 1, fadeIn.toFixed(2));
+check("dedication text fades in", fadeIn > 0.05 && fadeIn < 0.98, fadeIn.toFixed(2));
 const got = await splash.locator("p").allInnerTexts();
 check("dedication text is exact", got.join("\n") === lines.join("\n"), got.join(" | "));
 check("splash shows no English letters", !/[A-Za-z]/.test(await splash.innerText()));
-await shown.page.waitForTimeout(600);
+const look = await shown.page.evaluate(() => {
+  const splash = document.getElementById("memorial-splash");
+  const name = splash.querySelector(".memorial-name");
+  const flame = splash.querySelector(".memorial-flame");
+  const css = [...document.styleSheets].some((sheet) => {
+    try { return [...sheet.cssRules].some((rule) => rule.cssText && rule.cssText.includes("safe-area-inset-top")); }
+    catch (e) { return false; }
+  });
+  return {
+    bg: getComputedStyle(splash).backgroundColor,
+    name: getComputedStyle(name).color,
+    candles: splash.querySelectorAll(".memorial-candle").length,
+    frame: splash.querySelectorAll(".memorial-frame").length,
+    flicker: getComputedStyle(flame).animationName,
+    safe: css,
+  };
+});
+check("splash background is deep navy", look.bg === "rgb(3, 2, 31)", look.bg);
+check("name is warm gold", look.name === "rgb(212, 164, 106)", look.name);
+check("two candles flank the closing line", look.candles === 2 && look.frame === 1, JSON.stringify(look));
+check("flames flicker unless motion is reduced", look.flicker.includes("memorial-flicker"), look.flicker);
+check("frame stays inside the safe area", look.safe);
+await shown.page.waitForTimeout(800);
 await splash.screenshot({ path: "/opt/cursor/artifacts/memorial-splash-iphone.png" });
 await shown.context.close();
 
 async function fadeSamples(reduced, label) {
   const session = await open(reduced);
   const page = session.page;
+  const flameBefore = await page.evaluate(() => getComputedStyle(document.querySelector(".memorial-flame")).animationName);
   await page.waitForTimeout(400);
   const trace = await page.evaluate(() => new Promise((resolve) => {
     const splash = document.getElementById("memorial-splash");
@@ -85,7 +109,10 @@ async function fadeSamples(reduced, label) {
   check(label + " opacity stays between 0 and 1 during the fade", fading && at400.o > at700.o && at700.o > at950.o, shown);
   check(label + " fade is still running almost a second later", at950.o != null && at950.o > 0.04, shown);
   if (!reduced) check("full motion drifts and scales the text", trace.moved && trace.moved !== "none" && trace.moved !== "gone", String(trace.moved));
-  else check("reduced motion keeps the text still", trace.moved === "none", String(trace.moved));
+  else {
+    check("reduced motion keeps the text still", trace.moved === "none", String(trace.moved));
+    check("reduced motion holds the flames still", flameBefore === "none", flameBefore);
+  }
   await page.waitForTimeout(800);
   check(label + " splash is gone after the fade", await page.locator("#memorial-splash").count() === 0);
   await session.context.close();
