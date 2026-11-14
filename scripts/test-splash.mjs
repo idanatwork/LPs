@@ -200,16 +200,14 @@ const asher = watch.page.locator("[data-icloud=asher]");
 check("asher download is live", (await asher.getAttribute("href")) === "https://www.icloud.com/shortcuts/0e5a4734dbba4cfcb565a45b1dd86a24" && (await asher.innerText()).trim() === "הורד קיצור");
 const borei = watch.page.locator("[data-icloud=borei]");
 check("borei download is live", (await borei.getAttribute("href")) === "https://www.icloud.com/shortcuts/873203a37c8a49ee8908fda4e5dea9d6" && (await borei.innerText()).trim() === "הורד קיצור");
-for (const key of ["meein", "zmanim", "menu"]) {
-  const card = watch.page.locator(`[data-icloud=${key}]`);
-  check(key + " download is still pending", (await card.getAttribute("href")) === null && (await card.getAttribute("aria-disabled")) === "true" && (await card.innerText()).trim() === "קישור ההורדה יתווסף בקרוב");
-}
-const visible = await watch.page.locator("main").evaluate((el) => {
-  const copy = el.cloneNode(true);
-  copy.querySelectorAll("details").forEach((node) => node.remove());
-  return copy.innerText;
-});
-check("watch cards show no English letters", !/[A-Za-z]/.test(visible) && visible.includes("אשר יצר") && visible.includes("זמני היום"), visible.slice(0, 80));
+const meein = watch.page.locator("[data-icloud=meein]");
+check("meein download is live", (await meein.getAttribute("href")) === "https://www.icloud.com/shortcuts/7d9c3bd880144899b06adb9a11765a56" && (await meein.innerText()).trim() === "הורד קיצור");
+check("watch has no zmanim or menu shortcut", await watch.page.evaluate(() => {
+  const headings = [...document.querySelectorAll("main h2")].map((node) => node.textContent.trim());
+  return !headings.includes("זמני היום") && !headings.includes("שעון תפילה") && document.querySelector("[data-icloud=zmanim], [data-icloud=menu]") === null;
+}));
+const visible = await watch.page.locator("body").innerText();
+check("watch page shows no English letters", !/[A-Za-z]/.test(visible) && visible.includes("אשר יצר") && visible.includes("מעין שלוש"), visible.slice(0, 80));
 await watch.context.close();
 
 await browser.close();
