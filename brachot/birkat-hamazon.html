@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="23">
+<meta name="tefila-build" content="24">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../tefila/tefila.css?v=23">
-<link rel="stylesheet" href="../tefila/accent.css?v=23">
+<link rel="stylesheet" href="../tefila/tefila.css?v=24">
+<link rel="stylesheet" href="../tefila/accent.css?v=24">
 <title>ברכת המזון</title>
 <script type="importmap">
 {
@@ -26,12 +26,12 @@
   }
 }
 </script>
-<script src="../tefila/boot.js?v=23"></script>
+<script src="../tefila/boot.js?v=24"></script>
 <style>
 .memorial-splash{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 28px) 22px calc(env(safe-area-inset-bottom) + 28px);background:var(--m-bg);color:var(--m-fg);text-align:center;overflow:hidden;--m-bg:#f4efe6;--m-fg:#2c261f;--m-name:#7a2f2f;--m-muted:#5e564c;--m-flame:#c4842a;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
 html[data-theme="dark"] .memorial-splash{--m-bg:#141210;--m-fg:#f4efe6;--m-name:#f0d7a2;--m-muted:#c4b8a8;--m-flame:#e6b15a}
 @media (prefers-color-scheme:dark){html:not([data-theme]) .memorial-splash{--m-bg:#141210;--m-fg:#f4efe6;--m-name:#f0d7a2;--m-muted:#c4b8a8;--m-flame:#e6b15a}}
-.memorial-card{width:min(100%,28rem);margin:0}
+.memorial-card{width:min(100%,28rem);margin:0;opacity:0;will-change:opacity,transform,filter}
 .memorial-flame{display:block;margin:0 auto 18px;color:var(--m-flame)}
 .memorial-splash p{margin:0 0 10px;font-size:clamp(16px,4.4vw,20px);line-height:1.45;font-weight:400;color:var(--m-fg)}
 .memorial-splash .memorial-kicker{color:var(--m-muted);font-size:clamp(15px,4vw,18px);letter-spacing:.04em}
@@ -39,8 +39,10 @@ html[data-theme="dark"] .memorial-splash{--m-bg:#141210;--m-fg:#f4efe6;--m-name:
 .memorial-splash .memorial-story{font-size:clamp(15px,3.9vw,18px);line-height:1.5}
 .memorial-splash .memorial-date{margin-top:12px}
 .memorial-splash .memorial-tnc{margin-top:16px;letter-spacing:.18em;color:var(--m-muted);font-size:clamp(14px,3.6vw,17px)}
-.memorial-splash.is-leaving{opacity:0;transition:opacity 400ms ease;pointer-events:none}
-@media (prefers-reduced-motion:reduce){.memorial-splash.is-leaving{transition:none}}
+.memorial-splash.is-in .memorial-card{opacity:1;transition:opacity 500ms ease}
+.memorial-splash.is-leaving{opacity:0;pointer-events:none;transition:opacity 1100ms ease-in-out;-webkit-transition:opacity 1100ms ease-in-out}
+.memorial-splash.is-leaving .memorial-card{opacity:0;transform:translate3d(0,-16px,0) scale(1.04);filter:blur(1.5px);transition:opacity 700ms ease-in, transform 1100ms ease-in-out, filter 1100ms ease-in-out;-webkit-transition:opacity 700ms ease-in, -webkit-transform 1100ms ease-in-out, filter 1100ms ease-in-out}
+@media (prefers-reduced-motion:reduce){.memorial-splash.is-in .memorial-card{transition:opacity 500ms ease;-webkit-transition:opacity 500ms ease}.memorial-splash.is-leaving{transition:opacity 1100ms ease-in-out;-webkit-transition:opacity 1100ms ease-in-out}.memorial-splash.is-leaving .memorial-card{transform:none;filter:none;transition:opacity 700ms ease-in;-webkit-transition:opacity 700ms ease-in}}
 html.splash-seen .memorial-splash{display:none !important}
 </style>
 <script>
@@ -63,16 +65,47 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
 (function () {
   var el = document.getElementById("memorial-splash");
   if (!el) return;
-  if (document.documentElement.classList.contains("splash-seen")) { el.remove(); return; }
+  function finished() {
+    window.tefilaSplashActive = false;
+    var next = window.tefilaAfterSplash;
+    window.tefilaAfterSplash = null;
+    if (typeof next === "function") next();
+  }
+  if (document.documentElement.classList.contains("splash-seen")) { el.remove(); finished(); return; }
+  window.tefilaSplashActive = true;
   try { sessionStorage.setItem("tefila-splash", "1"); } catch (e) {}
-  var reduce = false;
-  try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var card = el.querySelector(".memorial-card");
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      if (card) void card.offsetWidth;
+      el.classList.add("is-in");
+    });
+  });
+  var leaving = false;
+  function removeNow() {
+    if (el.isConnected) el.remove();
+    finished();
+  }
   function leave() {
-    if (!el.isConnected || el.getAttribute("data-done") === "1") return;
+    if (leaving || !el.isConnected) return;
+    leaving = true;
     el.setAttribute("data-done", "1");
-    if (reduce) { el.remove(); return; }
-    el.classList.add("is-leaving");
-    setTimeout(function () { if (el.isConnected) el.remove(); }, 400);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        void el.offsetWidth;
+        el.classList.add("is-leaving");
+        var removed = false;
+        function end(event) {
+          if (event && event.target !== el) return;
+          if (event && event.propertyName && event.propertyName !== "opacity") return;
+          if (removed) return;
+          removed = true;
+          removeNow();
+        }
+        el.addEventListener("transitionend", end);
+        setTimeout(end, 1400);
+      });
+    });
   }
   el.addEventListener("click", leave);
   setTimeout(leave, 2000);
@@ -105,8 +138,8 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
 הָרַחֲמָן הוּא יְבָרֵךְ אֶת בַּֽעַל הַבַּֽיִת הַזֶּה, אֲבִי הַבֵּן, הוּא וְאִשְׁתּוֹ הַיּוֹלֶֽדֶת, מֵעַתָּה וְעַד עוֹלָם: הָרַחֲמָן הוּא יְבָרֵךְ אֶת הַיֶּֽלֶד הַנּוֹלָד, וּכְשֵׁם שֶׁזִּכָּֽהוּ הַקָּדוֹשׁ בָּרוּךְ הוּא לַמִּילָה, כֵּן יְזַכֵּֽהוּ לְהִכָּנֵס לַתּוֹרָה וְלַחֻפָּה וְלַמִּצְוֹת וּלְמַעֲשִׂים טוֹבִים, וְכֵן יְהִי רָצוֹן וְנֹאמַר אָמֵן: הָרַחֲמָן הוּא יְבָרֵךְ אֶת מַעֲלַת הַסַּנְדָּק וְהַמּוֹהֵל וּשְׁאָר הַמִּשְׁתַּדְּלִים בַּמִּצְוָה הֵם וְכָל־אֲשֶׁר לָהֶם:</p><p class="t">הָרַחֲמָן הוּא יְחַיֵּֽנוּ וִיזַכֵּֽנוּ וִיקָֽרְבֵֽנוּ לִימוֹת הַמָּשִֽׁיחַ וּלְבִנְיַן בֵּית הַמִּקְדָּשׁ וּלְחַיֵּי הָעוֹלָם הַבָּא.</p><p class="t">מַגְדִּיל (ביום שמתפללים מוסף, במוצ&quot;ש, בסעודת פורים ובסעודת מילה יאמר: מִגְדּ֖וֹל) יְשׁוּע֣וֹת מַלְכּ֑וֹ וְעֹֽשֶׂה־חֶ֧סֶד לִמְשִׁיח֛וֹ לְדָוִ֥ד וּלְזַרְע֖וֹ עַד־עוֹלָֽם: כְּ֭פִירִים רָשׁ֣וּ וְרָעֵ֑בוּ וְדֹרְשֵׁ֥י יְ֝הֹוָ֗ה לֹא־יַחְסְר֥וּ כָל־טֽוֹב: נַ֤עַר ׀ הָיִ֗יתִי גַּם־זָ֫קַ֥נְתִּי וְֽלֹא־רָ֭אִיתִי צַדִּ֣יק נֶעֱזָ֑ב וְ֝זַרְע֗וֹ מְבַקֶּשׁ־לָֽחֶם: כָּל־הַ֭יּוֹם חוֹנֵ֣ן וּמַלְוֶ֑ה וְ֝זַרְע֗וֹ לִבְרָכָֽה: מַה־שֶּׁאָכַֽלְנוּ יִהְיֶה לְשָׂבְעָה. וּמַה־שֶּׁשָּׁתִֽינוּ יִהְיֶה לִרְפוּאָה. וּמַה־שֶּׁהוֹתַֽרְנוּ יִהְיֶה לִבְרָכָה. כְּדִכְתִיב. וַיִּתֵּ֧ן לִפְנֵיהֶ֛ם וַיֹּאכְל֥וּ וַיּוֹתִ֖רוּ כִּדְבַ֥ר יְהֹוָֽה: בְּרוּכִ֣ים אַ֭תֶּם לַיהֹוָ֑ה עֹ֝שֵׂ֗ה שָׁמַ֥יִם וָאָֽרֶץ: בָּר֣וּךְ הַגֶּ֔בֶר אֲשֶׁ֥ר יִבְטַ֖ח בַּיהֹוָ֑ה וְהָיָ֥ה יְהֹוָ֖ה מִבְטַחֽוֹֹ: יְֽהֹוָ֗ה עֹ֭ז לְעַמּ֣וֹ יִתֵּ֑ן יְהֹוָ֓ה ׀ יְבָרֵ֖ךְ אֶת־עַמּ֣וֹ בַשָּׁלֽוֹם: עֹשֶׂה שָׁלוֹם בִּמְרוֹמָיו, הוּא בְּרַחֲמָיו יַעֲשֶׂה שָׁלוֹם עָלֵֽינוּ. וְעַל כָּל־עַמּוֹ יִשְׂרָאֵל, וְאִמְרוּ אָמֵן:</p><p class="src"><a href="https://www.sefaria.org/Siddur_Edot_HaMizrach%2C_Post_Meal_Blessing">ספריא: ברכת המזון</a></p>
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="../tefila/controls.js?v=23"></script>
-<script src="../tefila/credit.js?v=23"></script>
-<script type="module" src="../tefila/bracha-page.mjs?v=23"></script>
+<script src="../tefila/controls.js?v=24"></script>
+<script src="../tefila/credit.js?v=24"></script>
+<script type="module" src="../tefila/bracha-page.mjs?v=24"></script>
 </body>
 </html>

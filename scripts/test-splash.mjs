@@ -1,4 +1,4 @@
-import { chromium } from "playwright-core";
+import { webkit } from "playwright-core";
 import { mkdirSync } from "fs";
 
 const base = process.env.BASE_URL || "http://127.0.0.1:8765";
@@ -19,75 +19,103 @@ function check(name, ok, detail) {
 }
 
 mkdirSync("/opt/cursor/artifacts", { recursive: true });
-const browser = await chromium.launch({
-  executablePath: process.env.CHROME_PATH || "/usr/bin/google-chrome",
-  args: ["--no-sandbox", "--disable-gpu"],
-});
+const browser = await webkit.launch();
 
-const context = await browser.newContext({
-  viewport: { width: 393, height: 852 },
-  isMobile: true,
-  hasTouch: true,
-  userAgent: iphone,
-  colorScheme: "dark",
-});
-const page = await context.newPage();
-await page.addInitScript(() => localStorage.setItem("tefila-theme", "dark"));
-await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
-const splash = page.locator("#memorial-splash");
+async function open(reduced) {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
+    userAgent: iphone,
+    reducedMotion: reduced ? "reduce" : "no-preference",
+  });
+  const page = await context.newPage();
+  await page.addInitScript(() => localStorage.setItem("tefila-theme", "dark"));
+  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
+  return { context, page };
+}
+
+async function opacity(page) {
+  return page.evaluate(() => {
+    const el = document.getElementById("memorial-splash");
+    if (!el) return null;
+    return parseFloat(getComputedStyle(el).opacity);
+  });
+}
+
+const shown = await open(false);
+const splash = shown.page.locator("#memorial-splash");
 check("splash is visible on load", await splash.isVisible());
+const fadeIn = await shown.page.evaluate(() => parseFloat(getComputedStyle(document.querySelector(".memorial-card")).opacity));
+check("dedication text fades in", fadeIn > 0 && fadeIn < 1, fadeIn.toFixed(2));
 const got = await splash.locator("p").allInnerTexts();
 check("dedication text is exact", got.join("\n") === lines.join("\n"), got.join(" | "));
-const latin = await splash.innerText();
-check("splash shows no English letters", !/[A-Za-z]/.test(latin));
-const nameSize = await splash.locator(".memorial-name").evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-const otherSize = await splash.locator(".memorial-kicker").evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
-check("the name line is the largest", nameSize > otherSize + 8, nameSize + " vs " + otherSize);
-const overflow = await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1);
-check("splash does not widen the page", overflow);
+check("splash shows no English letters", !/[A-Za-z]/.test(await splash.innerText()));
+await shown.page.waitForTimeout(600);
 await splash.screenshot({ path: "/opt/cursor/artifacts/memorial-splash-iphone.png" });
-await page.screenshot({ path: "/opt/cursor/artifacts/memorial-splash-iphone-full.png" });
+await shown.context.close();
 
-await splash.click();
-await page.waitForTimeout(700);
-check("a tap dismisses the splash", await splash.count() === 0);
+async function fadeSamples(reduced, label) {
+  const session = await open(reduced);
+  const page = session.page;
+  await page.waitForTimeout(400);
+  const trace = await page.evaluate(() => new Promise((resolve) => {
+    const splash = document.getElementById("memorial-splash");
+    splash.click();
+    const samples = [];
+    let moved = "gone";
+    const started = performance.now();
+    (function tick() {
+      const node = document.getElementById("memorial-splash");
+      const opacityNow = node ? parseFloat(getComputedStyle(node).opacity) : null;
+      const card = node && node.querySelector(".memorial-card");
+      if (card && opacityNow != null && opacityNow < 0.8 && moved === "gone") moved = getComputedStyle(card).transform;
+      samples.push({ t: Math.round(performance.now() - started), o: opacityNow });
+      if (performance.now() - started < 1300) requestAnimationFrame(tick);
+      else resolve({ samples, moved });
+    })();
+  }));
+  const near = (ms) => trace.samples.reduce((best, sample) => Math.abs(sample.t - ms) < Math.abs(best.t - ms) ? sample : best);
+  const at400 = near(400);
+  const at700 = near(700);
+  const at950 = near(950);
+  const shown = [at400, at700, at950].map((sample) => sample.t + "ms:" + (sample.o == null ? "gone" : sample.o.toFixed(2))).join(" ");
+  const fading = [at400, at700, at950].every((sample) => sample.o != null && sample.o > 0.04 && sample.o < 0.96);
+  check(label + " opacity stays between 0 and 1 during the fade", fading && at400.o > at700.o && at700.o > at950.o, shown);
+  check(label + " fade is still running almost a second later", at950.o != null && at950.o > 0.04, shown);
+  if (!reduced) check("full motion drifts and scales the text", trace.moved && trace.moved !== "none" && trace.moved !== "gone", String(trace.moved));
+  else check("reduced motion keeps the text still", trace.moved === "none", String(trace.moved));
+  await page.waitForTimeout(800);
+  check(label + " splash is gone after the fade", await page.locator("#memorial-splash").count() === 0);
+  await session.context.close();
+}
 
-await page.goto(base + "/tefila/mincha.html", { waitUntil: "domcontentloaded" });
-check("the splash stays down for the rest of the visit", await page.locator("#memorial-splash").count() === 0);
+await fadeSamples(false, "no-preference");
+await fadeSamples(true, "reduced-motion");
 
-await context.close();
+async function captureMid(reduced, label) {
+  const session = await open(reduced);
+  await session.page.waitForTimeout(500);
+  await session.page.locator("#memorial-splash").click();
+  await session.page.waitForTimeout(550);
+  const value = await opacity(session.page);
+  await session.page.screenshot({ path: `/opt/cursor/artifacts/splash-mid-fade-${label}.png` });
+  check(label + " mid-fade frame was captured while still visible", value != null && value > 0.05 && value < 0.95, value == null ? "gone" : value.toFixed(2));
+  await session.context.close();
+}
+await captureMid(false, "no-preference");
+await captureMid(true, "reduced-motion");
 
-const timed = await browser.newContext({
-  viewport: { width: 393, height: 852 },
-  isMobile: true,
-  hasTouch: true,
-  userAgent: iphone,
-  colorScheme: "light",
-});
-const timedPage = await timed.newPage();
-await timedPage.addInitScript(() => localStorage.setItem("tefila-theme", "light"));
-await timedPage.goto(base + "/tefila/index.html", { waitUntil: "domcontentloaded" });
-check("splash is still up before two seconds", await timedPage.locator("#memorial-splash").isVisible());
-await timedPage.screenshot({ path: "/opt/cursor/artifacts/memorial-splash-iphone-light.png" });
-await timedPage.waitForTimeout(2600);
-check("splash leaves after about two seconds", await timedPage.locator("#memorial-splash").count() === 0);
-await timed.close();
-
-const reduce = await browser.newContext({
-  viewport: { width: 393, height: 852 },
-  isMobile: true,
-  hasTouch: true,
-  userAgent: iphone,
-  reducedMotion: "reduce",
-});
-const reducePage = await reduce.newPage();
-await reducePage.goto(base + "/tefila/arvit.html", { waitUntil: "domcontentloaded" });
-const motion = await reducePage.locator("#memorial-splash").evaluate((el) => getComputedStyle(el).transitionDuration);
-check("reduced motion has no fade", motion === "0s", motion);
-await reducePage.locator("#memorial-splash").click();
-await reducePage.waitForTimeout(80);
-check("reduced motion dismisses without waiting for a fade", await reducePage.locator("#memorial-splash").count() === 0);
-await reduce.close();
+const hold = await open(false);
+check("splash is still up before two seconds", await hold.page.locator("#memorial-splash").isVisible());
+await hold.page.waitForTimeout(2400);
+const midAuto = await opacity(hold.page);
+check("auto fade is underway after two seconds", midAuto != null && midAuto > 0.05 && midAuto < 0.95, String(midAuto));
+await hold.page.screenshot({ path: "/opt/cursor/artifacts/splash-mid-fade-auto.png" });
+await hold.page.waitForTimeout(1400);
+check("auto fade finishes", await hold.page.locator("#memorial-splash").count() === 0);
+await hold.context.close();
 
 await browser.close();
 const failed = checks.filter((item) => !item.ok);

@@ -1,7 +1,7 @@
 var CACHE = "tefila-pages";
 
-self.addEventListener("install", function (event) {
-  event.waitUntil(self.skipWaiting());
+self.addEventListener("message", function (event) {
+  if (event.data && event.data.type === "tefila-ready") self.skipWaiting();
 });
 
 self.addEventListener("activate", function (event) {

@@ -48,6 +48,14 @@
   }
 
   function reloadFor(remote) {
+    if (window.tefilaSplashActive) {
+      var prev = window.tefilaAfterSplash;
+      window.tefilaAfterSplash = function () {
+        if (typeof prev === "function") prev();
+        reloadFor(remote);
+      };
+      return;
+    }
     try {
       sessionStorage.setItem("tefila-reloaded", remote);
       sessionStorage.setItem("tefila-scroll", String(window.scrollY || 0));
@@ -99,9 +107,32 @@
     }).catch(function () {});
   }
 
+  function notifyWorker() {
+    if (!navigator.serviceWorker) return;
+    navigator.serviceWorker.getRegistration().then(function (reg) {
+      if (!reg) return;
+      var worker = reg.waiting || reg.installing || reg.active;
+      if (worker) worker.postMessage({ type: "tefila-ready" });
+    }).catch(function () {});
+  }
+  function whenSplashDone(fn) {
+    function arm() {
+      if (window.tefilaSplashActive) {
+        var prev = window.tefilaAfterSplash;
+        window.tefilaAfterSplash = function () {
+          if (typeof prev === "function") prev();
+          fn();
+        };
+      } else fn();
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", arm);
+    else arm();
+  }
   if (navigator.serviceWorker && location.protocol !== "file:") {
     var scopeBase = location.pathname.replace(/\/(tefila|brachot|watch)\/.*$/, "/");
-    navigator.serviceWorker.register(scopeBase + "sw.js").catch(function () {});
+    navigator.serviceWorker.register(scopeBase + "sw.js").then(function () {
+      whenSplashDone(notifyWorker);
+    }).catch(function () {});
   }
 
   restoreScroll();
