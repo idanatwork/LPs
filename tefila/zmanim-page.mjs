@@ -1,5 +1,5 @@
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
-import { civilWeekday, statusForHDate } from "./day-status.mjs?v=25";
+import { civilWeekday, statusForHDate } from "./day-status.mjs?v=26";
 import { ORANIT, ZMAN_ROWS, computeFromSun, formatHM } from "./zmanim-calc.mjs";
 
 const input = document.getElementById("z-date");

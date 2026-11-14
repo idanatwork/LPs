@@ -21,9 +21,9 @@ function check(name, ok, detail) {
 mkdirSync("/opt/cursor/artifacts", { recursive: true });
 const browser = await webkit.launch();
 
-async function open(reduced) {
+async function open(reduced, viewport = { width: 390, height: 844 }) {
   const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
+    viewport,
     deviceScaleFactor: 2,
     isMobile: true,
     hasTouch: true,
@@ -68,8 +68,18 @@ const look = await shown.page.evaluate(() => {
     frame: splash.querySelectorAll(".memorial-frame").length,
     flicker: getComputedStyle(flame).animationName,
     safe: css,
+    kicker: parseFloat(getComputedStyle(splash.querySelector(".memorial-kicker")).fontSize),
+    nameSize: parseFloat(getComputedStyle(name).fontSize),
+    detail: parseFloat(getComputedStyle(splash.querySelector(".memorial-story")).fontSize),
+    tnc: parseFloat(getComputedStyle(splash.querySelector(".memorial-tnc")).fontSize),
+    wrap: getComputedStyle(name).textWrap,
   };
 });
+check("kicker is about 26 to 30px", look.kicker >= 26 && look.kicker <= 30, String(look.kicker));
+check("name is about 40 to 46px", look.nameSize >= 40 && look.nameSize <= 46, String(look.nameSize));
+check("detail lines are about 20 to 22px", look.detail >= 20 && look.detail <= 22, String(look.detail));
+check("closing line is about 26 to 28px", look.tnc >= 26 && look.tnc <= 28, String(look.tnc));
+check("name wraps with balance", look.wrap === "balance", look.wrap);
 check("splash background is deep navy", look.bg === "rgb(3, 2, 31)", look.bg);
 check("name is warm gold", look.name === "rgb(212, 164, 106)", look.name);
 check("two candles flank the closing line", look.candles === 2 && look.frame === 1, JSON.stringify(look));
@@ -143,6 +153,40 @@ await hold.page.screenshot({ path: "/opt/cursor/artifacts/splash-mid-fade-auto.p
 await hold.page.waitForTimeout(1400);
 check("auto fade finishes", await hold.page.locator("#memorial-splash").count() === 0);
 await hold.context.close();
+
+async function fits(width, height) {
+  const session = await open(false, { width, height });
+  await session.page.waitForTimeout(700);
+  const fit = await session.page.evaluate(() => {
+    const splash = document.getElementById("memorial-splash");
+    const frame = splash.querySelector(".memorial-frame").getBoundingClientRect();
+    const foot = splash.querySelector(".memorial-foot").getBoundingClientRect();
+    const outside = [];
+    for (const node of splash.querySelectorAll(".memorial-copy p, .memorial-tnc, .memorial-candle, .memorial-wax")) {
+      const rect = node.getBoundingClientRect();
+      if (rect.left < -1 || rect.right > window.innerWidth + 1 || rect.top < -1 || rect.bottom > window.innerHeight + 1 || rect.left < frame.left - 2 || rect.right > frame.right + 2) {
+        outside.push(node.className || node.tagName);
+      }
+    }
+    const date = splash.querySelector(".memorial-date").getBoundingClientRect();
+    const textTop = splash.querySelector(".memorial-kicker").getBoundingClientRect().top;
+    const textMid = (textTop + date.bottom) / 2;
+    const bandMid = (frame.top + foot.top) / 2;
+    return {
+      outside,
+      center: Math.abs(textMid - bandMid),
+      gap: Math.round(foot.top - date.bottom),
+    };
+  });
+  const shot = width === 390 ? "/opt/cursor/artifacts/memorial-splash-iphone.png" : `/opt/cursor/artifacts/memorial-splash-${width}x${height}.png`;
+  await session.page.locator("#memorial-splash").screenshot({ path: shot });
+  check(`${width}x${height} splash fits inside the frame`, fit.outside.length === 0 && fit.gap > 24, JSON.stringify(fit));
+  check(`${width}x${height} text sits between the frame and the candles`, fit.center < 48, "off by " + fit.center.toFixed(1));
+  await session.context.close();
+}
+await fits(375, 667);
+await fits(390, 844);
+await fits(430, 932);
 
 await browser.close();
 const failed = checks.filter((item) => !item.ok);
