@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="22">
+<meta name="tefila-build" content="23">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../tefila/tefila.css?v=22">
-<link rel="stylesheet" href="../tefila/accent.css?v=22">
+<link rel="stylesheet" href="../tefila/tefila.css?v=23">
+<link rel="stylesheet" href="../tefila/accent.css?v=23">
 <title>ברכת המזון</title>
 <script type="importmap">
 {
@@ -26,9 +26,59 @@
   }
 }
 </script>
-<script src="../tefila/boot.js?v=22"></script>
+<script src="../tefila/boot.js?v=23"></script>
+<style>
+.memorial-splash{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 28px) 22px calc(env(safe-area-inset-bottom) + 28px);background:var(--m-bg);color:var(--m-fg);text-align:center;overflow:hidden;--m-bg:#f4efe6;--m-fg:#2c261f;--m-name:#7a2f2f;--m-muted:#5e564c;--m-flame:#c4842a;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
+html[data-theme="dark"] .memorial-splash{--m-bg:#141210;--m-fg:#f4efe6;--m-name:#f0d7a2;--m-muted:#c4b8a8;--m-flame:#e6b15a}
+@media (prefers-color-scheme:dark){html:not([data-theme]) .memorial-splash{--m-bg:#141210;--m-fg:#f4efe6;--m-name:#f0d7a2;--m-muted:#c4b8a8;--m-flame:#e6b15a}}
+.memorial-card{width:min(100%,28rem);margin:0}
+.memorial-flame{display:block;margin:0 auto 18px;color:var(--m-flame)}
+.memorial-splash p{margin:0 0 10px;font-size:clamp(16px,4.4vw,20px);line-height:1.45;font-weight:400;color:var(--m-fg)}
+.memorial-splash .memorial-kicker{color:var(--m-muted);font-size:clamp(15px,4vw,18px);letter-spacing:.04em}
+.memorial-splash .memorial-name{margin:8px 0 12px;font-size:clamp(30px,8vw,42px);font-weight:700;line-height:1.25;color:var(--m-name)}
+.memorial-splash .memorial-story{font-size:clamp(15px,3.9vw,18px);line-height:1.5}
+.memorial-splash .memorial-date{margin-top:12px}
+.memorial-splash .memorial-tnc{margin-top:16px;letter-spacing:.18em;color:var(--m-muted);font-size:clamp(14px,3.6vw,17px)}
+.memorial-splash.is-leaving{opacity:0;transition:opacity 400ms ease;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.memorial-splash.is-leaving{transition:none}}
+html.splash-seen .memorial-splash{display:none !important}
+</style>
+<script>
+try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElement.classList.add("splash-seen"); } catch (e) {}
+</script>
 </head>
 <body class="siddur-frame">
+<div id="memorial-splash" class="memorial-splash">
+<div class="memorial-card">
+<svg class="memorial-flame" viewBox="0 0 48 72" width="28" height="42" aria-hidden="true"><path fill="currentColor" d="M24 2c1.4 7 6 11 6 18a6 6 0 0 1-12 0c0-4 2.4-7 3.6-11 .8 4 2.6 5.4 3.6 5.4C25.2 8 24.6 4.6 24 2z"/><rect x="20" y="32" width="8" height="28" rx="1.5" fill="currentColor" opacity=".88"/><rect x="15" y="58" width="18" height="4" rx="1" fill="currentColor" opacity=".4"/></svg>
+<p class="memorial-kicker">לעילוי נשמת</p>
+<p class="memorial-name">עדי עדיאל טויטו הי״ד</p>
+<p>בת אילנה ויורם שיבל״ט</p>
+<p class="memorial-story">שנרצחה על קידוש השם בטבח שמחת תורה</p>
+<p class="memorial-date">כ״ב בתשרי תשפ״ד</p>
+<p class="memorial-tnc">ת.נ.צ.ב.ה.</p>
+</div>
+</div>
+<script>
+(function () {
+  var el = document.getElementById("memorial-splash");
+  if (!el) return;
+  if (document.documentElement.classList.contains("splash-seen")) { el.remove(); return; }
+  try { sessionStorage.setItem("tefila-splash", "1"); } catch (e) {}
+  var reduce = false;
+  try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  function leave() {
+    if (!el.isConnected || el.getAttribute("data-done") === "1") return;
+    el.setAttribute("data-done", "1");
+    if (reduce) { el.remove(); return; }
+    el.classList.add("is-leaving");
+    setTimeout(function () { if (el.isConnected) el.remove(); }, 400);
+  }
+  el.addEventListener("click", leave);
+  setTimeout(leave, 2000);
+})();
+</script>
+
 <header class="bar">
   <div class="brand"><a class="home-btn" href="../tefila/"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><p class="header-date" id="header-date" hidden></p><strong>ברכת המזון</strong></div>
   <div class="szs">
@@ -55,8 +105,8 @@
 הָרַחֲמָן הוּא יְבָרֵךְ אֶת בַּֽעַל הַבַּֽיִת הַזֶּה, אֲבִי הַבֵּן, הוּא וְאִשְׁתּוֹ הַיּוֹלֶֽדֶת, מֵעַתָּה וְעַד עוֹלָם: הָרַחֲמָן הוּא יְבָרֵךְ אֶת הַיֶּֽלֶד הַנּוֹלָד, וּכְשֵׁם שֶׁזִּכָּֽהוּ הַקָּדוֹשׁ בָּרוּךְ הוּא לַמִּילָה, כֵּן יְזַכֵּֽהוּ לְהִכָּנֵס לַתּוֹרָה וְלַחֻפָּה וְלַמִּצְוֹת וּלְמַעֲשִׂים טוֹבִים, וְכֵן יְהִי רָצוֹן וְנֹאמַר אָמֵן: הָרַחֲמָן הוּא יְבָרֵךְ אֶת מַעֲלַת הַסַּנְדָּק וְהַמּוֹהֵל וּשְׁאָר הַמִּשְׁתַּדְּלִים בַּמִּצְוָה הֵם וְכָל־אֲשֶׁר לָהֶם:</p><p class="t">הָרַחֲמָן הוּא יְחַיֵּֽנוּ וִיזַכֵּֽנוּ וִיקָֽרְבֵֽנוּ לִימוֹת הַמָּשִֽׁיחַ וּלְבִנְיַן בֵּית הַמִּקְדָּשׁ וּלְחַיֵּי הָעוֹלָם הַבָּא.</p><p class="t">מַגְדִּיל (ביום שמתפללים מוסף, במוצ&quot;ש, בסעודת פורים ובסעודת מילה יאמר: מִגְדּ֖וֹל) יְשׁוּע֣וֹת מַלְכּ֑וֹ וְעֹֽשֶׂה־חֶ֧סֶד לִמְשִׁיח֛וֹ לְדָוִ֥ד וּלְזַרְע֖וֹ עַד־עוֹלָֽם: כְּ֭פִירִים רָשׁ֣וּ וְרָעֵ֑בוּ וְדֹרְשֵׁ֥י יְ֝הֹוָ֗ה לֹא־יַחְסְר֥וּ כָל־טֽוֹב: נַ֤עַר ׀ הָיִ֗יתִי גַּם־זָ֫קַ֥נְתִּי וְֽלֹא־רָ֭אִיתִי צַדִּ֣יק נֶעֱזָ֑ב וְ֝זַרְע֗וֹ מְבַקֶּשׁ־לָֽחֶם: כָּל־הַ֭יּוֹם חוֹנֵ֣ן וּמַלְוֶ֑ה וְ֝זַרְע֗וֹ לִבְרָכָֽה: מַה־שֶּׁאָכַֽלְנוּ יִהְיֶה לְשָׂבְעָה. וּמַה־שֶּׁשָּׁתִֽינוּ יִהְיֶה לִרְפוּאָה. וּמַה־שֶּׁהוֹתַֽרְנוּ יִהְיֶה לִבְרָכָה. כְּדִכְתִיב. וַיִּתֵּ֧ן לִפְנֵיהֶ֛ם וַיֹּאכְל֥וּ וַיּוֹתִ֖רוּ כִּדְבַ֥ר יְהֹוָֽה: בְּרוּכִ֣ים אַ֭תֶּם לַיהֹוָ֑ה עֹ֝שֵׂ֗ה שָׁמַ֥יִם וָאָֽרֶץ: בָּר֣וּךְ הַגֶּ֔בֶר אֲשֶׁ֥ר יִבְטַ֖ח בַּיהֹוָ֑ה וְהָיָ֥ה יְהֹוָ֖ה מִבְטַחֽוֹֹ: יְֽהֹוָ֗ה עֹ֭ז לְעַמּ֣וֹ יִתֵּ֑ן יְהֹוָ֓ה ׀ יְבָרֵ֖ךְ אֶת־עַמּ֣וֹ בַשָּׁלֽוֹם: עֹשֶׂה שָׁלוֹם בִּמְרוֹמָיו, הוּא בְּרַחֲמָיו יַעֲשֶׂה שָׁלוֹם עָלֵֽינוּ. וְעַל כָּל־עַמּוֹ יִשְׂרָאֵל, וְאִמְרוּ אָמֵן:</p><p class="src"><a href="https://www.sefaria.org/Siddur_Edot_HaMizrach%2C_Post_Meal_Blessing">ספריא: ברכת המזון</a></p>
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="../tefila/controls.js?v=22"></script>
-<script src="../tefila/credit.js?v=22"></script>
-<script type="module" src="../tefila/bracha-page.mjs?v=22"></script>
+<script src="../tefila/controls.js?v=23"></script>
+<script src="../tefila/credit.js?v=23"></script>
+<script type="module" src="../tefila/bracha-page.mjs?v=23"></script>
 </body>
 </html>
