@@ -1,4 +1,4 @@
-import { formatHeaderDate, hebrewNow, isNightService, mountHeaderDate, statusForHDate } from "./day-status.mjs?v=27";
+import { formatHeaderDate, hebrewNow, isNightService, mountHeaderDate, statusForHDate } from "./day-status.mjs?v=28";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {

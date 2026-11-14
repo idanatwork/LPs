@@ -794,6 +794,21 @@ a.shortcut-btn[aria-disabled="true"] {
 .z-strip { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
 .watch-list { padding-right: 18px; }
 .watch-list li { margin: 0 0 8px; line-height: 1.5; }
+.watch-later { background: transparent; }
+.watch-later h2 { font-size: 18px; }
+details.manual-build code {
+  display: block;
+  direction: ltr;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 6px 0 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  color: var(--fg);
+  word-break: break-all;
+}
 
 :focus-visible {
   outline: 2px solid var(--accent);

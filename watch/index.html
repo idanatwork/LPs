@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="27">
+<meta name="tefila-build" content="28">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>בשעון</title>
-<link rel="stylesheet" href="../tefila/tefila.css?v=27">
-<script src="../tefila/boot.js?v=27"></script>
+<link rel="stylesheet" href="../tefila/tefila.css?v=28">
+<script src="../tefila/boot.js?v=28"></script>
 </head>
 <body>
 <header class="bar">
@@ -15,29 +15,88 @@
 <main>
 <p class="kicker">טקסט לשעון</p>
 <div class="sep"></div>
-<p class="note">הקבצים הם טקסט פשוט בעברית. בשעון רואים רק את המילים, בלי עיצוב.</p>
-<ol class="watch-list">
-  <li><a href="asher-yatzar.txt">אשר יצר</a></li>
-  <li><a href="borei-nefashot.txt">בורא נפשות</a></li>
-  <li><a href="meein-shalosh.txt">מעין שלוש</a></li>
-  <li><a href="zmanim.txt">זמני היום להיום</a></li>
-</ol>
-<h2>קיצור אחד</h2>
-<ol class="watch-list">
-  <li>באייפון פותחים את אפליקציית קיצורים.</li>
-  <li>לוחצים על +.</li>
-  <li>מוסיפים פעולה: קבל תוכן של כתובת (<bdi>Get Contents of URL</bdi>).</li>
-  <li>מדביקים את הכתובת, למשל את כתובת אשר יצר.</li>
-  <li>מוסיפים פעולה: הצג תוצאה (<bdi>Show Result</bdi>).</li>
-  <li>בפרטי הקיצור מסמנים: הצג בשעון (<bdi>Show on Apple Watch</bdi>).</li>
-  <li>בשעון פותחים את הקיצור. התוצאה מופיעה כטקסט.</li>
-</ol>
-<h2>קיצור עם תפריט</h2>
-<p class="note">אפשר קיצור אחד לארבעתם: פעולת בחר מתפריט (<bdi>Choose from Menu</bdi>), ובכל ענף אותה כתובת ואחר כך הצג תוצאה. גם אותו מסמנים להצגה בשעון.</p>
-<h2>זמנים לפי תאריך</h2>
-<p class="note">בנוסף לקובץ של היום יש קובץ לכל תאריך, ארבע מאות יום קדימה. בקיצור מוסיפים את התאריך הנוכחי בפורמט yyyy-MM-dd לכתובת:</p>
-<p class="t" dir="ltr">/watch/zmanim/yyyy-MM-dd.txt</p>
-<p class="note">הקובץ של היום מתחדש כל לילה סמוך לחצות שעון ירושלים.</p>
+<p class="note">כל כרטיס הוא קיצור נפרד לשעון. הורדה מוסיפה קיצור חתום לאייפון.</p>
+<article class="install-card">
+  <h2>אשר יצר</h2>
+  <p class="lead">הברכה אחרי בית הכיסא</p>
+  <a class="shortcut-btn shortcut-start" data-icloud="asher" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
+</article>
+<article class="install-card">
+  <h2>בורא נפשות</h2>
+  <p class="lead">ברכה אחרונה על רוב האוכל</p>
+  <a class="shortcut-btn shortcut-start" data-icloud="borei" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
+</article>
+<article class="install-card">
+  <h2>מעין שלוש</h2>
+  <p class="lead">ברכה אחרונה על פת הבאה בכיסנין, יין ופירות</p>
+  <a class="shortcut-btn shortcut-start" data-icloud="meein" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
+</article>
+<article class="install-card">
+  <h2>זמני היום</h2>
+  <p class="lead">הקיצור מביא את הזמנים של היום</p>
+  <a class="shortcut-btn shortcut-start" data-icloud="zmanim" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
+</article>
+<article class="install-card watch-later">
+  <h2>שעון תפילה</h2>
+  <p class="lead">לא חובה. תפריט אחד: אשר יצר, בורא נפשות, מעין שלוש, וזמני היום.</p>
+  <a class="shortcut-btn shortcut-start" data-icloud="menu" aria-disabled="true">קישור ההורדה יתווסף בקרוב</a>
+</article>
+<details class="manual-build">
+  <summary>בנייה ידנית</summary>
+  <h2>קיצור אחד</h2>
+  <ol class="watch-list">
+    <li>באייפון פותחים את אפליקציית הקיצורים.</li>
+    <li>לוחצים על +.</li>
+    <li>מוסיפים פעולה: קבל תוכן של כתובת (<bdi>Get Contents of URL</bdi>).</li>
+    <li>מדביקים את הכתובת של הטקסט.</li>
+    <li>מוסיפים פעולה: הצג תוצאה (<bdi>Show Result</bdi>).</li>
+    <li>בפרטי הקיצור מסמנים: הצג בשעון (<bdi>Show on Apple Watch</bdi>).</li>
+    <li>בשעון פותחים את הקיצור. התוצאה מופיעה כטקסט.</li>
+  </ol>
+  <p class="note">כתובות:</p>
+  <code>https://idanatwork.github.io/LPs/watch/asher-yatzar.txt</code>
+  <code>https://idanatwork.github.io/LPs/watch/borei-nefashot.txt</code>
+  <code>https://idanatwork.github.io/LPs/watch/meein-shalosh.txt</code>
+  <h2>קיצור עם תפריט</h2>
+  <p class="note">אפשר קיצור אחד לארבעתם: פעולת בחר מתפריט (<bdi>Choose from Menu</bdi>), ובכל ענף אותה כתובת ואחר כך הצג תוצאה. גם אותו מסמנים להצגה בשעון. שם מתאים: שעון תפילה.</p>
+  <h2>זמנים לפי תאריך</h2>
+  <p class="note">בנוסף לקובץ של היום יש קובץ לכל תאריך. בקיצור מעצבים את התאריך הנוכחי (<bdi>Format Date</bdi>) ומוסיפים אותו לכתובת:</p>
+  <code>https://idanatwork.github.io/LPs/watch/zmanim/yyyy-MM-dd.txt</code>
+  <p class="note">הקובץ של היום מתחדש כל לילה סמוך לחצות שעון ירושלים.</p>
+</details>
 </main>
+<script>
+/* iCloud share links. Leave a string empty until that link exists. */
+var ICLOUD_LINKS = {
+  asher: "https://www.icloud.com/shortcuts/0e5a4734dbba4cfcb565a45b1dd86a24",
+  borei: "https://www.icloud.com/shortcuts/873203a37c8a49ee8908fda4e5dea9d6",
+  meein: "",
+  zmanim: "",
+  menu: ""
+};
+(function () {
+  var pending = "קישור ההורדה יתווסף בקרוב";
+  var ready = "הורד קיצור";
+  document.querySelectorAll("[data-icloud]").forEach(function (link) {
+    var key = link.getAttribute("data-icloud");
+    var url = (ICLOUD_LINKS[key] || "").trim();
+    if (!url) {
+      link.removeAttribute("href");
+      link.removeAttribute("target");
+      link.removeAttribute("rel");
+      link.setAttribute("aria-disabled", "true");
+      link.textContent = pending;
+      link.setAttribute("aria-label", pending);
+      return;
+    }
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.removeAttribute("aria-disabled");
+    link.textContent = ready;
+    link.setAttribute("aria-label", ready);
+  });
+})();
+</script>
 </body>
 </html>

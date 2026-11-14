@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="27">
+<meta name="tefila-build" content="28">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -15,119 +15,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=27">
-<link rel="stylesheet" href="accent.css?v=27">
+<link rel="stylesheet" href="tefila.css?v=28">
+<link rel="stylesheet" href="accent.css?v=28">
 <title>פוקוס תפילה</title>
-<script src="boot.js?v=27"></script>
-<style>
-.memorial-splash{position:fixed;inset:0;z-index:200;background:#03021f;color:#fff;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
-.memorial-frame{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);left:16px;border:1px solid #d4b06a;pointer-events:none}
-.memorial-frame::before{content:"";position:absolute;inset:6px;border:1px solid #d4b06a}
-.corner{position:absolute;width:38px;height:38px}
-.corner.tl{top:-9px;left:-9px}
-.corner.tr{top:-9px;right:-9px;transform:scaleX(-1)}
-.corner.bl{bottom:-9px;left:-9px;transform:scaleY(-1)}
-.corner.br{bottom:-9px;right:-9px;transform:scale(-1)}
-.memorial-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 48px) clamp(46px,12vw,64px) calc(env(safe-area-inset-bottom) + 20px);opacity:0;will-change:opacity,transform,filter}
-.memorial-copy{width:100%;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
-.memorial-splash p{margin:0;color:#fff;font-weight:400}
-.memorial-splash .memorial-copy p{font-size:clamp(20px,5.2vw,22px);line-height:1.7;margin-bottom:8px}
-.memorial-splash p.memorial-kicker{font-weight:700;font-size:clamp(26px,7vw,30px);line-height:1.35;letter-spacing:.03em;margin:0 0 22px;color:#fff}
-.memorial-splash p.memorial-name{margin:0 0 26px;color:#d4a46a;font-weight:700;font-size:clamp(40px,10.6vw,46px);line-height:1.28;text-wrap:balance}
-.memorial-splash p.memorial-story{text-wrap:balance}
-.memorial-splash p.memorial-date{margin-top:6px}
-.memorial-foot{flex:none;display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,18px);width:100%;padding-bottom:10px}
-.memorial-splash p.memorial-tnc{margin:0;color:#fff;font-weight:700;font-size:clamp(26px,6.6vw,28px);letter-spacing:.08em;white-space:nowrap}
-.memorial-candle{position:relative;width:clamp(48px,13.2vw,60px);height:clamp(112px,30vw,136px);flex:none}
-.memorial-candle.mirror{transform:scaleX(-1)}
-.memorial-glow{position:absolute;left:-8%;top:-2%;width:116%;height:48%;filter:blur(8px);opacity:.8;animation:memorial-flicker 1.8s ease-in-out infinite}
-.memorial-flame{position:absolute;left:19%;top:0;width:62%;height:45%;transform-origin:center bottom;animation:memorial-flicker 1.6s ease-in-out infinite}
-.memorial-candle.late .memorial-glow,.memorial-candle.late .memorial-flame{animation-delay:-.85s}
-.memorial-wax{position:absolute;left:2%;bottom:0;width:96%;height:63%}
-@keyframes memorial-flicker{0%,100%{transform:translateY(0) scale(1);opacity:1}35%{transform:translateY(1px) scale(.96,1.05);opacity:.82}68%{transform:translateY(-1px) scale(1.04,.96);opacity:1}}
-.memorial-splash.is-in .memorial-card{opacity:1;transition:opacity 500ms ease}
-.memorial-splash.is-leaving{opacity:0;pointer-events:none;transition:opacity 1100ms ease-in-out;-webkit-transition:opacity 1100ms ease-in-out}
-.memorial-splash.is-leaving .memorial-card{opacity:0;transform:translate3d(0,-16px,0) scale(1.04);filter:blur(1.5px);transition:opacity 700ms ease-in, transform 1100ms ease-in-out, filter 1100ms ease-in-out;-webkit-transition:opacity 700ms ease-in, -webkit-transform 1100ms ease-in-out, filter 1100ms ease-in-out}
-@media (prefers-reduced-motion:reduce){
-  .memorial-flame,.memorial-glow{animation:none}
-  .memorial-splash.is-in .memorial-card{transition:opacity 500ms ease;-webkit-transition:opacity 500ms ease}
-  .memorial-splash.is-leaving{transition:opacity 1100ms ease-in-out;-webkit-transition:opacity 1100ms ease-in-out}
-  .memorial-splash.is-leaving .memorial-card{transform:none;filter:none;transition:opacity 700ms ease-in;-webkit-transition:opacity 700ms ease-in}
-}
-html.splash-seen .memorial-splash{display:none !important}
-</style>
-<script>
-try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElement.classList.add("splash-seen"); } catch (e) {}
-</script>
+<script src="boot.js?v=28"></script>
+
 </head>
 <body class="siddur-frame">
-<div id="memorial-splash" class="memorial-splash">
-<div class="memorial-frame" aria-hidden="true"><svg class="corner tl" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg><svg class="corner tr" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg><svg class="corner bl" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg><svg class="corner br" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg></div>
-<div class="memorial-card">
-<div class="memorial-copy">
-<p class="memorial-kicker">לעילוי נשמת</p>
-<p class="memorial-name">עדי עדיאל טויטו הי״ד</p>
-<p>בת אילנה ויורם שיבל״ט</p>
-<p class="memorial-story">שנרצחה על קידוש השם בטבח שמחת תורה</p>
-<p class="memorial-date">כ״ב בתשרי תשפ״ד</p>
-</div>
-<div class="memorial-foot">
-<span class="memorial-candle" aria-hidden="true"><svg class="memorial-glow" viewBox="0 0 80 80"><ellipse cx="40" cy="48" rx="28" ry="26" fill="#ffb43a"/></svg><svg class="memorial-flame" viewBox="0 0 64 84"><path fill="#ff9a2a" d="M32 2c8 18 17 30 17 46a17 17 0 0 1-34 0C15 32 24 20 32 2z"/><path fill="#fff4c8" d="M32 24c4 10 8 16 8 24a8 8 0 0 1-16 0c0-8 4-14 8-24z"/></svg><svg class="memorial-wax" viewBox="0 0 80 100"><rect x="27" y="24" width="26" height="66" rx="8" fill="#f2c44b"/><ellipse cx="40" cy="26" rx="13" ry="5" fill="#ffe8a6"/><path fill="#e2a322" d="M31 26c1 12 2.2 22 .4 36-.6 5 1.8 6.5 2.4 1.5.6-8-.4-20-1-30-.2-2-1.4-5-1.8-7.5z"/><path fill="#e8b43e" d="M49 25c-.4 10 .2 20 1.4 32 .5 5-1.8 6.2-2.5 1.4-.7-8 .2-18-.2-28 .1-2 1-4 1.3-5.4z"/><path fill="#f0c44e" d="M27 28c-3.2.6-5 5-4.2 11 .6 3.4 2.6 2.8 3.2-.6.5-3 .6-7 1-10.4z"/><rect x="33" y="32" width="4.5" height="46" rx="2" fill="#fff6d0" opacity=".55"/><rect x="38.8" y="10" width="2.4" height="16" rx="1" fill="#3d2914"/></svg></span>
-<p class="memorial-tnc">ת.נ.צ.ב.ה.</p>
-<span class="memorial-candle mirror late" aria-hidden="true"><svg class="memorial-glow" viewBox="0 0 80 80"><ellipse cx="40" cy="48" rx="28" ry="26" fill="#ffb43a"/></svg><svg class="memorial-flame" viewBox="0 0 64 84"><path fill="#ff9a2a" d="M32 2c8 18 17 30 17 46a17 17 0 0 1-34 0C15 32 24 20 32 2z"/><path fill="#fff4c8" d="M32 24c4 10 8 16 8 24a8 8 0 0 1-16 0c0-8 4-14 8-24z"/></svg><svg class="memorial-wax" viewBox="0 0 80 100"><rect x="27" y="24" width="26" height="66" rx="8" fill="#f2c44b"/><ellipse cx="40" cy="26" rx="13" ry="5" fill="#ffe8a6"/><path fill="#e2a322" d="M31 26c1 12 2.2 22 .4 36-.6 5 1.8 6.5 2.4 1.5.6-8-.4-20-1-30-.2-2-1.4-5-1.8-7.5z"/><path fill="#e8b43e" d="M49 25c-.4 10 .2 20 1.4 32 .5 5-1.8 6.2-2.5 1.4-.7-8 .2-18-.2-28 .1-2 1-4 1.3-5.4z"/><path fill="#f0c44e" d="M27 28c-3.2.6-5 5-4.2 11 .6 3.4 2.6 2.8 3.2-.6.5-3 .6-7 1-10.4z"/><rect x="33" y="32" width="4.5" height="46" rx="2" fill="#fff6d0" opacity=".55"/><rect x="38.8" y="10" width="2.4" height="16" rx="1" fill="#3d2914"/></svg></span>
-</div>
-</div>
-</div>
-<script>
-(function () {
-  var el = document.getElementById("memorial-splash");
-  if (!el) return;
-  function finished() {
-    window.tefilaSplashActive = false;
-    var next = window.tefilaAfterSplash;
-    window.tefilaAfterSplash = null;
-    if (typeof next === "function") next();
-  }
-  if (document.documentElement.classList.contains("splash-seen")) { el.remove(); finished(); return; }
-  window.tefilaSplashActive = true;
-  try { sessionStorage.setItem("tefila-splash", "1"); } catch (e) {}
-  var card = el.querySelector(".memorial-card");
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () {
-      if (card) void card.offsetWidth;
-      el.classList.add("is-in");
-    });
-  });
-  var leaving = false;
-  function removeNow() {
-    if (el.isConnected) el.remove();
-    finished();
-  }
-  function leave() {
-    if (leaving || !el.isConnected) return;
-    leaving = true;
-    el.setAttribute("data-done", "1");
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        void el.offsetWidth;
-        el.classList.add("is-leaving");
-        var removed = false;
-        function end(event) {
-          if (event && event.target !== el) return;
-          if (event && event.propertyName && event.propertyName !== "opacity") return;
-          if (removed) return;
-          removed = true;
-          removeNow();
-        }
-        el.addEventListener("transitionend", end);
-        setTimeout(end, 1400);
-      });
-    });
-  }
-  el.addEventListener("click", leave);
-  setTimeout(leave, 2000);
-})();
-</script>
+
 
 <header class="bar">
   <div class="brand"><a class="home-btn" href="index.html"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><strong>פוקוס תפילה</strong></div>
@@ -185,8 +80,8 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   <a class="shortcut-btn shortcut-end" data-shortcut="end" href="#" aria-label="🔔 כבה פוקוס תפילה">🔔 כבה פוקוס תפילה</a>
 </div>
 </main>
-<script src="shortcuts.js?v=27"></script>
-<script src="controls.js?v=27"></script>
-<script src="credit.js?v=27"></script>
+<script src="shortcuts.js?v=28"></script>
+<script src="controls.js?v=28"></script>
+<script src="credit.js?v=28"></script>
 </body>
 </html>

@@ -21,7 +21,7 @@ function check(name, ok, detail) {
 mkdirSync("/opt/cursor/artifacts", { recursive: true });
 const browser = await webkit.launch();
 
-async function open(reduced, viewport = { width: 390, height: 844 }) {
+async function open(reduced, viewport = { width: 390, height: 844 }, path = "/tefila/index.html") {
   const context = await browser.newContext({
     viewport,
     deviceScaleFactor: 2,
@@ -32,7 +32,7 @@ async function open(reduced, viewport = { width: 390, height: 844 }) {
   });
   const page = await context.newPage();
   await page.addInitScript(() => localStorage.setItem("tefila-theme", "dark"));
-  await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
+  await page.goto(base + path, { waitUntil: "domcontentloaded" });
   return { context, page };
 }
 
@@ -187,6 +187,30 @@ async function fits(width, height) {
 await fits(375, 667);
 await fits(390, 844);
 await fits(430, 932);
+
+for (const path of ["/watch/", "/tefila/shortcuts.html", "/tefila/shacharit.html", "/tefila/zmanim.html", "/brachot/asher-yatzar.html"]) {
+  const other = await open(false, { width: 390, height: 844 }, path);
+  check(path + " has no splash", await other.page.locator("#memorial-splash").count() === 0);
+  await other.context.close();
+}
+
+const watch = await open(false, { width: 390, height: 844 }, "/watch/");
+await watch.page.screenshot({ path: "/opt/cursor/artifacts/watch-iphone.png", fullPage: true });
+const asher = watch.page.locator("[data-icloud=asher]");
+check("asher download is live", (await asher.getAttribute("href")) === "https://www.icloud.com/shortcuts/0e5a4734dbba4cfcb565a45b1dd86a24" && (await asher.innerText()).trim() === "הורד קיצור");
+const borei = watch.page.locator("[data-icloud=borei]");
+check("borei download is live", (await borei.getAttribute("href")) === "https://www.icloud.com/shortcuts/873203a37c8a49ee8908fda4e5dea9d6" && (await borei.innerText()).trim() === "הורד קיצור");
+for (const key of ["meein", "zmanim", "menu"]) {
+  const card = watch.page.locator(`[data-icloud=${key}]`);
+  check(key + " download is still pending", (await card.getAttribute("href")) === null && (await card.getAttribute("aria-disabled")) === "true" && (await card.innerText()).trim() === "קישור ההורדה יתווסף בקרוב");
+}
+const visible = await watch.page.locator("main").evaluate((el) => {
+  const copy = el.cloneNode(true);
+  copy.querySelectorAll("details").forEach((node) => node.remove());
+  return copy.innerText;
+});
+check("watch cards show no English letters", !/[A-Za-z]/.test(visible) && visible.includes("אשר יצר") && visible.includes("זמני היום"), visible.slice(0, 80));
+await watch.context.close();
 
 await browser.close();
 const failed = checks.filter((item) => !item.ok);
