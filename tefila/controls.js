@@ -215,7 +215,7 @@
     scrollPanel.id = "scroll-panel";
     scrollPanel.className = "scroll-panel";
     scrollPanel.hidden = true;
-    scrollPanel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">איטי</span><input type="range" id="scroll-speed" min="0" max="100" step="1" dir="rtl" aria-label="מהירות גלילה"><span class="font-mark font-mark-lg" aria-hidden="true">מהיר</span><button type="button" id="scroll-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions"><button type="button" id="scroll-slower" aria-label="לאט יותר">−</button><button type="button" id="scroll-play" aria-label="המשך">▶</button><button type="button" id="scroll-faster" aria-label="מהר יותר">+</button></div><p class="font-value" id="scroll-value"></p><p class="scroll-hint" id="scroll-wake-hint" hidden>אם המסך נכבה, בטלו את הנעילה האוטומטית.</p>';
+    scrollPanel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">איטי</span><input type="range" id="scroll-speed" min="0" max="100" step="1" dir="rtl" aria-label="מהירות גלילה"><span class="font-mark font-mark-lg" aria-hidden="true">מהיר</span><button type="button" id="scroll-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions"><button type="button" id="scroll-slower" aria-label="לאט יותר">−</button><button type="button" id="scroll-play" aria-label="המשך">▶</button><button type="button" id="scroll-faster" aria-label="מהר יותר">+</button></div><p class="font-value" id="scroll-value"></p><label class="scroll-keep"><input type="checkbox" id="scroll-keep"><span class="scroll-keep-box" aria-hidden="true"></span><span class="scroll-keep-text">המשך גלילה גם בזמן גלילה ידנית</span></label><p class="scroll-hint" id="scroll-wake-hint" hidden>אם המסך נכבה, בטלו את הנעילה האוטומטית.</p>';
     var scrollFloat = document.createElement("button");
     scrollFloat.type = "button";
     scrollFloat.id = "scroll-float";
@@ -239,12 +239,20 @@
     var speedLabel = scrollPanel.querySelector("#scroll-value");
     var playBtn = scrollPanel.querySelector("#scroll-play");
     var wakeHint = scrollPanel.querySelector("#scroll-wake-hint");
+    var keepInput = scrollPanel.querySelector("#scroll-keep");
+    var keepKey = "tefila-scroll-continue";
+    var keepGoing = false;
+    try { keepGoing = localStorage.getItem(keepKey) === "1"; } catch (e) {}
+    keepInput.checked = keepGoing;
     var playing = false;
     var started = false;
     var acc = 0;
     var lastTick = 0;
     var rafId = 0;
     var wakeSentinel = null;
+    var fingers = 0;
+    var coastUntil = 0;
+    var ownScrollAt = 0;
     var paceCache = { fs: 0, width: 0, value: 8 };
     function wordsPerLine() {
       var fs = read();
@@ -320,8 +328,25 @@
         wakeHint.hidden = false;
       });
     }
+    function handoff() {
+      return keepGoing && (fingers > 0 || nowMs() < coastUntil);
+    }
+    function nowMs() {
+      return window.performance ? performance.now() : Date.now();
+    }
+    function noteUserScroll() {
+      acc = 0;
+      lastTick = 0;
+      coastUntil = nowMs() + 160;
+    }
     function tick(now) {
       if (!playing) return;
+      if (handoff()) {
+        acc = 0;
+        lastTick = 0;
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
       if (!lastTick) lastTick = now;
       var dt = Math.min(0.05, (now - lastTick) / 1000);
       lastTick = now;
@@ -330,6 +355,7 @@
       if (acc >= 0.2) {
         var before = window.scrollY;
         root.style.scrollBehavior = "auto";
+        ownScrollAt = nowMs();
         window.scrollTo(0, before + acc);
         acc -= window.scrollY - before;
       }
@@ -416,6 +442,11 @@
     }
     scrollPanel.querySelector("#scroll-slower").addEventListener("click", function () { stepWpm(-1); });
     scrollPanel.querySelector("#scroll-faster").addEventListener("click", function () { stepWpm(1); });
+    keepInput.addEventListener("change", function () {
+      keepGoing = keepInput.checked;
+      if (!keepGoing) { fingers = 0; coastUntil = 0; }
+      try { localStorage.setItem(keepKey, keepGoing ? "1" : "0"); } catch (e) {}
+    });
     speedInput.addEventListener("input", function () { setWpm(fromCurve(parseInt(speedInput.value, 10), speedMin, speedMax)); });
     window.addEventListener("resize", function () { paceCache.width = 0; });
     document.addEventListener("pointerdown", function (event) {
@@ -426,13 +457,32 @@
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && !scrollPanel.hidden) setScrollOpen(false);
     });
-    function manualPause(event) {
-      if (!playing) return;
-      if (event.target.closest && event.target.closest("header.bar, #scroll-panel, #scroll-float, #scroll-pace, #font-panel")) return;
-      pauseScroll();
+    function manualTarget(event) {
+      return event.target && event.target.closest && event.target.closest("header.bar, #scroll-panel, #scroll-float, #scroll-pace, #font-panel");
     }
-    document.addEventListener("touchstart", manualPause, { passive: true });
-    document.addEventListener("wheel", manualPause, { passive: true });
+    document.addEventListener("touchstart", function (event) {
+      if (!playing || manualTarget(event)) return;
+      if (!keepGoing) { pauseScroll(); return; }
+      fingers += 1;
+      acc = 0;
+      lastTick = 0;
+    }, { passive: true });
+    function releaseFinger() {
+      if (fingers > 0) fingers -= 1;
+      if (fingers === 0 && keepGoing && playing) noteUserScroll();
+    }
+    document.addEventListener("touchend", releaseFinger, { passive: true });
+    document.addEventListener("touchcancel", releaseFinger, { passive: true });
+    document.addEventListener("wheel", function (event) {
+      if (!playing || manualTarget(event)) return;
+      if (!keepGoing) { pauseScroll(); return; }
+      noteUserScroll();
+    }, { passive: true });
+    window.addEventListener("scroll", function () {
+      if (!keepGoing || !playing || fingers > 0) return;
+      if (nowMs() - ownScrollAt < 50) return;
+      noteUserScroll();
+    }, { passive: true });
     document.addEventListener("visibilitychange", function () {
       if (document.visibilityState === "visible" && playing) acquireWake();
     });

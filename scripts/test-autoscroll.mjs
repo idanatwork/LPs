@@ -19,6 +19,7 @@ const context = await browser.newContext({
   userAgent: iphone,
 });
 const page = await context.newPage();
+await page.addInitScript(() => sessionStorage.setItem("tefila-splash", "1"));
 await page.goto(base + "/tefila/shacharit.html", { waitUntil: "domcontentloaded" });
 await page.evaluate(() => {
   localStorage.removeItem("tefila-scroll-lpm:shacharit");
@@ -206,6 +207,60 @@ const fastestPace = await page.evaluate((moved) => {
   return (moved / lh) * (words / lines) * 60;
 }, fastestPx);
 check("fastest setting at small text is genuinely fast", fastestPace > 350, fastestPace.toFixed(0) + " wpm, " + fastestPx.toFixed(0) + "px");
+
+await page.evaluate(() => document.body.dispatchEvent(new Event("touchstart", { bubbles: true })));
+await openSpeed();
+check("continue option starts unchecked", await page.locator("#scroll-keep").isChecked() === false);
+const keepLabel = (await page.locator(".scroll-keep-text").innerText()).trim();
+const panelText = await page.locator("#scroll-panel").innerText();
+check("continue option is Hebrew", keepLabel === "המשך גלילה גם בזמן גלילה ידנית" && !/[A-Za-z]/.test(panelText), keepLabel);
+const keepSize = await page.evaluate(() => {
+  const panel = document.querySelector("#scroll-panel");
+  const row = panel.querySelector(".font-panel-row");
+  const keep = panel.querySelector(".scroll-keep");
+  return {
+    keepH: keep.getBoundingClientRect().height,
+    keepW: Math.round(keep.getBoundingClientRect().width),
+    rowW: Math.round(row.getBoundingClientRect().width),
+    panelW: Math.round(panel.getBoundingClientRect().width),
+  };
+});
+check("continue option spans the panel and is easy to tap", keepSize.keepH >= 44 && keepSize.keepW >= keepSize.rowW - 2 && keepSize.panelW > 300, JSON.stringify(keepSize));
+await page.locator("#scroll-keep").evaluate((el) => {
+  el.checked = true;
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+});
+await setSpeed(80);
+await page.locator("#scroll-play").evaluate((el) => el.click());
+await page.waitForTimeout(300);
+const marked = await scrollY();
+await page.evaluate((y) => window.scrollTo(0, Math.max(0, y - 800)), marked);
+await page.waitForTimeout(180);
+const held = await scrollY();
+await page.waitForTimeout(600);
+const continued = await scrollY();
+check("manual scroll does not stop auto-scroll", (await page.locator("#scroll-float").getAttribute("aria-label")) === "עצור" && continued > held + 1 && continued < marked - 300, "from " + Math.round(held) + " to " + Math.round(continued) + " was " + Math.round(marked));
+await page.evaluate(() => document.body.dispatchEvent(new Event("touchstart", { bubbles: true })));
+const dragged = await measure(250);
+await page.evaluate(() => document.body.dispatchEvent(new Event("touchend", { bubbles: true })));
+check("a finger hold does not fight or stop", dragged < 6 && (await page.locator("#scroll-float").getAttribute("aria-label")) === "עצור", dragged.toFixed(1));
+const lifted = await measure(1000);
+check("auto-scroll resumes after the finger lifts", lifted > 2, lifted.toFixed(1));
+await openSpeed();
+await page.locator("#scroll-keep").evaluate((el) => {
+  el.checked = false;
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+});
+const storedKeep = await page.evaluate(() => localStorage.getItem("tefila-scroll-continue"));
+await page.locator("#scroll-panel-close").evaluate((el) => el.click());
+await page.evaluate(() => document.body.dispatchEvent(new Event("touchstart", { bubbles: true })));
+const turnedOff = await measure(350);
+check("unchecked touch still pauses", turnedOff < 4 && (await page.locator("#scroll-float").getAttribute("aria-label")) === "המשך" && storedKeep === "0", turnedOff.toFixed(1));
+await page.reload({ waitUntil: "domcontentloaded" });
+await page.evaluate(() => localStorage.setItem("tefila-scroll-continue", "1"));
+await page.reload({ waitUntil: "domcontentloaded" });
+await page.locator("#scroll-toggle").evaluate((el) => el.click());
+check("continue choice is remembered", await page.locator("#scroll-keep").isChecked());
 
 await browser.close();
 const failed = checks.filter((item) => !item.ok);
