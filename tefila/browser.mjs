@@ -1,5 +1,5 @@
-import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=32";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=32";
+import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=33";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=33";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
