@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="30">
+<meta name="tefila-build" content="31">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -12,12 +12,12 @@
 <meta name="apple-mobile-web-app-title" content="סידור">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" id="theme-color" content="#fdfbf6">
-<link rel="manifest" href="index.webmanifest">
+<link rel="manifest" href="index.webmanifest?v=31">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=30">
-<link rel="stylesheet" href="accent.css?v=30">
+<link rel="stylesheet" href="tefila.css?v=31">
+<link rel="stylesheet" href="accent.css?v=31">
 <title>סידור</title>
 <script type="importmap">
 {
@@ -49,7 +49,15 @@
 
 })();
 </script>
-<script src="boot.js?v=30"></script>
+<script src="boot.js?v=31"></script>
+<script>
+window.tefilaInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", function (event) {
+  event.preventDefault();
+  window.tefilaInstallPrompt = event;
+  if (window.tefilaOnInstallPrompt) window.tefilaOnInstallPrompt();
+});
+</script>
 <style>
 .memorial-splash{position:fixed;inset:0;z-index:200;background:#03021f;color:#fff;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
 .memorial-frame{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);left:16px;border:1px solid #d4b06a;pointer-events:none}
@@ -169,6 +177,14 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   </div>
 </header>
 <main class="index-main">
+<aside id="install-banner" class="install-banner" hidden>
+  <p class="install-banner-title">התקנה כאפליקציה</p>
+  <p class="install-banner-text">הסידור יכול להיפתח כמו אפליקציה, בלי שורת הכתובת.</p>
+  <div class="install-banner-actions">
+    <button type="button" id="install-go" class="shortcut-btn shortcut-start">התקן כאפליקציה</button>
+    <button type="button" id="install-later">לא עכשיו</button>
+  </div>
+</aside>
 <div class="today" id="today-banner" hidden>
   <p class="date"></p>
   <p class="status"></p>
@@ -211,14 +227,28 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   <a class="shortcut-btn shortcut-end" data-shortcut="end" href="#" aria-label="🔔 כבה פוקוס תפילה">🔔 כבה פוקוס תפילה</a>
 </div>
 </section>
+<section id="install-hub" hidden>
+<h2 class="hub-h">התקנה</h2>
+<nav class="cards small" aria-label="התקנה">
+  <button type="button" id="install-menu" class="card-btn">התקנה כאפליקציה</button>
+</nav>
+</section>
 <h2 class="hub-h">שעון</h2>
 <nav class="cards small" aria-label="שעון">
   <a href="../watch/">בשעון</a>
 </nav>
 </main>
-<script src="shortcuts.js?v=30"></script>
-<script src="controls.js?v=30"></script>
-<script src="credit.js?v=30"></script>
-<script type="module" src="hub.mjs?v=30"></script>
+<dialog id="install-guide" class="install-guide">
+  <p class="install-banner-title" id="install-guide-title">הוספה למסך הבית</p>
+  <ol id="install-guide-steps"></ol>
+  <button type="button" id="install-copy" class="shortcut-btn shortcut-end" hidden>העתקת הקישור</button>
+  <p id="install-copied" class="install-copied" hidden>הקישור הועתק</p>
+  <button type="button" id="install-close" class="install-later">סגירה</button>
+</dialog>
+<script src="install.js?v=31"></script>
+<script src="shortcuts.js?v=31"></script>
+<script src="controls.js?v=31"></script>
+<script src="credit.js?v=31"></script>
+<script type="module" src="hub.mjs?v=31"></script>
 </body>
 </html>

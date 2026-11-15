@@ -503,23 +503,65 @@ details.sec details.add { margin-right: 0; }
   color: var(--accent);
 }
 .cards { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
-.cards a {
+.cards a, .cards button.card-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  width: 100%;
   text-decoration: none;
+  text-align: right;
+  font: inherit;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 18px;
   padding: 20px 18px;
   min-height: 76px;
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.2;
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 7%, transparent);
 }
-.cards.small a { font-size: 26px; min-height: 64px; padding: 16px 18px; }
+.cards.small a, .cards.small button.card-btn { font-size: 26px; min-height: 64px; padding: 16px 18px; }
+.install-banner {
+  margin: 0 0 16px;
+  padding: 14px 16px 16px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  color: var(--fg);
+}
+.install-banner[hidden], #install-hub[hidden] { display: none !important; }
+.install-banner-title { margin: 0 0 6px; font-size: 18px; font-weight: 700; color: var(--accent); }
+.install-banner-text { margin: 0; font-size: 16px; line-height: 1.45; }
+.install-banner-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.install-banner-actions .shortcut-btn { flex: 1 1 10rem; min-height: 44px; }
+.install-later {
+  flex: 1 1 8rem;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+}
+.install-guide {
+  width: min(26rem, calc(100vw - 32px));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 20px;
+  padding: 18px 16px 16px;
+  background: var(--bg);
+  color: var(--fg);
+}
+.install-guide::backdrop { background: color-mix(in srgb, #000 45%, transparent); }
+.install-guide ol { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.install-guide li { display: flex; align-items: center; gap: 12px; font-size: 17px; line-height: 1.4; }
+.install-guide li svg { flex: none; color: var(--accent); }
+.install-guide .install-later, .install-guide .shortcut-btn { width: 100%; margin-top: 8px; }
+.install-copied { margin: 8px 0 0; text-align: center; color: var(--accent); font-weight: 700; }
 .cards a.now {
   background: var(--accent);
   color: var(--bg);
