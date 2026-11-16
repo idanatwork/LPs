@@ -6,7 +6,7 @@
   }
   document.documentElement.setAttribute("data-theme", theme);
   var meta = document.getElementById("theme-color");
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#111111" : "#fdfbf6");
+  if (meta) meta.setAttribute("content", "#0A1633");
   try {
     var s = localStorage.getItem("tefila-font");
     if (s) document.documentElement.style.setProperty("--fs", Math.max(16, Math.min(64, parseInt(s, 10))) + "px");

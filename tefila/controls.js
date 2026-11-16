@@ -14,7 +14,7 @@
       var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
       var meta = document.getElementById("theme-color");
-      if (meta) meta.setAttribute("content", next === "dark" ? "#111111" : "#fdfbf6");
+      if (meta) meta.setAttribute("content", "#0A1633");
       btn.setAttribute("aria-label", next === "dark" ? "מצב בהיר" : "מצב כהה");
       btn.setAttribute("aria-pressed", next === "dark" ? "true" : "false");
       try { localStorage.setItem("tefila-theme", next); } catch (e) {}
