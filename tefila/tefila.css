@@ -1,11 +1,11 @@
 :root {
-  --bg: #fdfbf6;
-  --fg: #1c1915;
-  --muted: #5c5348;
-  --accent: #1e3a8a;
+  --bg: #0A1633;
+  --fg: #f6f0e4;
+  --muted: #d4c6ae;
+  --accent: #e6c27a;
   --fs: 22px;
   --header: calc(env(safe-area-inset-top) + 120px);
-  color-scheme: light;
+  color-scheme: dark;
 }
 html[data-theme="light"] {
   --bg: #fdfbf6;
@@ -24,15 +24,6 @@ html[data-theme="dark"] {
 html[data-theme="light"] body[data-service="shacharit"] { --accent: #1e3a8a; }
 html[data-theme="light"] body[data-service="mincha"] { --accent: #9a3412; }
 html[data-theme="light"] body[data-service="arvit"] { --accent: #312e81; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg: #111111;
-    --fg: #f4efe6;
-    --muted: #c4b8a8;
-    --accent: #e9c46a;
-    color-scheme: dark;
-  }
-}
 * { box-sizing: border-box; }
 html {
   scroll-behavior: smooth;
@@ -298,6 +289,7 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
   padding: 0;
 }
 #theme-toggle svg { display: block; }
+html:not([data-theme]) #theme-toggle .sun,
 html[data-theme="dark"] #theme-toggle .moon,
 html[data-theme="light"] #theme-toggle .sun { display: none; }
 

@@ -4,14 +4,15 @@
   var btn = document.getElementById("theme-toggle");
   function label(theme) {
     if (!btn) return;
-    var dark = theme === "dark";
-    btn.setAttribute("aria-label", dark ? "מצב בהיר" : "מצב כהה");
-    btn.setAttribute("aria-pressed", dark ? "true" : "false");
+    var darkish = theme !== "light";
+    btn.setAttribute("aria-label", darkish ? "מצב בהיר" : "מצב כהה");
+    btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   }
   label(document.documentElement.getAttribute("data-theme"));
   if (btn) {
     btn.addEventListener("click", function () {
-      var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      var current = document.documentElement.getAttribute("data-theme");
+      var next = current === "light" ? "dark" : "light";
       document.documentElement.setAttribute("data-theme", next);
       var meta = document.getElementById("theme-color");
       if (meta) meta.setAttribute("content", "#0A1633");
@@ -694,9 +695,34 @@
       ensureToc();
       applyMode(readMode(), false);
     }
-    applyAccent(readAccent(), false);
+    var currentAccent = document.documentElement.getAttribute("data-accent");
+    if (ACCENTS.indexOf(currentAccent) !== -1) applyAccent(currentAccent, false);
+    document.querySelectorAll(".accent-menu").forEach(function (menu) {
+      if (menu.querySelector("[data-theme-default]")) return;
+      var reset = document.createElement("button");
+      reset.type = "button";
+      reset.className = "accent-default";
+      reset.setAttribute("data-theme-default", "");
+      reset.textContent = "חזרה לברירת מחדל";
+      menu.appendChild(reset);
+    });
     mountTocOverlay();
     document.addEventListener("click", function (event) {
+      var reset = event.target.closest && event.target.closest("[data-theme-default]");
+      if (reset) {
+        try {
+          localStorage.removeItem("tefila-theme");
+          localStorage.removeItem("tefila-accent");
+        } catch (e) {}
+        document.documentElement.removeAttribute("data-theme");
+        document.documentElement.removeAttribute("data-accent");
+        document.querySelectorAll("[data-set-accent]").forEach(function (button) {
+          button.setAttribute("aria-pressed", "false");
+        });
+        label(null);
+        closeAccentMenus();
+        return;
+      }
       var minyanButton = event.target.closest && event.target.closest("[data-set-minyan]");
       if (minyanButton) {
         applyMode(minyanButton.getAttribute("data-set-minyan"), true);
@@ -726,7 +752,19 @@
     });
     window.addEventListener("storage", function (event) {
       if (event.key === KEY) applyMode(event.newValue === "minyan" ? "minyan" : "yachid", false);
-      if (event.key === "tefila-accent") applyAccent(event.newValue, false);
+      if (event.key === "tefila-theme") {
+        if (event.newValue === "light" || event.newValue === "dark") {
+          document.documentElement.setAttribute("data-theme", event.newValue);
+          label(event.newValue);
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+          label(null);
+        }
+      }
+      if (event.key === "tefila-accent") {
+        if (ACCENTS.indexOf(event.newValue) !== -1) applyAccent(event.newValue, false);
+        else document.documentElement.removeAttribute("data-accent");
+      }
     });
   }
 

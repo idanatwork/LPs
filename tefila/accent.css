@@ -162,6 +162,35 @@ body.siddur-frame main { position: relative; }
   border: 2px solid transparent;
   padding: 0;
 }
+html:not([data-theme])[data-accent="gold"],
+html:not([data-theme])[data-accent="gold"] body { --accent: #e9c46a !important; }
+html:not([data-theme])[data-accent="blue"],
+html:not([data-theme])[data-accent="blue"] body { --accent: #93c5fd !important; }
+html:not([data-theme])[data-accent="olive"],
+html:not([data-theme])[data-accent="olive"] body { --accent: #c6d48a !important; }
+html:not([data-theme])[data-accent="bordeaux"],
+html:not([data-theme])[data-accent="bordeaux"] body { --accent: #f0a3b8 !important; }
+html:not([data-theme])[data-accent="purple"],
+html:not([data-theme])[data-accent="purple"] body { --accent: #d8b4fe !important; }
+html:not([data-theme])[data-accent="turquoise"],
+html:not([data-theme])[data-accent="turquoise"] body { --accent: #5eead4 !important; }
+.accent-menu button.accent-default {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 44px;
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
 .accent-menu button[data-set-accent="gold"] { background: #e9c46a; }
 .accent-menu button[data-set-accent="blue"] { background: #1e3a8a; }
 .accent-menu button[data-set-accent="olive"] { background: #6d7c32; }
