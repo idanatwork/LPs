@@ -6,20 +6,21 @@
 </defs>
 <rect width="160" height="160" fill="url(#bg)"/>
 <circle cx="80" cy="84" r="86" fill="url(#gl)"/>
-<g transform="translate(12.8,14.06) scale(0.84)">
-<circle cx="80" cy="70" r="24" fill="#FFE08A" opacity="0.9"/>
-<g stroke="#FFD66B" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.75"><path d="M51.8 59.7L40.5 55.6M57 50.7L47.8 43M65 44L59 33.6M74.8 40.5L72.7 28.6M85.2 40.5L87.3 28.6M95 44L101 33.6M103 50.7L112.2 43M108.2 59.7L119.5 55.6"/></g>
+<g transform="translate(12.8,14.5) scale(0.84)">
+<circle cx="80" cy="32" r="30" fill="url(#gl)"/>
+<path d="M80 17L93 40H67ZM80 47L67 24H93Z" fill="none" stroke="#FFE9A8" stroke-width="3.2" stroke-linejoin="miter"/>
 <rect x="22" y="70" width="116" height="42" fill="url(#gd)"/>
-<path d="M22 64h7v6h-7zM50 64h7v6h-7zM64 64h7v6h-7zM78 64h7v6h-7zM92 64h7v6h-7zM106 64h7v6h-7zM131 64h7v6h-7z" fill="url(#gd)"/>
-<rect x="112" y="52" width="18" height="22" fill="url(#gd)"/>
-<path d="M112 46h5v6h-5zM120 46h4v6h-4zM127 46h3v6h-3z" fill="url(#gd)"/>
-<rect x="118" y="58" width="5" height="9" rx="2.5" fill="#0E1E45"/>
-<rect x="31" y="40" width="12" height="36" fill="url(#gd)"/>
-<rect x="28" y="38" width="18" height="5" fill="#E3B94F"/>
-<polygon points="37,18 32,38 42,38" fill="#FFE9A8"/>
-<circle cx="37" cy="17" r="1.8" fill="#FFE9A8"/>
-<rect x="35" y="50" width="4" height="9" rx="2" fill="#0E1E45"/>
-<path d="M68 112L68 90A12 12 0 0 1 92 90L92 112Z" fill="#FFF0C2" stroke="#9A6F2A" stroke-width="2"/>
+<path d="M50 64h7v6h-7zM103 64h7v6h-7z" fill="url(#gd)"/>
+<rect x="20" y="56" width="26" height="18" fill="url(#gd)"/>
+<path d="M20 50h6v6h-6zM30 50h6v6h-6zM40 50h6v6h-6z" fill="url(#gd)"/>
+<rect x="114" y="56" width="26" height="18" fill="url(#gd)"/>
+<path d="M114 50h6v6h-6zM124 50h6v6h-6zM134 50h6v6h-6z" fill="url(#gd)"/>
+<rect x="62" y="56" width="36" height="18" fill="url(#gd)"/>
+<path d="M62 50h6v6h-6zM72 50h6v6h-6zM82 50h6v6h-6zM92 50h6v6h-6z" fill="url(#gd)"/>
+<rect x="31" y="60" width="3" height="9" rx="1.5" fill="#0E1E45"/>
+<rect x="126" y="60" width="3" height="9" rx="1.5" fill="#0E1E45"/>
+<path d="M22 84H138M22 96H138" stroke="#B4853A" stroke-width="1" opacity="0.5"/>
+<path d="M70 112V88Q70 84 74 84H86Q90 84 90 88V112Z" fill="#FFF0C2" stroke="#9A6F2A" stroke-width="2"/>
 <ellipse cx="80" cy="124" rx="84" ry="30" fill="url(#gl)"/>
 <path d="M16 106C36 96 60 96 80 108C100 96 124 96 144 106L144 134C124 126 100 126 80 140C60 126 36 126 16 134Z" fill="url(#gd)"/>
 <path d="M80 112C62 103 40 103 24 110L24 128C40 123 62 123 80 134Z" fill="#FFF6DC"/>
