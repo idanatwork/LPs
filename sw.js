@@ -1,4 +1,4 @@
-var CACHE = "tefila-pages-36";
+var CACHE = "tefila-pages-37";
 
 self.addEventListener("message", function (event) {
   if (event.data && event.data.type === "tefila-ready") self.skipWaiting();

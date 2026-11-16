@@ -209,8 +209,8 @@
     scrollToggle.setAttribute("aria-label", "גלילה אוטומטית");
     scrollToggle.setAttribute("aria-pressed", "false");
     scrollToggle.setAttribute("aria-controls", "scroll-panel");
-    var playIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
-    var pauseIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+    var playIcon = '<svg class="play-glyph" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8.4 5v14l11-7z"/></svg>';
+    var pauseIcon = '<svg class="pause-glyph" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
     scrollToggle.innerHTML = playIcon;
     var scrollPanel = document.createElement("div");
     scrollPanel.id = "scroll-panel";
