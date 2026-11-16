@@ -9,13 +9,21 @@
     btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   }
   label(document.documentElement.getAttribute("data-theme"));
+  function themeChrome(theme) {
+    if (theme === "light") return "#fdfbf6";
+    if (theme === "dark") return "#111111";
+    return "#E4D0B0";
+  }
+  function paintThemeColor(theme) {
+    var meta = document.getElementById("theme-color");
+    if (meta) meta.setAttribute("content", themeChrome(theme));
+  }
   if (btn) {
     btn.addEventListener("click", function () {
       var current = document.documentElement.getAttribute("data-theme");
       var next = current === "light" ? "dark" : "light";
       document.documentElement.setAttribute("data-theme", next);
-      var meta = document.getElementById("theme-color");
-      if (meta) meta.setAttribute("content", "#0A1633");
+      paintThemeColor(next);
       btn.setAttribute("aria-label", next === "dark" ? "מצב בהיר" : "מצב כהה");
       btn.setAttribute("aria-pressed", next === "dark" ? "true" : "false");
       try { localStorage.setItem("tefila-theme", next); } catch (e) {}
@@ -689,7 +697,28 @@
     });
   }
 
+  function ensureReadingPanel() {
+    if (document.querySelector(".stone-read")) return;
+    var main = document.querySelector("main");
+    if (!main) return;
+    var start = document.getElementById("toc") || main.querySelector(".sep");
+    if (!start) return;
+    var panel = document.createElement("div");
+    panel.className = "stone-read";
+    var nodes = [];
+    var n = start.nextElementSibling;
+    while (n) {
+      if (n.classList && n.classList.contains("site-credit")) break;
+      nodes.push(n);
+      n = n.nextElementSibling;
+    }
+    if (!nodes.length) return;
+    nodes.forEach(function (el) { panel.appendChild(el); });
+    start.after(panel);
+  }
+
   function boot() {
+    ensureReadingPanel();
     if (document.getElementById("today-banner") || document.getElementById("toc") || document.querySelector(".mode-switch")) {
       ensureModeStatus();
       ensureToc();
@@ -719,6 +748,7 @@
         document.querySelectorAll("[data-set-accent]").forEach(function (button) {
           button.setAttribute("aria-pressed", "false");
         });
+        paintThemeColor(null);
         label(null);
         closeAccentMenus();
         return;
@@ -756,9 +786,11 @@
         if (event.newValue === "light" || event.newValue === "dark") {
           document.documentElement.setAttribute("data-theme", event.newValue);
           label(event.newValue);
+          paintThemeColor(event.newValue);
         } else {
           document.documentElement.removeAttribute("data-theme");
           label(null);
+          paintThemeColor(null);
         }
       }
       if (event.key === "tefila-accent") {

@@ -4,7 +4,12 @@
   if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
   else document.documentElement.removeAttribute("data-theme");
   var meta = document.getElementById("theme-color");
-  if (meta) meta.setAttribute("content", "#0A1633");
+  if (meta) {
+    var chrome = "#E4D0B0";
+    if (theme === "light") chrome = "#fdfbf6";
+    else if (theme === "dark") chrome = "#111111";
+    meta.setAttribute("content", chrome);
+  }
   try {
     var s = localStorage.getItem("tefila-font");
     if (s) document.documentElement.style.setProperty("--fs", Math.max(16, Math.min(64, parseInt(s, 10))) + "px");

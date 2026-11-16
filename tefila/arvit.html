@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="37">
+<meta name="tefila-build" content="38">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -12,13 +12,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="סידור עד-י-אל">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" id="theme-color" content="#0A1633">
+<meta name="theme-color" id="theme-color" content="#E4D0B0">
 <link rel="manifest" href="arvit.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=37">
-<link rel="stylesheet" href="accent.css?v=37">
+<link rel="stylesheet" href="tefila.css?v=38">
+<link rel="stylesheet" href="accent.css?v=38">
 <title>ערבית</title>
 <script type="importmap">
 {
@@ -34,7 +34,7 @@
   if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
   else document.documentElement.removeAttribute("data-theme");
   var meta = document.getElementById("theme-color");
-  if (meta) meta.setAttribute("content", "#0A1633");
+  if (meta) meta.setAttribute("content", theme === "light" ? "#fdfbf6" : theme === "dark" ? "#111111" : "#E4D0B0");
   var mode = "yachid";
   try { if (localStorage.getItem("tefila-minyan") === "minyan") mode = "minyan"; } catch (e) {}
   document.documentElement.setAttribute("data-minyan", mode);
@@ -50,7 +50,7 @@
   } catch (e) {}
 })();
 </script>
-<script src="boot.js?v=37"></script>
+<script src="boot.js?v=38"></script>
 
 </head>
 <body class="siddur-frame" data-service="arvit">
@@ -205,9 +205,9 @@
 <p class="note">הוראה — ההגהות נעשו לפי המקורות המקושרים, ולא מיוחס כאן פסק לרב חיים דרוקמן בלי מקור מפורש. סדר זה מיועד לימי חול; פרטי שבת, יום טוב, ראש חודש ותעניות דורשים את סדר היום המתאים.</p>
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="shortcuts.js?v=37"></script>
-<script src="controls.js?v=37"></script>
-<script src="credit.js?v=37"></script>
-<script type="module" src="browser.mjs?v=37"></script>
+<script src="shortcuts.js?v=38"></script>
+<script src="controls.js?v=38"></script>
+<script src="credit.js?v=38"></script>
+<script type="module" src="browser.mjs?v=38"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
 :root {
-  --bg: #0A1633;
-  --fg: #f6f0e4;
-  --muted: #d4c6ae;
-  --accent: #e6c27a;
+  --bg: #F7F2E6;
+  --fg: #33302B;
+  --muted: #4E493F;
+  --accent: #4A3C1C;
   --fs: 22px;
   --header: calc(env(safe-area-inset-top) + 120px);
-  color-scheme: dark;
+  color-scheme: light;
 }
 html[data-theme="light"] {
   --bg: #fdfbf6;
@@ -853,4 +853,92 @@ details.manual-build code {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Unset default: Kotel stone texture. Saved light, dark, and accent keep their own colors. */
+html:not([data-theme]) {
+  background-color: #E4D0B0;
+  background-image: url("stone-t2.webp?v=38");
+  background-repeat: repeat;
+  background-size: 560px auto;
+  background-attachment: fixed;
+  background-position: 0 0;
+}
+html:not([data-theme]) body {
+  background: transparent;
+}
+html:not([data-theme]) header.bar {
+  background-color: #E4D0B0;
+  background-image: url("stone-t2.webp?v=38");
+  background-repeat: repeat;
+  background-size: 560px auto;
+  background-attachment: fixed;
+  background-position: 0 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: rgba(74, 60, 28, 0.28);
+}
+html:not([data-theme]) .brand strong,
+html:not([data-theme]) .header-date,
+html:not([data-theme]) .kicker,
+html:not([data-theme]) .hub-h {
+  background: rgba(247, 242, 230, 0.92);
+  border-radius: 8px;
+}
+html:not([data-theme]) .brand strong {
+  padding: 2px 8px;
+  color: #33302B;
+}
+html:not([data-theme]) .header-date {
+  flex: 0 1 auto;
+  margin-inline: auto;
+  padding: 3px 8px;
+  color: #33302B;
+}
+html:not([data-theme]) .kicker,
+html:not([data-theme]) .hub-h {
+  display: inline-block;
+  padding: 2px 10px;
+  color: var(--accent);
+}
+html:not([data-theme]) .today,
+html:not([data-theme]) nav.toc,
+html:not([data-theme]) .stone-read,
+html:not([data-theme]) .mode-panel,
+html:not([data-theme]) .install-banner,
+html:not([data-theme]) .z-strip,
+html:not([data-theme]) .install-card,
+html:not([data-theme]) .cards a:not(.now),
+html:not([data-theme]) .cards button.card-btn,
+html:not([data-theme]) main > p.note,
+html:not([data-theme]) .site-credit {
+  background: rgba(247, 242, 230, 0.91);
+  background-image: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(62, 40, 14, 0.16);
+}
+html:not([data-theme]) .stone-read {
+  padding: 6px 12px 16px;
+  margin-top: 10px;
+}
+html:not([data-theme]) main > p.note,
+html:not([data-theme]) .site-credit {
+  padding: 10px 12px;
+}
+html:not([data-theme]) .site-credit {
+  color: #4E493F;
+  border-top: 0;
+}
+html:not([data-theme]) a.home-btn,
+html:not([data-theme]) .szs > button:not([aria-pressed="true"]),
+html:not([data-theme]) .accent-pop > button,
+html:not([data-theme]) .mode-switch button:not([aria-pressed="true"]) {
+  background: rgba(247, 242, 230, 0.88);
+  color: var(--accent);
+}
+html:not([data-theme]) a.home-btn:active,
+html:not([data-theme]) .szs > button:active,
+html:not([data-theme]) .mode-switch button:active {
+  background: var(--accent);
+  color: var(--bg);
 }

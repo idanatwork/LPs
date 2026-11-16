@@ -13,7 +13,7 @@ function walk(dir, out) {
     const path = join(dir, name);
     const stat = statSync(path);
     if (stat.isDirectory()) walk(path, out);
-    else if (/\.(html|mjs|js)$/.test(name) && !path.endsWith("bump-version.mjs")) out.push(path);
+    else if (/\.(html|mjs|js|css)$/.test(name) && !path.endsWith("bump-version.mjs")) out.push(path);
   }
   return out;
 }

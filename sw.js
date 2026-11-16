@@ -1,4 +1,9 @@
-var CACHE = "tefila-pages-37";
+var CACHE = "tefila-pages-38";
+var PRECACHE = ["tefila/stone-t2.webp?v=38"];
+
+self.addEventListener("install", function (event) {
+  event.waitUntil(caches.open(CACHE).then(function (cache) { return cache.addAll(PRECACHE); }));
+});
 
 self.addEventListener("message", function (event) {
   if (event.data && event.data.type === "tefila-ready") self.skipWaiting();
@@ -20,7 +25,7 @@ function cacheable(url, request) {
   var path = url.pathname;
   var dest = request.destination;
   return dest === "document" || dest === "script" || dest === "style" ||
-    /\.(html|js|mjs|css|webmanifest|svg|png)$/.test(path) ||
+    /\.(html|js|mjs|css|webmanifest|svg|png|webp)$/.test(path) ||
     path.endsWith("/vendor/hebcal-core.js");
 }
 
