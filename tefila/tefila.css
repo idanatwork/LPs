@@ -858,7 +858,7 @@ details.manual-build code {
 /* Unset default: Kotel stone texture. Saved light, dark, and accent keep their own colors. */
 html:not([data-theme]) {
   background-color: #E4D0B0;
-  background-image: url("stone-t2.webp?v=38");
+  background-image: url("stone-t2.webp?v=39");
   background-repeat: repeat;
   background-size: 560px auto;
   background-attachment: fixed;
@@ -869,7 +869,7 @@ html:not([data-theme]) body {
 }
 html:not([data-theme]) header.bar {
   background-color: #E4D0B0;
-  background-image: url("stone-t2.webp?v=38");
+  background-image: url("stone-t2.webp?v=39");
   background-repeat: repeat;
   background-size: 560px auto;
   background-attachment: fixed;

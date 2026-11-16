@@ -1,5 +1,5 @@
-var CACHE = "tefila-pages-38";
-var PRECACHE = ["tefila/stone-t2.webp?v=38"];
+var CACHE = "tefila-pages-39";
+var PRECACHE = ["tefila/stone-t2.webp?v=39"];
 
 self.addEventListener("install", function (event) {
   event.waitUntil(caches.open(CACHE).then(function (cache) { return cache.addAll(PRECACHE); }));

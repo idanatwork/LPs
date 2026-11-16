@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="38">
+<meta name="tefila-build" content="39">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -13,12 +13,12 @@
 <meta name="apple-mobile-web-app-title" content="סידור עד-י-אל">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" id="theme-color" content="#E4D0B0">
-<link rel="manifest" href="index.webmanifest?v=38">
+<link rel="manifest" href="index.webmanifest?v=39">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=38">
-<link rel="stylesheet" href="accent.css?v=38">
+<link rel="stylesheet" href="tefila.css?v=39">
+<link rel="stylesheet" href="accent.css?v=39">
 <title>סידור</title>
 <script type="importmap">
 {
@@ -46,7 +46,7 @@
 
 })();
 </script>
-<script src="boot.js?v=38"></script>
+<script src="boot.js?v=39"></script>
 <script>
 window.tefilaInstallPrompt = null;
 window.addEventListener("beforeinstallprompt", function (event) {
@@ -56,7 +56,7 @@ window.addEventListener("beforeinstallprompt", function (event) {
 });
 </script>
 <style>
-.memorial-splash{position:fixed;inset:0;z-index:200;background:#03021f;color:#fff;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
+.memorial-splash{position:fixed;inset:0;z-index:200;background-color:#E4D0B0;background-image:url("stone-t2.webp?v=39");background-repeat:repeat;background-size:560px auto;color:#33302B;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
 .memorial-frame{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);left:16px;border:1px solid #d4b06a;pointer-events:none}
 .memorial-frame::before{content:"";position:absolute;inset:6px;border:1px solid #d4b06a}
 .corner{position:absolute;width:38px;height:38px}
@@ -66,14 +66,15 @@ window.addEventListener("beforeinstallprompt", function (event) {
 .corner.br{bottom:-9px;right:-9px;transform:scale(-1)}
 .memorial-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;padding:calc(env(safe-area-inset-top) + 48px) clamp(46px,12vw,64px) calc(env(safe-area-inset-bottom) + 20px);opacity:0;will-change:opacity,transform,filter}
 .memorial-copy{width:100%;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
-.memorial-splash p{margin:0;color:#fff;font-weight:400}
+.memorial-panel{background:rgba(247,242,230,.91);border-radius:18px;padding:16px 14px 12px;box-shadow:0 8px 22px rgba(62,40,14,.16)}
+.memorial-splash p{margin:0;color:#33302B;font-weight:400}
 .memorial-splash .memorial-copy p{font-size:clamp(20px,5.2vw,22px);line-height:1.7;margin-bottom:8px}
-.memorial-splash p.memorial-kicker{font-weight:700;font-size:clamp(26px,7vw,30px);line-height:1.35;letter-spacing:.03em;margin:0 0 22px;color:#fff}
-.memorial-splash p.memorial-name{margin:0 0 26px;color:#d4a46a;font-weight:700;font-size:clamp(40px,10.6vw,46px);line-height:1.28;text-wrap:balance}
+.memorial-splash p.memorial-kicker{font-weight:700;font-size:clamp(26px,7vw,30px);line-height:1.35;letter-spacing:.03em;margin:0 0 22px;color:#4A3C1C}
+.memorial-splash p.memorial-name{margin:0 0 26px;color:#4A3C1C;font-weight:700;font-size:clamp(40px,10.6vw,46px);line-height:1.28;text-wrap:balance}
 .memorial-splash p.memorial-story{text-wrap:balance}
 .memorial-splash p.memorial-date{margin-top:6px}
 .memorial-foot{flex:none;display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,18px);width:100%;padding-bottom:10px}
-.memorial-splash p.memorial-tnc{margin:0;color:#fff;font-weight:700;font-size:clamp(26px,6.6vw,28px);letter-spacing:.08em;white-space:nowrap}
+.memorial-splash p.memorial-tnc{margin:0;color:#4A3C1C;font-weight:700;font-size:clamp(26px,6.6vw,28px);letter-spacing:.08em;white-space:nowrap;background:rgba(247,242,230,.92);border-radius:12px;padding:2px 12px}
 .memorial-candle{position:relative;width:clamp(48px,13.2vw,60px);height:clamp(112px,30vw,136px);flex:none}
 .memorial-candle.mirror{transform:scaleX(-1)}
 .memorial-glow{position:absolute;left:-8%;top:-2%;width:116%;height:48%;filter:blur(8px);opacity:.8;animation:memorial-flicker 1.8s ease-in-out infinite}
@@ -101,11 +102,13 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
 <div class="memorial-frame" aria-hidden="true"><svg class="corner tl" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg><svg class="corner tr" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg><svg class="corner bl" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg><svg class="corner br" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 54C8 20 20 8 54 8" fill="none" stroke="#d4b06a" stroke-width="1.7" stroke-linecap="round"/><path d="M16 54C16 26 26 16 54 16" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/><path d="M48 8c4 10-1 15-9 13" fill="none" stroke="#d4b06a" stroke-width="1.15" stroke-linecap="round"/></svg></div>
 <div class="memorial-card">
 <div class="memorial-copy">
+<div class="memorial-panel">
 <p class="memorial-kicker">לעילוי נשמת</p>
 <p class="memorial-name">עדי עדיאל טויטו הי״ד</p>
 <p>בת אילנה ויורם שיבל״ט</p>
 <p class="memorial-story">שנרצחה על קידוש השם בטבח שמחת תורה</p>
 <p class="memorial-date">כ״ב בתשרי תשפ״ד</p>
+</div>
 </div>
 <div class="memorial-foot">
 <span class="memorial-candle" aria-hidden="true"><svg class="memorial-glow" viewBox="0 0 80 80"><ellipse cx="40" cy="48" rx="28" ry="26" fill="#ffb43a"/></svg><svg class="memorial-flame" viewBox="0 0 64 84"><path fill="#ff9a2a" d="M32 2c8 18 17 30 17 46a17 17 0 0 1-34 0C15 32 24 20 32 2z"/><path fill="#fff4c8" d="M32 24c4 10 8 16 8 24a8 8 0 0 1-16 0c0-8 4-14 8-24z"/></svg><svg class="memorial-wax" viewBox="0 0 80 100"><rect x="27" y="24" width="26" height="66" rx="8" fill="#f2c44b"/><ellipse cx="40" cy="26" rx="13" ry="5" fill="#ffe8a6"/><path fill="#e2a322" d="M31 26c1 12 2.2 22 .4 36-.6 5 1.8 6.5 2.4 1.5.6-8-.4-20-1-30-.2-2-1.4-5-1.8-7.5z"/><path fill="#e8b43e" d="M49 25c-.4 10 .2 20 1.4 32 .5 5-1.8 6.2-2.5 1.4-.7-8 .2-18-.2-28 .1-2 1-4 1.3-5.4z"/><path fill="#f0c44e" d="M27 28c-3.2.6-5 5-4.2 11 .6 3.4 2.6 2.8 3.2-.6.5-3 .6-7 1-10.4z"/><rect x="33" y="32" width="4.5" height="46" rx="2" fill="#fff6d0" opacity=".55"/><rect x="38.8" y="10" width="2.4" height="16" rx="1" fill="#3d2914"/></svg></span>
@@ -242,10 +245,10 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   <p id="install-copied" class="install-copied" hidden>הקישור הועתק</p>
   <button type="button" id="install-close" class="install-later">סגירה</button>
 </dialog>
-<script src="install.js?v=38"></script>
-<script src="shortcuts.js?v=38"></script>
-<script src="controls.js?v=38"></script>
-<script src="credit.js?v=38"></script>
-<script type="module" src="hub.mjs?v=38"></script>
+<script src="install.js?v=39"></script>
+<script src="shortcuts.js?v=39"></script>
+<script src="controls.js?v=39"></script>
+<script src="credit.js?v=39"></script>
+<script type="module" src="hub.mjs?v=39"></script>
 </body>
 </html>
