@@ -457,14 +457,6 @@ p.t {
 }
 #settings-hub #install-hub:not([hidden]) { display: contents; }
 
-.improve-card { gap: 10px; }
-.improve-icon {
-  display: inline-flex;
-  flex: none;
-  color: var(--accent);
-  opacity: .75;
-}
-.improve-icon svg { display: block; }
 .improve-foot {
   margin: 18px 0 0;
   text-align: center;
@@ -474,8 +466,26 @@ p.t {
   color: var(--muted);
 }
 .improve-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
   color: inherit;
   text-decoration: none;
+}
+.improve-foot .improve-icon {
+  display: inline-flex;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  opacity: .8;
+}
+.improve-foot .improve-icon svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+.improve-foot-text {
   border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent);
 }
 html:not([data-theme]) .improve-foot {
