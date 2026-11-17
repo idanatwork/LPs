@@ -31,6 +31,7 @@ function cacheable(url, request) {
 
 self.addEventListener("fetch", function (event) {
   var url = new URL(event.request.url);
+  if (url.hostname === "static.cloudflareinsights.com" || /\.cloudflareinsights\.com$/.test(url.hostname)) return;
   if (!cacheable(url, event.request)) return;
   event.respondWith(
     fetch(event.request).then(function (response) {
