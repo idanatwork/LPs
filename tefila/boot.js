@@ -38,6 +38,17 @@
     });
     if (lockWd === "Sat" || (lockWd === "Fri" && lockHour >= 16)) {
       document.documentElement.classList.add("siddur-lock-pending");
+      var supportsModules = "noModule" in document.createElement("script");
+      if (!supportsModules) {
+        document.documentElement.classList.remove("siddur-lock-pending");
+      } else {
+        setTimeout(function () {
+          var root = document.documentElement;
+          if (root.classList.contains("siddur-lock-pending") && !root.classList.contains("siddur-locked")) {
+            root.classList.remove("siddur-lock-pending");
+          }
+        }, 4000);
+      }
     }
   } catch (e) {}
 

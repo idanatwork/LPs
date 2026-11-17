@@ -98,24 +98,27 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
 .hub-dedication {
   margin: 0;
   max-width: 100%;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 400;
   line-height: 1.25;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 .header-date {
   flex: 1 1 auto;
-  min-width: 0;
+  min-width: 8.5rem;
+  min-height: 2.6em;
   margin: 0;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.25;
   text-align: center;
   color: var(--fg);
+  visibility: hidden;
 }
-.header-date[hidden] { display: none !important; }
+.header-date:not(:empty) { visibility: visible; }
+.header-date[hidden] { visibility: hidden; display: block; }
 .szs { display: flex; flex: 1 1 100%; flex-wrap: nowrap; gap: 6px; justify-content: space-between; align-items: center; }
 .szs button {
   min-width: 44px;
@@ -396,6 +399,8 @@ p.t {
   text-align: right;
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  min-height: 80px;
+  box-sizing: border-box;
 }
 .today .date {
   margin: 0 0 4px;
@@ -410,6 +415,73 @@ p.t {
   line-height: 1.55;
 }
 .today .extra { color: var(--muted); margin-top: 6px; }
+
+.hub-halacha {
+  margin: 0 0 16px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  text-align: right;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+.hub-halacha[open] { padding-bottom: 10px; }
+.hub-halacha > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 2px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--accent);
+}
+.hub-halacha > summary::-webkit-details-marker { display: none; }
+.hub-halacha > summary::before {
+  content: "◂ ";
+  font-weight: 400;
+}
+.hub-halacha[open] > summary::before { content: "▾ "; }
+.hub-halacha .halacha-title { margin-top: 2px; }
+.hub-halacha .halacha-kicker { display: none; }
+.settings-hub { margin-top: 8px; }
+.settings-hub .hub-sub {
+  margin: 22px 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+#settings-hub #install-hub:not([hidden]) { display: contents; }
+
+.improve-card { gap: 10px; }
+.improve-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--accent);
+  opacity: .75;
+}
+.improve-icon svg { display: block; }
+.improve-foot {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--muted);
+}
+.improve-foot a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+}
+html:not([data-theme]) .improve-foot {
+  background: transparent;
+  padding: 0;
+}
 
 p.note, summary small, .sum-note {
   font-size: 15px;
@@ -631,7 +703,7 @@ details.sec details.add { margin-right: 0; }
     flex-wrap: nowrap;
   }
   .brand { flex: 1 1 auto; }
-  .hub-dedication { font-size: 12.5px; }
+  .hub-dedication { font-size: 13px; }
   .szs { flex: 0 0 auto; width: auto; justify-content: flex-start; }
 }
 html[data-minyan="yachid"] .mode-switch [data-set-minyan="yachid"],
@@ -853,7 +925,7 @@ a.shortcut-btn[aria-disabled="true"] {
   border-color: color-mix(in srgb, var(--muted) 45%, transparent);
   pointer-events: none;
 }
-.z-strip { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
+.z-strip { margin: 0 0 14px; font-size: 17px; line-height: 1.5; min-height: 1.5em; }
 .watch-list { padding-right: 18px; }
 .watch-list li { margin: 0 0 8px; line-height: 1.5; }
 details.manual-build code {
@@ -881,7 +953,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=43");
+  --klaf-tile: url("parchment-p1.webp?v=44");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -930,7 +1002,8 @@ html:not([data-theme]) .hub-dedication {
   padding: 0;
 }
 html:not([data-theme]) .kicker,
-html:not([data-theme]) .hub-h {
+html:not([data-theme]) .hub-h,
+html:not([data-theme]) .hub-sub {
   display: inline-block;
   padding: 0;
   color: var(--accent);
@@ -938,6 +1011,7 @@ html:not([data-theme]) .hub-h {
 /* Remove the cream reading panels and their drop shadows.
    Instructional notes, toc and credits stay typographic, not cards. */
 html:not([data-theme]) .today,
+html:not([data-theme]) .hub-halacha,
 html:not([data-theme]) nav.toc,
 html:not([data-theme]) .stone-read,
 html:not([data-theme]) .mode-panel,
@@ -1018,6 +1092,8 @@ html:not([data-theme]) .mode-switch button:active {
   .header-date { font-size: 15px; }
   .hub-dedication { font-size: 13.5px; }
   .hub-h { font-size: 21px; }
+  .hub-halacha > summary { font-size: 19px; }
+  .hub-sub { font-size: 17px; }
   nav.toc a.l2 { font-size: 17px; }
   html:not([data-theme]),
   html:not([data-theme]) header.bar {
@@ -1100,7 +1176,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=43");
+  background-image: url("parchment-p1.webp?v=44");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1121,7 +1197,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=43");
+  background-image: url("parchment-p1.webp?v=44");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;

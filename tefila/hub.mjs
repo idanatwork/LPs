@@ -1,6 +1,7 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=43";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=44";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=44";
 
 function paintHub() {
   const now = new Date();
@@ -17,7 +18,18 @@ function paintHub() {
       note.textContent = status.note || "";
       note.hidden = !status.note;
     }
-    box.hidden = false;
+    box.removeAttribute("hidden");
+  }
+  const halachaBox = document.getElementById("halacha-yomit");
+  if (halachaBox && status.hd) {
+    const item = halachaForHDate(status.hd);
+    const title = document.getElementById("halacha-title");
+    const body = document.getElementById("halacha-body");
+    const source = document.getElementById("halacha-src");
+    if (title) title.textContent = item.title;
+    if (body) body.textContent = item.body;
+    if (source) source.textContent = item.source;
+    halachaBox.removeAttribute("hidden");
   }
   const strip = document.getElementById("next-zman");
   if (strip) {

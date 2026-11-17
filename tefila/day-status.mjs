@@ -264,7 +264,7 @@ export function mountHeaderDate(text) {
     if (index) el.appendChild(document.createElement("br"));
     el.appendChild(document.createTextNode(part));
   });
-  el.hidden = !text;
+  if (text) el.removeAttribute("hidden");
 }
 
 export function hebrewNow(now) {

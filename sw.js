@@ -1,5 +1,5 @@
-var CACHE = "tefila-pages-43";
-var PRECACHE = ["tefila/parchment-p1.webp?v=43"];
+var CACHE = "tefila-pages-44";
+var PRECACHE = ["tefila/parchment-p1.webp?v=44"];
 
 self.addEventListener("install", function (event) {
   event.waitUntil(caches.open(CACHE).then(function (cache) { return cache.addAll(PRECACHE); }));
@@ -32,6 +32,7 @@ function cacheable(url, request) {
 self.addEventListener("fetch", function (event) {
   var url = new URL(event.request.url);
   if (url.hostname === "static.cloudflareinsights.com" || /\.cloudflareinsights\.com$/.test(url.hostname)) return;
+  if (url.hostname === "wa.me" || url.hostname === "api.whatsapp.com" || /\.whatsapp\.com$/.test(url.hostname)) return;
   if (!cacheable(url, event.request)) return;
   event.respondWith(
     fetch(event.request).then(function (response) {

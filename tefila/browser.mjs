@@ -1,5 +1,5 @@
-import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=43";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=43";
+import { formatHeaderDate, isNightService, mountHeaderDate, statusFor } from "./day-status.mjs?v=44";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=44";
 
 function openMatching(flags) {
   document.querySelectorAll("details[data-open]").forEach((el) => {
@@ -34,7 +34,7 @@ function showBanner(status) {
     note.textContent = status.note || "";
     note.hidden = !status.note;
   }
-  box.hidden = false;
+  box.removeAttribute("hidden");
 }
 
 function showHalacha(status) {
@@ -64,7 +64,7 @@ function init() {
     if (box) {
       const line = box.querySelector(".status");
       if (line) line.textContent = "לא ניתן לחשב את התאריך.";
-      box.hidden = false;
+      box.removeAttribute("hidden");
     }
   }
 }

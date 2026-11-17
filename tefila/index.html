@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="43">
+<meta name="tefila-build" content="44">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -13,12 +13,12 @@
 <meta name="apple-mobile-web-app-title" content="סידור עד-י-אל">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" id="theme-color" content="#DACCB2">
-<link rel="manifest" href="index.webmanifest?v=43">
+<link rel="manifest" href="index.webmanifest?v=44">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=43">
-<link rel="stylesheet" href="accent.css?v=43">
+<link rel="stylesheet" href="tefila.css?v=44">
+<link rel="stylesheet" href="accent.css?v=44">
 <title>סידור</title>
 <script type="importmap">
 {
@@ -46,8 +46,16 @@
 
 })();
 </script>
-<script src="boot.js?v=43"></script>
-<script type="module" src="shabbat-lock.mjs?v=43"></script>
+<script src="boot.js?v=44"></script>
+<script nomodule>
+(function () {
+  var root = document.documentElement;
+  if (root.classList.contains("siddur-lock-pending") && !root.classList.contains("siddur-locked")) {
+    root.classList.remove("siddur-lock-pending");
+  }
+})();
+</script>
+<script type="module" src="shabbat-lock.mjs?v=44"></script>
 <script>
 window.tefilaInstallPrompt = null;
 window.addEventListener("beforeinstallprompt", function (event) {
@@ -57,7 +65,7 @@ window.addEventListener("beforeinstallprompt", function (event) {
 });
 </script>
 <style>
-.memorial-splash{position:fixed;inset:0;z-index:200;background-color:#DACCB2;background-image:url("parchment-p1.webp?v=43");background-repeat:repeat;background-size:640px auto;color:#2B2620;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
+.memorial-splash{position:fixed;inset:0;z-index:200;background-color:#DACCB2;background-image:url("parchment-p1.webp?v=44");background-repeat:repeat;background-size:640px auto;color:#2B2620;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
 .memorial-frame{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);left:16px;border:1px solid #8A6A3A;pointer-events:none}
 .memorial-frame::before{content:"";position:absolute;inset:6px;border:1px solid #8A6A3A}
 .corner{position:absolute;width:38px;height:38px}
@@ -200,11 +208,17 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
     <button type="button" id="install-later">לא עכשיו</button>
   </div>
 </aside>
-<div class="today" id="today-banner" hidden>
+<div class="today" id="today-banner">
   <p class="date"></p>
   <p class="status"></p>
   <p class="extra" hidden></p>
 </div>
+<details class="hub-halacha" id="halacha-yomit">
+  <summary>הלכה יומית</summary>
+  <p class="halacha-title" id="halacha-title"></p>
+  <p class="halacha-body" id="halacha-body"></p>
+  <p class="halacha-src" id="halacha-src"></p>
+</details>
 <p class="note">נוסח עדות המזרח לימי חול. בחירה אחת כאן חלה על כל התפילות.</p>
 <div class="mode-panel" id="mode-panel">
   <p class="mode-lead">איך מתפללים?</p>
@@ -231,27 +245,28 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   <a href="../brachot/meein-shalosh.html">מעין שלוש</a>
   <a href="../brachot/birkat-hamazon.html">ברכת המזון</a>
 </nav>
-<section id="focus-hub" hidden>
-<h2 class="hub-h">פוקוס תפילה</h2>
-<nav class="cards small" aria-label="פוקוס תפילה">
-  <a href="shortcuts.html">איך מתקינים ←</a>
-</nav>
-<p class="focus-status" hidden>🔕 פוקוס תפילה פעיל</p>
-<div class="shortcut-row" hidden>
-  <a class="shortcut-btn shortcut-start" data-shortcut="start" href="#" aria-label="🔕 הפעל פוקוס תפילה">🔕 הפעל פוקוס תפילה</a>
-  <a class="shortcut-btn shortcut-end" data-shortcut="end" href="#" aria-label="🔔 כבה פוקוס תפילה">🔔 כבה פוקוס תפילה</a>
-</div>
+<section id="settings-hub" class="settings-hub" aria-labelledby="settings-heading">
+  <h2 class="hub-h" id="settings-heading">הגדרות</h2>
+  <nav class="cards small" aria-label="הגדרות">
+    <div id="install-hub" hidden>
+      <button type="button" id="install-menu" class="card-btn">התקנה כאפליקציה</button>
+    </div>
+    <a href="../watch/">בשעון</a>
+    <a class="improve-card" href="https://wa.me/972546667898?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%99%D7%A9%20%D7%9C%D7%99%20%D7%A8%D7%A2%D7%99%D7%95%D7%9F%2F%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%A9%D7%99%D7%A4%D7%95%D7%A8%20%D7%A1%D7%99%D7%93%D7%95%D7%A8%20%D7%A2%D7%93-%D7%99-%D7%90%D7%9C%3A" target="_blank" rel="noopener">הצעות לשיפור<span class="improve-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 0 1 7 12.5 8.2 8.2 0 0 1-9.9 2.7l-.4-.2-3 .8.8-2.9-.2-.4A8.2 8.2 0 0 1 12 3.8zm-3.2 5.3c-.2 0-.5.1-.6.4-.2.3-.6.8-.6 1.9s.6 2.2.7 2.3c.1.2 1.2 1.9 3 2.6 1.5.6 1.8.5 2.1.5.3 0 1-.4 1.2-.8.2-.4.2-.7.1-.8l-.6-.3-1-.5c-.1 0-.2 0-.3.1l-.4.5c-.1.1-.2.1-.3.1s-.3-.1-.6-.3c-.6-.3-1-1-1.1-1.1 0-.1 0-.2.1-.3l.3-.4.1-.2c0-.1 0-.2 0-.2l-.3-.6c-.2-.3-.3-.3-.5-.3z"/></svg></span></a>
+  </nav>
+  <div id="focus-hub" hidden>
+    <h3 class="hub-sub">פוקוס תפילה</h3>
+    <nav class="cards small" aria-label="פוקוס תפילה">
+      <a href="shortcuts.html">איך מתקינים</a>
+    </nav>
+    <p class="focus-status" hidden>🔕 פוקוס תפילה פעיל</p>
+    <div class="shortcut-row" hidden>
+      <a class="shortcut-btn shortcut-start" data-shortcut="start" href="#" aria-label="🔕 הפעל פוקוס תפילה">🔕 הפעל פוקוס תפילה</a>
+      <a class="shortcut-btn shortcut-end" data-shortcut="end" href="#" aria-label="🔔 כבה פוקוס תפילה">🔔 כבה פוקוס תפילה</a>
+    </div>
+  </div>
 </section>
-<section id="install-hub" hidden>
-<h2 class="hub-h">התקנה</h2>
-<nav class="cards small" aria-label="התקנה">
-  <button type="button" id="install-menu" class="card-btn">התקנה כאפליקציה</button>
-</nav>
-</section>
-<h2 class="hub-h">שעון</h2>
-<nav class="cards small" aria-label="שעון">
-  <a href="../watch/">בשעון</a>
-</nav>
+<p class="improve-foot"><a href="https://wa.me/972546667898?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%99%D7%A9%20%D7%9C%D7%99%20%D7%A8%D7%A2%D7%99%D7%95%D7%9F%2F%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%A9%D7%99%D7%A4%D7%95%D7%A8%20%D7%A1%D7%99%D7%93%D7%95%D7%A8%20%D7%A2%D7%93-%D7%99-%D7%90%D7%9C%3A" target="_blank" rel="noopener">רעיון לשיפור? כתבו לנו בווטסאפ</a></p>
 </main>
 <dialog id="install-guide" class="install-guide">
   <p class="install-banner-title" id="install-guide-title">הוספה למסך הבית</p>
@@ -260,10 +275,10 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   <p id="install-copied" class="install-copied" hidden>הקישור הועתק</p>
   <button type="button" id="install-close" class="install-later">סגירה</button>
 </dialog>
-<script src="install.js?v=43"></script>
-<script src="shortcuts.js?v=43"></script>
-<script src="controls.js?v=43"></script>
-<script src="credit.js?v=43"></script>
-<script type="module" src="hub.mjs?v=43"></script>
+<script src="install.js?v=44"></script>
+<script src="shortcuts.js?v=44"></script>
+<script src="controls.js?v=44"></script>
+<script src="credit.js?v=44"></script>
+<script type="module" src="hub.mjs?v=44"></script>
 </body>
 </html>
