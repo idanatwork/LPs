@@ -864,7 +864,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=40");
+  --klaf-tile: url("parchment-p1.webp?v=41");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);

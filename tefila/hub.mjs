@@ -1,5 +1,5 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=40";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=41";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
 
 function paintHub() {
