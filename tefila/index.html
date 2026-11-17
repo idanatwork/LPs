@@ -85,6 +85,17 @@ window.addEventListener("beforeinstallprompt", function (event) {
 .memorial-splash.is-in .memorial-card{opacity:1;transition:opacity 500ms ease}
 .memorial-splash.is-leaving{opacity:0;pointer-events:none;transition:opacity 1100ms ease-in-out;-webkit-transition:opacity 1100ms ease-in-out}
 .memorial-splash.is-leaving .memorial-card{opacity:0;transform:translate3d(0,-16px,0) scale(1.04);filter:blur(1.5px);transition:opacity 700ms ease-in, transform 1100ms ease-in-out, filter 1100ms ease-in-out;-webkit-transition:opacity 700ms ease-in, -webkit-transform 1100ms ease-in-out, filter 1100ms ease-in-out}
+@media (min-width:900px){
+  .memorial-card{justify-content:center;gap:56px}
+  .memorial-copy{max-width:760px}
+  .memorial-splash .memorial-copy p{font-size:clamp(22px,1.7vw,30px)}
+  .memorial-splash p.memorial-kicker{font-size:clamp(30px,2.4vw,40px)}
+  .memorial-splash p.memorial-name{font-size:clamp(46px,4vw,68px)}
+  .memorial-splash p.memorial-tnc{font-size:clamp(28px,2.2vw,36px)}
+}
+@media (min-width:1200px){
+  .memorial-splash{background-size:960px auto}
+}
 @media (prefers-reduced-motion:reduce){
   .memorial-flame,.memorial-glow{animation:none}
   .memorial-splash.is-in .memorial-card{transition:opacity 500ms ease;-webkit-transition:opacity 500ms ease}

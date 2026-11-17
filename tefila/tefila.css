@@ -4,6 +4,7 @@
   --muted: #4E493F;
   --accent: #4A3C1C;
   --fs: 22px;
+  --col: 680px;
   --header: calc(env(safe-area-inset-top) + 120px);
   color-scheme: light;
 }
@@ -302,7 +303,7 @@ html[data-theme="dark"] #theme-toggle .moon,
 html[data-theme="light"] #theme-toggle .sun { display: none; }
 
 main {
-  width: min(680px, 100%);
+  width: min(var(--col), 100%);
   margin: 0 auto;
   padding: 16px 18px 24px;
   text-align: right;
@@ -605,14 +606,16 @@ details.sec details.add { margin-right: 0; }
   padding: 0 8px;
   font-size: 14px;
 }
-@media (min-width: 900px) {
+@media (min-width: 720px) {
   header.bar {
-    width: min(680px, calc(100% - 24px));
+    width: min(var(--col), calc(100% - 24px));
     margin: 8px auto 0;
     border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
     border-radius: 18px;
+    flex-wrap: nowrap;
   }
-  .szs { flex: 0 1 auto; width: auto; justify-content: flex-start; }
+  .brand { flex: 1 1 auto; }
+  .szs { flex: 0 0 auto; width: auto; justify-content: flex-start; }
 }
 html[data-minyan="yachid"] .mode-switch [data-set-minyan="yachid"],
 html[data-minyan="minyan"] .mode-switch [data-set-minyan="minyan"] {
@@ -952,4 +955,108 @@ html:not([data-theme]) .szs > button:active,
 html:not([data-theme]) .mode-switch button:active {
   background: var(--accent);
   color: var(--klaf-bg);
+}
+
+/* Desktop and tablet layout. Below 720px the mobile stylesheet is unchanged. */
+@media (min-width: 760px) {
+  .font-panel, .scroll-panel, .toc-panel {
+    inset-inline: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(var(--col), calc(100% - 24px));
+  }
+  .toc-panel { width: min(420px, calc(100% - 24px)); }
+}
+
+@media (min-width: 900px) {
+  .to-toc {
+    inset-inline-end: auto;
+    left: max(16px, calc(50% - (var(--col) / 2) - 16px - 73px));
+    right: auto;
+  }
+  .scroll-float {
+    inset-inline-start: auto;
+    right: max(16px, calc(50% - (var(--col) / 2) - 16px - 52px));
+    left: auto;
+  }
+  .scroll-pace {
+    inset-inline-start: auto;
+    right: max(16px, calc(50% - (var(--col) / 2) - 16px - 52px));
+    left: auto;
+    bottom: calc(env(safe-area-inset-bottom) + 80px);
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --fs: 24px;
+    --col: 740px;
+  }
+  p.note, .sum-note, summary small { font-size: 16.5px; }
+  .header-date { font-size: 15px; }
+  .hub-h { font-size: 21px; }
+  nav.toc a.l2 { font-size: 17px; }
+  html:not([data-theme]),
+  html:not([data-theme]) header.bar {
+    background-size: 960px auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  nav.toc#toc {
+    position: fixed;
+    z-index: 15;
+    top: calc(var(--header) + 24px);
+    left: calc(50% + (var(--col) / 2) + 24px);
+    right: auto;
+    width: min(280px, calc(50% - (var(--col) / 2) - 40px));
+    max-height: calc(100vh - var(--header) - 168px);
+    overflow: auto;
+    margin: 0;
+  }
+  nav.toc#toc a { min-height: 32px; }
+  .to-toc, #toc-toggle { display: none; }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --fs: 26px;
+    --col: 800px;
+  }
+}
+
+button, [role="option"], summary, a.home-btn, .to-toc, .scroll-float, .scroll-pace, nav.toc a {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .cards a:hover,
+  .cards button.card-btn:hover,
+  a.home-btn:hover,
+  .szs > button:not([aria-pressed="true"]):hover,
+  .accent-pop > button:hover,
+  .mode-switch button:not([aria-pressed="true"]):hover,
+  nav.toc a:hover,
+  .scroll-actions button:hover,
+  #font-panel-close:hover,
+  #scroll-panel-close:hover,
+  #toc-panel-close:hover {
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+  html:not([data-theme]) a.home-btn:hover,
+  html:not([data-theme]) .szs > button:not([aria-pressed="true"]):hover,
+  html:not([data-theme]) .accent-pop > button:hover,
+  html:not([data-theme]) .mode-switch button:not([aria-pressed="true"]):hover,
+  html:not([data-theme]) .cards a:not(.now):hover,
+  html:not([data-theme]) .cards button.card-btn:hover,
+  html:not([data-theme]) nav.toc a:hover,
+  html:not([data-theme]) .scroll-actions button:hover,
+  html:not([data-theme]) #font-panel-close:hover,
+  html:not([data-theme]) #scroll-panel-close:hover,
+  html:not([data-theme]) #toc-panel-close:hover {
+    background: color-mix(in srgb, var(--accent) 20%, rgba(255, 248, 230, 0.38));
+  }
+  nav.toc a:hover { text-decoration: underline; }
+  .to-toc:hover, .scroll-float:hover { filter: brightness(1.12); }
+  .scroll-pace:hover { background: color-mix(in srgb, var(--accent) 16%, var(--bg)); }
 }

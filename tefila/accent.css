@@ -181,3 +181,10 @@ html[data-accent="turquoise"] .accent-menu [data-set-accent="turquoise"] {
   border-color: var(--fg, #1c1915);
   box-shadow: 0 0 0 2px var(--bg, #fdfbf6);
 }
+
+@media (min-width: 720px) {
+  .accent-menu {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+  }
+}
