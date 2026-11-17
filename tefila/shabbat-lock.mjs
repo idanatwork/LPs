@@ -1,7 +1,7 @@
 /** Shabbat and Yom Tov lock for the siddur.
- * Location, candle lighting and havdalah times come from the site's own zmanim
- * (Oranit; 20 clock minutes before sunset; tzeit = 13.5 GRA minutes, the same
- * value the zmanim page already labels הבדלה).
+ * Location, candle lighting and end times come from the site's own zmanim
+ * (Oranit; 20 clock minutes before sunset; the lock lifts at Rabbeinu Tam,
+ * 72 GRA minutes after sunset, times.rabbeinuTam).
  * Israeli calendar only: one-day Yom Tov, except two days of Rosh Hashana.
  */
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
@@ -77,7 +77,7 @@ function intervalsAround(now) {
     if (!info.holy) continue;
     const eve = shiftIso(iso, -1);
     const start = timesForCivilIso(eve).candles;
-    const end = timesForCivilIso(iso).tzeit;
+    const end = timesForCivilIso(iso).rabbeinuTam;
     list.push({
       start,
       end,
