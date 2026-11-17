@@ -6,8 +6,8 @@
  "start_url": "./mincha.html",
  "scope": "./",
  "display": "standalone",
- "background_color": "#E4D0B0",
- "theme_color": "#E4D0B0",
+ "background_color": "#DACCB2",
+ "theme_color": "#DACCB2",
  "icons": [
   {
    "src": "icon-192.png",

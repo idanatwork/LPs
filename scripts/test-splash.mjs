@@ -81,8 +81,8 @@ check("name is about 40 to 46px", look.nameSize >= 40 && look.nameSize <= 46, St
 check("detail lines are about 20 to 22px", look.detail >= 20 && look.detail <= 22, String(look.detail));
 check("closing line is about 26 to 28px", look.tnc >= 26 && look.tnc <= 28, String(look.tnc));
 check("name wraps with balance", look.wrap === "balance", look.wrap);
-check("splash background is the stone", look.bg === "rgb(228, 208, 176)" && look.image.includes("stone-t2.webp"), look.bg + " " + look.image);
-check("name is the stone heading color", look.name === "rgb(74, 60, 28)", look.name);
+check("splash background is the parchment", look.bg === "rgb(218, 204, 178)" && look.image.includes("parchment-p1.webp"), look.bg + " " + look.image);
+check("name is the parchment heading color", look.name === "rgb(63, 42, 24)", look.name);
 check("two candles flank the closing line", look.candles === 2 && look.frame === 1, JSON.stringify(look));
 check("flames flicker unless motion is reduced", look.flicker.includes("memorial-flicker"), look.flicker);
 check("frame stays inside the safe area", look.safe);

@@ -12,7 +12,7 @@
   function themeChrome(theme) {
     if (theme === "light") return "#fdfbf6";
     if (theme === "dark") return "#111111";
-    return "#E4D0B0";
+    return "#DACCB2";
   }
   function paintThemeColor(theme) {
     var meta = document.getElementById("theme-color");

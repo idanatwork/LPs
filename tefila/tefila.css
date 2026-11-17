@@ -855,52 +855,63 @@ details.manual-build code {
   outline-offset: 2px;
 }
 
-/* Unset default: Kotel stone texture. Saved light, dark, and accent keep their own colors. */
+/* Unset default: parchment (klaf) texture. Saved light, dark, and accent keep their own colors. */
 html:not([data-theme]) {
-  background-color: #E4D0B0;
-  background-image: url("stone-t2.webp?v=39");
+  --bg: #DACCB2;
+  --fg: #2B2620;
+  --muted: #4E4338;
+  --accent: #3F2A18;
+  --klaf-tile: url("parchment-p1.webp?v=40");
+  --klaf-bg: #DACCB2;
+  background-color: var(--klaf-bg);
+  background-image: var(--klaf-tile);
   background-repeat: repeat;
-  background-size: 560px auto;
+  background-size: 640px auto;
   background-attachment: fixed;
   background-position: 0 0;
+  color-scheme: light;
 }
 html:not([data-theme]) body {
   background: transparent;
+  color: var(--fg);
 }
 html:not([data-theme]) header.bar {
-  background-color: #E4D0B0;
-  background-image: url("stone-t2.webp?v=39");
+  background-color: var(--klaf-bg);
+  background-image: var(--klaf-tile);
   background-repeat: repeat;
-  background-size: 560px auto;
+  background-size: 640px auto;
   background-attachment: fixed;
   background-position: 0 0;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border-bottom-color: rgba(74, 60, 28, 0.28);
+  border-bottom-color: rgba(63, 42, 24, 0.28);
 }
+/* Prayer titles and kickers sit directly on the klaf — no cream pills. */
 html:not([data-theme]) .brand strong,
 html:not([data-theme]) .header-date,
 html:not([data-theme]) .kicker,
 html:not([data-theme]) .hub-h {
-  background: rgba(247, 242, 230, 0.92);
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 0;
 }
 html:not([data-theme]) .brand strong {
-  padding: 2px 8px;
-  color: #33302B;
+  padding: 0;
+  color: var(--fg);
 }
 html:not([data-theme]) .header-date {
   flex: 0 1 auto;
   margin-inline: auto;
-  padding: 3px 8px;
-  color: #33302B;
+  padding: 0;
+  color: var(--fg);
 }
 html:not([data-theme]) .kicker,
 html:not([data-theme]) .hub-h {
   display: inline-block;
-  padding: 2px 10px;
+  padding: 0;
   color: var(--accent);
 }
+/* Remove the cream reading panels and their drop shadows.
+   Instructional notes, toc and credits stay typographic, not cards. */
 html:not([data-theme]) .today,
 html:not([data-theme]) nav.toc,
 html:not([data-theme]) .stone-read,
@@ -912,33 +923,33 @@ html:not([data-theme]) .cards a:not(.now),
 html:not([data-theme]) .cards button.card-btn,
 html:not([data-theme]) main > p.note,
 html:not([data-theme]) .site-credit {
-  background: rgba(247, 242, 230, 0.91);
+  background: transparent;
   background-image: none;
-  border-radius: 16px;
-  box-shadow: 0 8px 22px rgba(62, 40, 14, 0.16);
+  border-radius: 0;
+  box-shadow: none;
 }
 html:not([data-theme]) .stone-read {
-  padding: 6px 12px 16px;
+  padding: 0;
   margin-top: 10px;
 }
 html:not([data-theme]) main > p.note,
 html:not([data-theme]) .site-credit {
-  padding: 10px 12px;
+  padding: 10px 0;
 }
 html:not([data-theme]) .site-credit {
-  color: #4E493F;
-  border-top: 0;
+  color: var(--muted);
+  border-top: 1px solid rgba(63, 42, 24, 0.22);
 }
 html:not([data-theme]) a.home-btn,
 html:not([data-theme]) .szs > button:not([aria-pressed="true"]),
 html:not([data-theme]) .accent-pop > button,
 html:not([data-theme]) .mode-switch button:not([aria-pressed="true"]) {
-  background: rgba(247, 242, 230, 0.88);
+  background: rgba(255, 248, 230, 0.38);
   color: var(--accent);
 }
 html:not([data-theme]) a.home-btn:active,
 html:not([data-theme]) .szs > button:active,
 html:not([data-theme]) .mode-switch button:active {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--klaf-bg);
 }
