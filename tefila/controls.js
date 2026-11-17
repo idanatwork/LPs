@@ -640,6 +640,15 @@
     panel.appendChild(nav);
     document.body.appendChild(panel);
 
+    function jumpToTocTarget(anchor, event) {
+      if (event) event.preventDefault();
+      var id = ((anchor && anchor.getAttribute("href")) || "").slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      document.documentElement.style.scrollBehavior = "auto";
+      target.scrollIntoView({ block: "start", behavior: "auto" });
+      try { history.replaceState(null, "", "#" + id); } catch (e) {}
+    }
     function fill() {
       nav.replaceChildren();
       var minyan = document.documentElement.getAttribute("data-minyan") === "minyan";
@@ -647,15 +656,9 @@
         if (!minyan && anchor.closest(".minyan-only")) return;
         var item = anchor.cloneNode(true);
         item.addEventListener("click", function (event) {
-          event.preventDefault();
-          var id = (item.getAttribute("href") || "").slice(1);
-          var target = document.getElementById(id);
           cancelAnimationFrame(holdFrame);
           paint(false);
-          if (!target) return;
-          document.documentElement.style.scrollBehavior = "auto";
-          target.scrollIntoView({ block: "start", behavior: "auto" });
-          try { history.replaceState(null, "", "#" + id); } catch (e) {}
+          jumpToTocTarget(item, event);
         });
         nav.appendChild(item);
       });
@@ -680,6 +683,11 @@
     function setOpen(open) {
       holdScroll(function () { paint(open); });
     }
+    source.querySelectorAll("a[href^='#']").forEach(function (anchor) {
+      anchor.addEventListener("click", function (event) {
+        jumpToTocTarget(anchor, event);
+      });
+    });
     button.addEventListener("pointerdown", function (event) { event.preventDefault(); });
     button.addEventListener("click", function (event) {
       event.preventDefault();

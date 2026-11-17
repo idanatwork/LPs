@@ -980,7 +980,7 @@ html:not([data-theme]) .mode-switch button:active {
 }
 
 /* Desktop and tablet layout. Below 720px the mobile stylesheet is unchanged. */
-@media (min-width: 760px) {
+@media (min-width: 720px) {
   .font-panel, .scroll-panel, .toc-panel {
     inset-inline: auto;
     left: 50%;
@@ -1003,7 +1003,7 @@ html:not([data-theme]) .mode-switch button:active {
   }
   .scroll-pace {
     inset-inline-start: auto;
-    right: max(16px, calc(50% - (var(--col) / 2) - 16px - 52px));
+    right: max(20px, calc(50% - (var(--col) / 2) - 16px - 48px));
     left: auto;
     bottom: calc(env(safe-area-inset-bottom) + 80px);
   }
@@ -1053,7 +1053,7 @@ button, [role="option"], summary, a.home-btn, .to-toc, .scroll-float, .scroll-pa
 }
 
 @media (hover: hover) {
-  .cards a:hover,
+  .cards a:not(.now):hover,
   .cards button.card-btn:hover,
   a.home-btn:hover,
   .szs > button:not([aria-pressed="true"]):hover,
@@ -1082,6 +1082,7 @@ button, [role="option"], summary, a.home-btn, .to-toc, .scroll-float, .scroll-pa
   nav.toc a:hover { text-decoration: underline; }
   .to-toc:hover, .scroll-float:hover { filter: brightness(1.12); }
   .scroll-pace:hover { background: color-mix(in srgb, var(--accent) 16%, var(--bg)); }
+  .cards a.now:hover { background: var(--accent); filter: brightness(1.12); }
 }
 
 /* Shabbat and Yom Tov lock. Covers the whole app, including the splash. */
