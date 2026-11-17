@@ -23,6 +23,24 @@
   if (accentIds[accent]) document.documentElement.setAttribute("data-accent", accent);
   else document.documentElement.removeAttribute("data-accent");
 
+  try {
+    var lockParts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Jerusalem",
+      weekday: "short",
+      hour: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(new Date());
+    var lockWd = "";
+    var lockHour = 0;
+    lockParts.forEach(function (part) {
+      if (part.type === "weekday") lockWd = part.value;
+      if (part.type === "hour") lockHour = parseInt(part.value, 10);
+    });
+    if (lockWd === "Sat" || (lockWd === "Fri" && lockHour >= 16)) {
+      document.documentElement.classList.add("siddur-lock-pending");
+    }
+  } catch (e) {}
+
   var buildMeta = document.querySelector('meta[name="tefila-build"]');
   var BUILD = buildMeta ? String(buildMeta.getAttribute("content") || "") : "";
 

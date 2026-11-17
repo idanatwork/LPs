@@ -89,6 +89,22 @@ a.home-btn:active { background: var(--accent); color: var(--bg); }
   color: var(--accent);
   line-height: 1.2;
 }
+.brand:has(.hub-dedication) {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
+}
+.hub-dedication {
+  margin: 0;
+  max-width: 100%;
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
 .header-date {
   flex: 1 1 auto;
   min-width: 0;
@@ -615,6 +631,7 @@ details.sec details.add { margin-right: 0; }
     flex-wrap: nowrap;
   }
   .brand { flex: 1 1 auto; }
+  .hub-dedication { font-size: 12.5px; }
   .szs { flex: 0 0 auto; width: auto; justify-content: flex-start; }
 }
 html[data-minyan="yachid"] .mode-switch [data-set-minyan="yachid"],
@@ -907,6 +924,11 @@ html:not([data-theme]) .header-date {
   padding: 0;
   color: var(--fg);
 }
+html:not([data-theme]) .hub-dedication {
+  color: var(--muted);
+  background: transparent;
+  padding: 0;
+}
 html:not([data-theme]) .kicker,
 html:not([data-theme]) .hub-h {
   display: inline-block;
@@ -994,6 +1016,7 @@ html:not([data-theme]) .mode-switch button:active {
   }
   p.note, .sum-note, summary small { font-size: 16.5px; }
   .header-date { font-size: 15px; }
+  .hub-dedication { font-size: 13.5px; }
   .hub-h { font-size: 21px; }
   nav.toc a.l2 { font-size: 17px; }
   html:not([data-theme]),
@@ -1059,4 +1082,109 @@ button, [role="option"], summary, a.home-btn, .to-toc, .scroll-float, .scroll-pa
   nav.toc a:hover { text-decoration: underline; }
   .to-toc:hover, .scroll-float:hover { filter: brightness(1.12); }
   .scroll-pace:hover { background: color-mix(in srgb, var(--accent) 16%, var(--bg)); }
+}
+
+/* Shabbat and Yom Tov lock. Covers the whole app, including the splash. */
+html.siddur-lock-pending,
+html.siddur-locked {
+  overflow: hidden;
+}
+html.siddur-lock-pending body,
+html.siddur-locked body {
+  visibility: hidden;
+}
+html.siddur-lock-pending::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background-color: #DACCB2;
+  background-image: url("parchment-p1.webp?v=41");
+  background-repeat: repeat;
+  background-size: 640px auto;
+  background-attachment: fixed;
+}
+html.siddur-locked body {
+  visibility: visible;
+}
+html.siddur-locked body > *:not(.siddur-lock) {
+  visibility: hidden;
+}
+.siddur-lock {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
+  box-sizing: border-box;
+  background-color: #DACCB2;
+  background-image: url("parchment-p1.webp?v=41");
+  background-repeat: repeat;
+  background-size: 640px auto;
+  background-attachment: fixed;
+  color: #2B2620;
+  text-align: center;
+  font-family: "Frank Ruhl Libre", "David Libre", "Times New Roman", "Arial Hebrew", serif;
+}
+.siddur-lock-frame {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 16px);
+  right: 16px;
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  left: 16px;
+  border: 1px solid #8A6A3A;
+  pointer-events: none;
+}
+.siddur-lock-frame::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid #8A6A3A;
+}
+.siddur-lock-card {
+  position: relative;
+  z-index: 1;
+  max-width: 28rem;
+  padding: 12px 8px;
+}
+.siddur-lock-greeting {
+  margin: 0 0 12px;
+  font-size: clamp(34px, 9vw, 56px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #3F2A18;
+}
+.siddur-lock-heading {
+  margin: 0 0 18px;
+  font-size: clamp(24px, 5.6vw, 36px);
+  font-weight: 700;
+  line-height: 1.35;
+  color: #3F2A18;
+}
+.siddur-lock-body {
+  margin: 0 0 18px;
+  font-size: clamp(20px, 4.2vw, 26px);
+  line-height: 1.6;
+  font-weight: 400;
+}
+.siddur-lock-until {
+  margin: 0 0 36px;
+  font-size: clamp(18px, 3.6vw, 24px);
+  line-height: 1.55;
+  font-weight: 700;
+  color: #3F2A18;
+}
+.siddur-lock-memorial {
+  margin: 0;
+  font-size: clamp(15px, 2.8vw, 18px);
+  line-height: 1.6;
+  color: #4E4338;
+}
+@media (min-width: 1200px) {
+  html.siddur-lock-pending::after,
+  .siddur-lock {
+    background-size: 960px auto;
+  }
 }
