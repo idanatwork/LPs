@@ -5,7 +5,7 @@
   --accent: #4A3C1C;
   --fs: 22px;
   --col: 680px;
-  --header: calc(env(safe-area-inset-top) + 120px);
+  --header: calc(env(safe-area-inset-top) + 136px);
   color-scheme: light;
 }
 html[data-theme="light"] {
@@ -61,6 +61,18 @@ header.bar {
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.bsd {
+  flex: 1 0 100%;
+  margin: 0;
+  min-height: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: start;
+  white-space: nowrap;
 }
 .brand { display: flex; flex: 1 1 100%; flex-direction: row; align-items: center; gap: 8px; min-width: 0; }
 a.home-btn {
@@ -710,8 +722,10 @@ details.sec details.add { margin-right: 0; }
     margin: 8px auto 0;
     border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
     border-radius: 18px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    align-content: center;
   }
+  .bsd { padding-inline: 2px; }
   .brand { flex: 1 1 auto; }
   .hub-dedication { font-size: 13px; }
   .szs { flex: 0 0 auto; width: auto; justify-content: flex-start; }
@@ -963,7 +977,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=44");
+  --klaf-tile: url("parchment-p1.webp?v=45");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1101,6 +1115,7 @@ html:not([data-theme]) .mode-switch button:active {
   p.note, .sum-note, summary small { font-size: 16.5px; }
   .header-date { font-size: 15px; }
   .hub-dedication { font-size: 13.5px; }
+  .bsd { font-size: 12.5px; min-height: 15px; line-height: 15px; }
   .hub-h { font-size: 21px; }
   .hub-halacha > summary { font-size: 19px; }
   .hub-sub { font-size: 17px; }
@@ -1186,7 +1201,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=44");
+  background-image: url("parchment-p1.webp?v=45");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1207,7 +1222,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=44");
+  background-image: url("parchment-p1.webp?v=45");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1267,6 +1282,18 @@ html.siddur-locked body > *:not(.siddur-lock) {
   margin: 0;
   font-size: clamp(15px, 2.8vw, 18px);
   line-height: 1.6;
+  color: #4E4338;
+}
+.siddur-lock-bsd {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 36px);
+  right: 36px;
+  z-index: 2;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.06em;
   color: #4E4338;
 }
 @media (min-width: 1200px) {

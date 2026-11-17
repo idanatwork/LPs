@@ -5,7 +5,7 @@
  * Israeli calendar only: one-day Yom Tov, except two days of Rosh Hashana.
  */
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
-import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs?v=44";
+import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs?v=45";
 
 const TZ = ORANIT.tz;
 const LOCK_ID = "siddur-shabbat-lock";
@@ -140,6 +140,7 @@ function lockDocument() {
   el.setAttribute("aria-labelledby", "siddur-lock-title");
   el.innerHTML =
     '<div class="siddur-lock-frame" aria-hidden="true"></div>' +
+    '<p class="siddur-lock-bsd">בס״ד</p>' +
     '<div class="siddur-lock-card">' +
       '<p class="siddur-lock-greeting" id="siddur-lock-title"></p>' +
       '<p class="siddur-lock-heading" hidden></p>' +
