@@ -92,8 +92,28 @@ body.siddur-frame main { position: relative; }
     mask: url("ornament-rule.svg") center / 100% 14px no-repeat;
   }
   body.siddur-frame main::after { margin: 16px auto 0; }
+  /* Side flourishes, same as desktop but narrower, in the 18px page gutter. */
+  body.siddur-frame { position: relative; }
+  body.siddur-frame::before,
+  body.siddur-frame::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    z-index: 0;
+    pointer-events: none;
+    background-color: var(--accent);
+    opacity: 0.4;
+    -webkit-mask: url("ornament-side.svg") center top / 14px 56px repeat-y;
+    mask: url("ornament-side.svg") center top / 14px 56px repeat-y;
+  }
+  body.siddur-frame::before { inset-inline-start: 2px; }
+  body.siddur-frame::after { inset-inline-end: 2px; transform: scaleX(-1); }
 }
 @media (prefers-reduced-motion: reduce) {
+  body.siddur-frame::before,
+  body.siddur-frame::after,
   body.siddur-frame main::before,
   body.siddur-frame main::after,
   body.siddur-frame h2::after {
