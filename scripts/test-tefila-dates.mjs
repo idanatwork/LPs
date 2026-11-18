@@ -84,7 +84,7 @@ function at(y, m, d, service) {
 {
   const hd = new HDate(5, months.IYYAR, 5787);
   const st = statusForHDate(hd, "shacharit");
-  check("Yom HaAtzmaut omits tachanun with a note", !st.flags.tachanun && st.chips.includes("יום העצמאות") && st.note.includes("דרוקמן") && st.note.includes("עובדיה"), st.chips.join(" · "));
+  check("Yom HaAtzmaut omits tachanun with a note", !st.flags.tachanun && st.chips.includes("יום העצמאות") && st.note.includes("מלמד") && st.note.includes("עובדיה") && !st.note.includes("דרוקמן"), st.chips.join(" · "));
 }
 
 {
