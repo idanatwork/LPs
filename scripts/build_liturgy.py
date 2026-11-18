@@ -304,7 +304,9 @@ def main():
     parts_html.append('<details class="add" data-open="sukkot"><summary>הרחמן לסוכות</summary>' + body(bm[49]) + body(bm[50]) + "</details>")
     parts_html.append('<details class="add" data-open="yomtov"><summary>הרחמן למועדים</summary>' + body(bm[51]) + body(bm[52]) + body(bm[53]) + body(bm[54]) + "</details>")
     parts_html.append(body(bm[55]))
-    parts_html.append('<details class="sec" id="b4"><summary>ברכת האורח</summary>' + body(bm[56]) + body(bm[57]) + body(bm[58]) + "</details>")
+    parts_html.append('<details class="sec" id="b4"><summary>ברכת האורח</summary>' + body(bm[56]) + "</details>")
+    parts_html.append(body(bm[57]))
+    parts_html.append(body(bm[58]))
     parts_html.append(f'<p class="src"><a href="{SRC["bhm"]}">ספריא: ברכת המזון</a></p>')
     toc_b = "".join(
         f'<a class="l2" href="#{i}">{html.escape(t)}</a>'
