@@ -1,0 +1,17 @@
+name = "tefila-push-worker"
+main = "worker.js"
+compatibility_date = "2026-11-18"
+account_id = "f6565c2a07ed5e2a7defe3e17097b8ce"
+workers_dev = true
+preview_urls = false
+
+[vars]
+VAPID_PUBLIC_KEY = "BAfcnfmCr7UQYyKZviXZirgbb579cBt0VlgUNm83sNE0_KdmnMGhZ3xhNdkpWo9u3q9NtFRwWpyfnVNSVPBAUtU"
+VAPID_SUBJECT = "https://idanatwork.github.io/LPs/tefila/"
+
+[[kv_namespaces]]
+binding = "SUBSCRIPTIONS_KV"
+id = "81eece563899428d980fb29ff7bbf382"
+
+[triggers]
+crons = ["*/5 * * * *"]

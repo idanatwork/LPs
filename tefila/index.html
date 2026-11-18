@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta name="tefila-build" content="46">
+<meta name="tefila-build" content="47">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -13,12 +13,12 @@
 <meta name="apple-mobile-web-app-title" content="סידור עד-י-אל">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" id="theme-color" content="#DACCB2">
-<link rel="manifest" href="index.webmanifest?v=46">
+<link rel="manifest" href="index.webmanifest?v=47">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tefila.css?v=46">
-<link rel="stylesheet" href="accent.css?v=46">
+<link rel="stylesheet" href="tefila.css?v=47">
+<link rel="stylesheet" href="accent.css?v=47">
 <title>סידור</title>
 <script type="importmap">
 {
@@ -46,7 +46,7 @@
 
 })();
 </script>
-<script src="boot.js?v=46"></script>
+<script src="boot.js?v=47"></script>
 <script nomodule>
 (function () {
   var root = document.documentElement;
@@ -55,7 +55,7 @@
   }
 })();
 </script>
-<script type="module" src="shabbat-lock.mjs?v=46"></script>
+<script type="module" src="shabbat-lock.mjs?v=47"></script>
 <script>
 window.tefilaInstallPrompt = null;
 window.addEventListener("beforeinstallprompt", function (event) {
@@ -65,7 +65,7 @@ window.addEventListener("beforeinstallprompt", function (event) {
 });
 </script>
 <style>
-.memorial-splash{position:fixed;inset:0;z-index:200;background-color:#DACCB2;background-image:url("parchment-p1.webp?v=46");background-repeat:repeat;background-size:640px auto;color:#2B2620;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
+.memorial-splash{position:fixed;inset:0;z-index:200;background-color:#DACCB2;background-image:url("parchment-p1.webp?v=47");background-repeat:repeat;background-size:640px auto;color:#2B2620;overflow:hidden;font-family:"Frank Ruhl Libre","David Libre","Times New Roman","Arial Hebrew",serif}
 .memorial-frame{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;bottom:calc(env(safe-area-inset-bottom) + 16px);left:16px;border:1px solid #8A6A3A;pointer-events:none}
 .memorial-frame::before{content:"";position:absolute;inset:6px;border:1px solid #8A6A3A}
 .corner{position:absolute;width:38px;height:38px}
@@ -256,6 +256,23 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
     </div>
     <a href="../watch/">בשעון</a>
   </nav>
+  <details class="alerts-panel" id="alerts-panel">
+    <summary>התראות לתפילה</summary>
+    <p id="alerts-ios" class="alerts-ios" hidden>להפעלת התראות, הוסיפו תחילה את הסידור באמצעות «הוספה למסך הבית».</p>
+    <p id="alerts-state" class="alerts-state"></p>
+    <label class="alerts-row"><input type="checkbox" id="alert-shacharit"> שחרית</label>
+    <label class="alerts-row"><input type="checkbox" id="alert-mincha"> מנחה — <input type="number" id="alert-mincha-offset" min="0" max="180" value="15" inputmode="numeric" aria-label="דקות לפני שקיעה"> דקות לפני שקיעה</label>
+    <label class="alerts-row"><input type="checkbox" id="alert-arvit"> ערבית — <input type="number" id="alert-arvit-offset" min="0" max="180" value="0" inputmode="numeric" aria-label="דקות אחרי צאת הכוכבים"> דקות אחרי צאת הכוכבים</label>
+    <fieldset class="alerts-loc">
+      <legend>מיקום</legend>
+      <label><input type="radio" name="alert-loc" value="oranit" checked> אורנית</label>
+      <label><input type="radio" name="alert-loc" value="geo"> המיקום שלי</label>
+    </fieldset>
+    <div class="alerts-actions">
+      <button type="button" id="alert-subscribe" class="shortcut-btn shortcut-start">הפעלת התראות</button>
+      <button type="button" id="alert-unsubscribe" class="shortcut-btn shortcut-end" hidden>ביטול התראות</button>
+    </div>
+  </details>
   <div id="focus-hub" hidden>
     <h3 class="hub-sub">פוקוס תפילה</h3>
     <nav class="cards small" aria-label="פוקוס תפילה">
@@ -277,10 +294,11 @@ try { if (sessionStorage.getItem("tefila-splash") === "1") document.documentElem
   <p id="install-copied" class="install-copied" hidden>הקישור הועתק</p>
   <button type="button" id="install-close" class="install-later">סגירה</button>
 </dialog>
-<script src="install.js?v=46"></script>
-<script src="shortcuts.js?v=46"></script>
-<script src="controls.js?v=46"></script>
-<script src="credit.js?v=46"></script>
-<script type="module" src="hub.mjs?v=46"></script>
+<script src="install.js?v=47"></script>
+<script src="alerts.js?v=47"></script>
+<script src="shortcuts.js?v=47"></script>
+<script src="controls.js?v=47"></script>
+<script src="credit.js?v=47"></script>
+<script type="module" src="hub.mjs?v=47"></script>
 </body>
 </html>

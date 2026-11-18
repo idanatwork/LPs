@@ -1,1 +1,6 @@
 node_modules/
+
+# Worker secrets
+workers/**/.dev.vars
+workers/**/node_modules/
+workers/**/.wrangler/

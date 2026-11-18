@@ -469,6 +469,96 @@ p.t {
 }
 #settings-hub #install-hub:not([hidden]) { display: contents; }
 
+.alerts-panel {
+  margin: 12px 0 0;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  text-align: right;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+.alerts-panel[open] { padding-bottom: 12px; }
+.alerts-panel > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 2px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--accent);
+}
+.alerts-panel > summary::-webkit-details-marker { display: none; }
+.alerts-panel > summary::before {
+  content: "◂ ";
+  font-weight: 400;
+}
+.alerts-panel[open] > summary::before { content: "▾ "; }
+.alerts-ios {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.alerts-state {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 1.45em;
+}
+.alerts-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 8px 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.alerts-row input[type="number"] {
+  width: 3.6em;
+  text-align: center;
+  font: inherit;
+  padding: 2px 4px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+.alerts-loc {
+  margin: 10px 0 8px;
+  padding: 0;
+  border: 0;
+}
+.alerts-loc legend {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+  padding: 0;
+}
+.alerts-loc label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 14px;
+  font-size: 15px;
+}
+.alerts-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.alerts-actions .shortcut-btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 .improve-foot {
   margin: 18px 0 0;
   text-align: center;
@@ -977,7 +1067,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=46");
+  --klaf-tile: url("parchment-p1.webp?v=47");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1036,6 +1126,7 @@ html:not([data-theme]) .hub-sub {
    Instructional notes, toc and credits stay typographic, not cards. */
 html:not([data-theme]) .today,
 html:not([data-theme]) .hub-halacha,
+html:not([data-theme]) .alerts-panel,
 html:not([data-theme]) nav.toc,
 html:not([data-theme]) .stone-read,
 html:not([data-theme]) .mode-panel,
@@ -1201,7 +1292,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=46");
+  background-image: url("parchment-p1.webp?v=47");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1222,7 +1313,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=46");
+  background-image: url("parchment-p1.webp?v=47");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
