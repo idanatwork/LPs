@@ -1,7 +1,7 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=48";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=49";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=48";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=49";
 
 function paintHub() {
   const now = new Date();
