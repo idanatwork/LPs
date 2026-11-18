@@ -1,5 +1,5 @@
-var CACHE = "tefila-pages-47";
-var PRECACHE = ["tefila/parchment-p1.webp?v=47"];
+var CACHE = "tefila-pages-48";
+var PRECACHE = ["tefila/parchment-p1.webp?v=48"];
 
 self.addEventListener("install", function (event) {
   event.waitUntil(caches.open(CACHE).then(function (cache) { return cache.addAll(PRECACHE); }));

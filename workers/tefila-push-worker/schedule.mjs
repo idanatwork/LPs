@@ -27,13 +27,46 @@ export function computeFromSun(sunrise, sunset) {
   const shaah = (sunset.getTime() - sunrise.getTime()) / 12;
   const minute = shaah / 60;
   const shift = (base, mins) => new Date(base.getTime() + mins * minute);
+  const alot = shift(sunrise, -72);
+  const tzeit = shift(sunset, 13.5);
+  const rabbeinuTam = shift(sunset, 72);
+  const shaahMA = (rabbeinuTam.getTime() - alot.getTime()) / 12;
+  const fromAlot = (hours) => new Date(alot.getTime() + hours * shaahMA);
   return {
+    alot,
     sunrise,
     sunset,
-    tzeit: shift(sunset, 13.5),
-    rabbeinuTam: shift(sunset, 72),
+    shemaMGA: fromAlot(3),
+    tzeit,
+    rabbeinuTam,
     candles: new Date(sunset.getTime() - 20 * 60 * 1000),
   };
+}
+
+export function formatHM(date, tz = ORANIT.tz) {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: tz,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
+}
+
+/** Missing shacharitWhen (v47 subscriptions) keeps sunrise. */
+export function shacharitMode(alerts) {
+  return alerts && alerts.shacharitWhen === "shema" ? "shema" : "sunrise";
+}
+
+export function prayerPayload(kind, times, alerts, tz = ORANIT.tz) {
+  const base = PRAYERS[kind];
+  if (!base) return null;
+  if (kind === "shacharit" && shacharitMode(alerts) === "shema" && times.shemaMGA) {
+    return {
+      ...base,
+      body: `סוף זמן קריאת שמע בשעה ${formatHM(times.shemaMGA, tz)}`,
+    };
+  }
+  return { ...base };
 }
 
 export function civilParts(date, tz) {
@@ -138,7 +171,14 @@ export function isShabbatOrYomTovLocked(now, lat, lon, tz) {
 }
 
 export function alertTime(kind, times, alerts) {
-  if (kind === "shacharit") return times.sunrise;
+  if (kind === "shacharit") {
+    if (shacharitMode(alerts) === "shema") {
+      const mins = Number(alerts.shacharitOffset);
+      const offset = Number.isFinite(mins) ? mins : 15;
+      return new Date(times.shemaMGA.getTime() - offset * 60 * 1000);
+    }
+    return times.sunrise;
+  }
   if (kind === "mincha") {
     const mins = Number(alerts.minchaOffset);
     const offset = Number.isFinite(mins) ? mins : 15;
@@ -187,4 +227,12 @@ export function dueAlerts(record, now) {
 export async function subKey(endpoint) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(endpoint));
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export function timesForRecord(record, now) {
+  const lat = Number(record.lat) || ORANIT.lat;
+  const lon = Number(record.lng ?? record.lon) || ORANIT.lon;
+  const tz = record.tz || ORANIT.tz;
+  const p = civilParts(now, tz);
+  return { tz, times: zmanimForCivil(p.y, p.m, p.d, lat, lon, tz), alerts: record.alerts || {} };
 }

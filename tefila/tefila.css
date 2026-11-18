@@ -494,6 +494,7 @@ p.t {
   color: var(--accent);
 }
 .alerts-panel > summary::-webkit-details-marker { display: none; }
+.alerts-panel > summary::marker { content: none; }
 .alerts-panel > summary::before {
   content: "◂ ";
   font-weight: 400;
@@ -519,15 +520,72 @@ p.t {
   font-size: 15px;
   line-height: 1.4;
 }
+.alerts-panel {
+  accent-color: var(--accent);
+}
+.alerts-sub {
+  margin: 0 0 6px;
+  padding-right: 1.6em;
+}
+.alerts-msg {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 0;
+  color: var(--accent);
+}
+.alerts-panel input[type="checkbox"],
+.alerts-panel input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.15em;
+  height: 1.15em;
+  margin: 0;
+  flex: none;
+  box-sizing: border-box;
+  border: 2px solid var(--accent);
+  background: transparent;
+  accent-color: var(--accent);
+  color: var(--accent);
+  vertical-align: middle;
+}
+.alerts-panel input[type="checkbox"] {
+  border-radius: 4px;
+}
+.alerts-panel input[type="radio"] {
+  border-radius: 50%;
+}
+.alerts-panel input[type="checkbox"]:checked {
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23DACCB2' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5 6.5 11.5 12.5 4.5'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px 12px;
+}
+html[data-theme="light"] .alerts-panel input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23fdfbf6' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5 6.5 11.5 12.5 4.5'/></svg>");
+}
+html[data-theme="dark"] .alerts-panel input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23111111' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.5 6.5 11.5 12.5 4.5'/></svg>");
+}
+.alerts-panel input[type="radio"]:checked {
+  background-image: radial-gradient(circle, var(--accent) 0 0.35em, transparent 0.4em);
+}
 .alerts-row input[type="number"] {
   width: 3.6em;
   text-align: center;
   font: inherit;
   padding: 2px 4px;
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   border-radius: 6px;
   background: transparent;
-  color: inherit;
+  color: var(--accent);
+  caret-color: var(--accent);
+  accent-color: var(--accent);
+}
+.alerts-row input[type="number"]:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 1px;
 }
 .alerts-loc {
   margin: 10px 0 8px;
@@ -1067,7 +1125,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=47");
+  --klaf-tile: url("parchment-p1.webp?v=48");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1292,7 +1350,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=47");
+  background-image: url("parchment-p1.webp?v=48");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1313,7 +1371,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=47");
+  background-image: url("parchment-p1.webp?v=48");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1393,3 +1451,58 @@ html.siddur-locked body > *:not(.siddur-lock) {
     background-size: 960px auto;
   }
 }
+
+#update-banner {
+  position: fixed;
+  z-index: 90;
+  left: 12px;
+  right: 12px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  max-width: min(var(--col, 440px), calc(100% - 24px));
+  margin: 0 auto;
+  padding: 14px 14px 12px;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 16px;
+  background: var(--bg, #DACCB2);
+  color: var(--fg, #2B2620);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--fg, #2B2620) 18%, transparent);
+  text-align: right;
+  font: 400 15px/1.45 inherit;
+}
+#update-banner .update-note {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--accent);
+}
+#update-banner .update-how {
+  margin: 0 0 10px;
+}
+#update-banner .update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#update-banner button {
+  font: inherit;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 8px 14px;
+  min-height: 44px;
+  cursor: pointer;
+}
+#update-banner .update-now {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg, #DACCB2);
+}
+#update-banner .update-dismiss {
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: transparent;
+  color: var(--accent);
+}
+html.siddur-locked #update-banner,
+html.siddur-lock-pending #update-banner {
+  display: none !important;
+}
+

@@ -7,6 +7,8 @@
   function defaults() {
     return {
       shacharit: true,
+      shacharitWhen: "shema",
+      shacharitOffset: 15,
       mincha: true,
       minchaOffset: 15,
       arvit: true,
@@ -22,7 +24,11 @@
     var s = defaults();
     try {
       var raw = localStorage.getItem(STORAGE);
-      if (raw) Object.assign(s, JSON.parse(raw));
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        Object.assign(s, parsed);
+        if (!parsed.shacharitWhen) s.shacharitWhen = "sunrise";
+      }
     } catch (e) {}
     return s;
   }
@@ -53,8 +59,23 @@
 
   function $(id) { return document.getElementById(id); }
 
+  function setMsg(text) {
+    var el = $("alerts-msg");
+    if (el) el.textContent = text || "";
+  }
+
+  function formatCoords(lat, lng) {
+    function fmt(n) { return Math.abs(n).toFixed(3); }
+    var ns = lat >= 0 ? "צפון" : "דרום";
+    var ew = lng >= 0 ? "מזרח" : "מערב";
+    return fmt(lat) + "° " + ns + ", " + fmt(lng) + "° " + ew;
+  }
+
   function readForm(s) {
     s.shacharit = $("alert-shacharit").checked;
+    var when = document.querySelector('input[name="alert-shacharit-when"]:checked');
+    s.shacharitWhen = when && when.value === "sunrise" ? "sunrise" : "shema";
+    s.shacharitOffset = Math.max(0, Math.min(180, Number($("alert-shacharit-offset").value) || 0));
     s.mincha = $("alert-mincha").checked;
     s.minchaOffset = Math.max(0, Math.min(180, Number($("alert-mincha-offset").value) || 0));
     s.arvit = $("alert-arvit").checked;
@@ -71,12 +92,16 @@
 
   function writeForm(s) {
     $("alert-shacharit").checked = !!s.shacharit;
+    var whenRadios = document.querySelectorAll('input[name="alert-shacharit-when"]');
+    var when = s.shacharitWhen === "sunrise" ? "sunrise" : "shema";
+    for (var i = 0; i < whenRadios.length; i++) whenRadios[i].checked = whenRadios[i].value === when;
+    $("alert-shacharit-offset").value = String(s.shacharitOffset == null ? 15 : s.shacharitOffset);
     $("alert-mincha").checked = !!s.mincha;
     $("alert-mincha-offset").value = String(s.minchaOffset);
     $("alert-arvit").checked = !!s.arvit;
     $("alert-arvit-offset").value = String(s.arvitOffset);
     var radios = document.querySelectorAll('input[name="alert-loc"]');
-    for (var i = 0; i < radios.length; i++) radios[i].checked = radios[i].value === s.loc;
+    for (var j = 0; j < radios.length; j++) radios[j].checked = radios[j].value === s.loc;
   }
 
   function setState(text) {
@@ -98,69 +123,12 @@
     return reg.pushManager.getSubscription();
   }
 
-  async function refreshState(s) {
-    if (!supported()) {
-      setState("הדפדפן אינו תומך בהתראות");
-      $("alert-subscribe").disabled = true;
-      $("alert-unsubscribe").hidden = true;
-      return;
-    }
-    if (iosBlocked()) {
-      $("alerts-ios").hidden = false;
-      $("alert-subscribe").disabled = true;
-      $("alert-unsubscribe").hidden = true;
-      setState("לא פעילות");
-      return;
-    }
-    $("alerts-ios").hidden = true;
-    if (Notification.permission === "denied") {
-      setState("ההרשאה להתראות נחסמה");
-      $("alert-subscribe").disabled = true;
-      $("alert-unsubscribe").hidden = true;
-      return;
-    }
-    var sub = await currentSub();
-    if (sub) {
-      setState("פעילות");
-      $("alert-subscribe").hidden = true;
-      $("alert-subscribe").disabled = false;
-      $("alert-unsubscribe").hidden = false;
-    } else {
-      setState("לא פעילות");
-      $("alert-subscribe").hidden = false;
-      $("alert-subscribe").disabled = false;
-      $("alert-unsubscribe").hidden = true;
-    }
-  }
-
-  function payload(s, subscription) {
-    return {
-      subscription: {
-        endpoint: subscription.endpoint,
-        expirationTime: subscription.expirationTime,
-        keys: {
-          p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey("p256dh")))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, ""),
-          auth: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey("auth")))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "")
-        }
-      },
-      lat: s.lat,
-      lng: s.lng,
-      tz: s.tz,
-      alerts: {
-        shacharit: !!s.shacharit,
-        mincha: !!s.mincha,
-        minchaOffset: s.minchaOffset,
-        arvit: !!s.arvit,
-        arvitOffset: s.arvitOffset
-      }
-    };
+  function b64url(buf) {
+    var bin = btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+    return bin.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
   }
 
   function keysFromSub(subscription) {
-    function b64url(buf) {
-      var bin = btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
-      return bin.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-    }
     return {
       endpoint: subscription.endpoint,
       expirationTime: subscription.expirationTime,
@@ -171,36 +139,119 @@
     };
   }
 
-  async function maybeGeo(s) {
-    if (s.loc !== "geo" || !navigator.geolocation) {
-      if (s.loc !== "geo") {
-        s.lat = ORANIT.lat;
-        s.lng = ORANIT.lng;
-        s.tz = ORANIT.tz;
+  function payload(s, subscription) {
+    return {
+      subscription: keysFromSub(subscription),
+      lat: s.lat,
+      lng: s.lng,
+      tz: s.tz,
+      alerts: {
+        shacharit: !!s.shacharit,
+        shacharitWhen: s.shacharitWhen === "sunrise" ? "sunrise" : "shema",
+        shacharitOffset: s.shacharitOffset,
+        mincha: !!s.mincha,
+        minchaOffset: s.minchaOffset,
+        arvit: !!s.arvit,
+        arvitOffset: s.arvitOffset
       }
-      return s;
+    };
+  }
+
+  function pushSettings(s) {
+    currentSub().then(function (sub) {
+      if (!sub) return;
+      fetch(WORKER + "/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload(s, sub))
+      }).catch(function () {});
+    });
+  }
+
+  function applyOranit(s, message) {
+    s.loc = "oranit";
+    s.lat = ORANIT.lat;
+    s.lng = ORANIT.lng;
+    s.tz = ORANIT.tz;
+    writeForm(s);
+    save(s);
+    setMsg(message);
+    pushSettings(s);
+  }
+
+  // Must call getCurrentPosition in the same turn as the user gesture (iOS).
+  function locateNow(s, done) {
+    if (!navigator.geolocation) {
+      applyOranit(s, "לא ניתן לקבל את המיקום, נעשה שימוש באורנית");
+      if (done) done(s);
+      return;
     }
-    try {
-      var pos = await new Promise(function (resolve, reject) {
-        navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 });
-      });
-      s.lat = pos.coords.latitude;
-      s.lng = pos.coords.longitude;
-      s.tz = (Intl.DateTimeFormat().resolvedOptions().timeZone) || ORANIT.tz;
-    } catch (e) {
-      setState("לא ניתן לקבל את המיקום, נעשה שימוש באורנית");
-      s.loc = "oranit";
-      s.lat = ORANIT.lat;
-      s.lng = ORANIT.lng;
-      s.tz = ORANIT.tz;
-      writeForm(s);
+    setMsg("מאתר את המיקום…");
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        s.loc = "geo";
+        s.lat = pos.coords.latitude;
+        s.lng = pos.coords.longitude;
+        s.tz = (Intl.DateTimeFormat().resolvedOptions().timeZone) || ORANIT.tz;
+        writeForm(s);
+        save(s);
+        setMsg("המיקום הנוכחי: " + formatCoords(s.lat, s.lng));
+        pushSettings(s);
+        if (done) done(s);
+      },
+      function () {
+        applyOranit(s, "לא ניתנה גישה למיקום, נעשה שימוש באורנית");
+        if (done) done(s);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+    );
+  }
+
+  async function refreshState(s) {
+    if (!supported()) {
+      setState("הדפדפן אינו תומך בהתראות");
+      $("alert-subscribe").disabled = true;
+      $("alert-unsubscribe").hidden = true;
+      $("alert-test").hidden = true;
+      return;
     }
-    return s;
+    if (iosBlocked()) {
+      $("alerts-ios").hidden = false;
+      $("alert-subscribe").disabled = true;
+      $("alert-unsubscribe").hidden = true;
+      $("alert-test").hidden = true;
+      setState("לא פעילות");
+      return;
+    }
+    $("alerts-ios").hidden = true;
+    if (Notification.permission === "denied") {
+      setState("ההרשאה להתראות נחסמה");
+      $("alert-subscribe").disabled = true;
+      $("alert-unsubscribe").hidden = true;
+      $("alert-test").hidden = true;
+      return;
+    }
+    var sub = await currentSub();
+    if (sub) {
+      setState("פעילות");
+      $("alert-subscribe").hidden = true;
+      $("alert-subscribe").disabled = false;
+      $("alert-unsubscribe").hidden = false;
+      $("alert-test").hidden = false;
+    } else {
+      setState("לא פעילות");
+      $("alert-subscribe").hidden = false;
+      $("alert-subscribe").disabled = false;
+      $("alert-unsubscribe").hidden = true;
+      $("alert-test").hidden = true;
+    }
+    if (s && s.loc === "geo" && typeof s.lat === "number") {
+      setMsg("המיקום הנוכחי: " + formatCoords(s.lat, s.lng));
+    }
   }
 
   async function subscribe() {
     var s = readForm(load());
-    s = await maybeGeo(s);
     save(s);
     if (!supported() || iosBlocked()) return;
     var perm = await Notification.requestPermission();
@@ -214,20 +265,19 @@
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID)
     });
-    var body = payload(s, sub);
-    body.subscription = keysFromSub(sub);
     var res = await fetch(WORKER + "/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify(payload(s, sub))
     });
     if (!res.ok) {
-      setState("לא הצלחנו לשמור את ההתראות");
+      setMsg("לא הצלחנו לשמור את ההתראות");
       return;
     }
     setState("פעילות");
     $("alert-subscribe").hidden = true;
     $("alert-unsubscribe").hidden = false;
+    $("alert-test").hidden = false;
   }
 
   async function unsubscribe() {
@@ -243,23 +293,47 @@
       try { await sub.unsubscribe(); } catch (e) {}
     }
     setState("לא פעילות");
+    setMsg("");
     $("alert-subscribe").hidden = false;
     $("alert-unsubscribe").hidden = true;
+    $("alert-test").hidden = true;
   }
 
   function persistFromForm() {
     var s = readForm(load());
     save(s);
-    currentSub().then(function (sub) {
-      if (!sub) return;
-      var body = payload(s, sub);
-      body.subscription = keysFromSub(sub);
-      fetch(WORKER + "/subscribe", {
+    pushSettings(s);
+  }
+
+  async function sendTest() {
+    var sub = await currentSub();
+    if (!sub) {
+      setMsg("אין מנוי פעיל");
+      return;
+    }
+    setMsg("שולח התראת בדיקה…");
+    try {
+      var res = await fetch(WORKER + "/test", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      }).catch(function () {});
-    });
+        body: JSON.stringify({ subscription: { endpoint: sub.endpoint } })
+      });
+      if (res.status === 429) {
+        setMsg("אפשר לשלוח התראת בדיקה אחת בדקה");
+        return;
+      }
+      if (res.status === 404 || res.status === 410) {
+        setMsg("אין מנוי פעיל");
+        return;
+      }
+      if (!res.ok) {
+        setMsg("לא הצלחנו לשלוח את ההתראה");
+        return;
+      }
+      setMsg("נשלחה התראת בדיקה");
+    } catch (e) {
+      setMsg("לא הצלחנו לשלוח את ההתראה");
+    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -267,8 +341,25 @@
     var s = load();
     writeForm(s);
     refreshState(s);
-    $("alert-subscribe").addEventListener("click", function () { subscribe(); });
+    $("alert-subscribe").addEventListener("click", function () {
+      var cur = readForm(load());
+      if (cur.loc === "geo") locateNow(cur, function () { subscribe(); });
+      else subscribe();
+    });
     $("alert-unsubscribe").addEventListener("click", function () { unsubscribe(); });
-    $("alerts-panel").addEventListener("change", function () { persistFromForm(); });
+    $("alert-test").addEventListener("click", function () { sendTest(); });
+    $("alerts-panel").addEventListener("change", function (e) {
+      var t = e.target;
+      if (t && t.name === "alert-loc" && t.value === "geo") {
+        locateNow(readForm(load()));
+        return;
+      }
+      if (t && t.name === "alert-loc" && t.value === "oranit") {
+        var cur = readForm(load());
+        applyOranit(cur, "");
+        return;
+      }
+      persistFromForm();
+    });
   });
 })();

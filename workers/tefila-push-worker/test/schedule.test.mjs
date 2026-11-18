@@ -9,6 +9,8 @@ import {
   civilParts,
   civilYmd,
   alertTime,
+  prayerPayload,
+  shacharitMode,
   ORANIT,
   hdateFromCivil,
 } from "../schedule.mjs";
@@ -138,5 +140,70 @@ describe("Shabbat and Yom Tov suppression", () => {
     const hd = hebrewNowAt(chm, loc.lat, loc.lon, loc.tz);
     assert.equal(isHoly(hd), false);
     assert.equal(isShabbatOrYomTovLocked(chm, loc.lat, loc.lon, loc.tz), false);
+  });
+});
+
+describe("shacharit sof zman shema (MGA)", () => {
+  it("treats a missing shacharitWhen as sunrise (v47 compatibility)", () => {
+    assert.equal(shacharitMode({ shacharit: true }), "sunrise");
+    const nowBase = atCivil(2026, 11, 18, 12, 0);
+    const p = civilParts(nowBase, loc.tz);
+    const times = zmanimForCivil(p.y, p.m, p.d, loc.lat, loc.lon, loc.tz);
+    const now = new Date(times.sunrise.getTime() + 30 * 1000);
+    assert.deepEqual(dueAlerts(rec(), now), ["shacharit"]);
+  });
+
+  it("fires 15 minutes before sof zman kriat shema MGA", () => {
+    const nowBase = atCivil(2026, 11, 18, 12, 0);
+    const p = civilParts(nowBase, loc.tz);
+    const times = zmanimForCivil(p.y, p.m, p.d, loc.lat, loc.lon, loc.tz);
+    const alerts = { shacharit: true, shacharitWhen: "shema", shacharitOffset: 15, mincha: false, arvit: false };
+    const when = alertTime("shacharit", times, alerts);
+    assert.equal(when.getTime(), times.shemaMGA.getTime() - 15 * 60 * 1000);
+    const now = new Date(when.getTime() + 20 * 1000);
+    assert.deepEqual(dueAlerts(rec({ alerts }), now), ["shacharit"]);
+    const payload = prayerPayload("shacharit", times, alerts, loc.tz);
+    assert.equal(payload.title, "שחרית");
+    assert.match(payload.body, /^סוף זמן קריאת שמע בשעה \d{2}:\d{2}$/);
+  });
+
+  it("does not fire shema-mode shacharit 6 minutes after the offset", () => {
+    const nowBase = atCivil(2026, 11, 18, 12, 0);
+    const p = civilParts(nowBase, loc.tz);
+    const times = zmanimForCivil(p.y, p.m, p.d, loc.lat, loc.lon, loc.tz);
+    const alerts = { shacharit: true, shacharitWhen: "shema", shacharitOffset: 15, mincha: false, arvit: false };
+    const when = alertTime("shacharit", times, alerts);
+    const now = new Date(when.getTime() + 6 * 60 * 1000);
+    assert.deepEqual(dueAlerts(rec({ alerts }), now), []);
+  });
+
+  it("does not fire shema-mode shacharit at sunrise", () => {
+    const nowBase = atCivil(2026, 11, 18, 12, 0);
+    const p = civilParts(nowBase, loc.tz);
+    const times = zmanimForCivil(p.y, p.m, p.d, loc.lat, loc.lon, loc.tz);
+    const alerts = { shacharit: true, shacharitWhen: "shema", shacharitOffset: 15, mincha: false, arvit: false };
+    const now = new Date(times.sunrise.getTime() + 30 * 1000);
+    assert.deepEqual(dueAlerts(rec({ alerts }), now), []);
+  });
+
+  it("dedupes shema-mode shacharit after a send the same day", () => {
+    const nowBase = atCivil(2026, 11, 18, 12, 0);
+    const p = civilParts(nowBase, loc.tz);
+    const times = zmanimForCivil(p.y, p.m, p.d, loc.lat, loc.lon, loc.tz);
+    const alerts = { shacharit: true, shacharitWhen: "shema", shacharitOffset: 15, mincha: false, arvit: false };
+    const when = alertTime("shacharit", times, alerts);
+    const now = new Date(when.getTime() + 20 * 1000);
+    const today = civilYmd(now, loc.tz);
+    assert.deepEqual(dueAlerts(rec({ alerts, lastSent: { shacharit: today } }), now), []);
+  });
+
+  it("suppresses shema-mode shacharit during the Shabbat lock", () => {
+    const friday = atCivil(2026, 11, 20, 12, 0);
+    const fp = civilParts(friday, loc.tz);
+    const fTimes = zmanimForCivil(fp.y, fp.m, fp.d, loc.lat, loc.lon, loc.tz);
+    const alerts = { shacharit: true, shacharitWhen: "shema", shacharitOffset: 15, mincha: false, arvit: false };
+    const mid = atCivil(2026, 11, 21, 10, 0);
+    assert.equal(isShabbatOrYomTovLocked(mid, loc.lat, loc.lon, loc.tz), true);
+    assert.deepEqual(dueAlerts(rec({ alerts }), mid), []);
   });
 });

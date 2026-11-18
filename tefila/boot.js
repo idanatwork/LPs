@@ -96,16 +96,86 @@
   }
 
   var pendingVersion = "";
-  function showToast() {
-    if (document.getElementById("version-toast")) return;
-    var button = document.createElement("button");
-    button.id = "version-toast";
-    button.type = "button";
-    button.textContent = "גרסה חדשה זמינה — הקש לרענון";
-    button.setAttribute("aria-label", "גרסה חדשה זמינה — הקש לרענון");
-    button.style.cssText = "position:fixed;z-index:80;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);max-width:calc(100% - 24px);padding:10px 14px;border:0;border-radius:999px;background:#1e3a8a;color:#fff;font:600 14px/1.3 inherit;box-shadow:0 6px 18px rgba(0,0,0,.25)";
-    button.addEventListener("click", function () { reloadFor(pendingVersion || "toast"); });
-    (document.body || document.documentElement).appendChild(button);
+  var pendingNotes = "";
+
+  function isSiddurLocked() {
+    var root = document.documentElement;
+    return root.classList.contains("siddur-locked") || root.classList.contains("siddur-lock-pending");
+  }
+
+  function updateDismissed(version) {
+    try { return localStorage.getItem("tefila-update-dismissed") === String(version); } catch (e) { return false; }
+  }
+
+  function hideUpdateBanner() {
+    var el = document.getElementById("update-banner");
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  }
+
+  function applyUpdate() {
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (!reg) return;
+        var worker = reg.waiting || reg.installing || reg.active;
+        if (worker) worker.postMessage({ type: "tefila-ready" });
+      }).catch(function () {});
+    }
+    reloadFor(pendingVersion || "update");
+  }
+
+  function showUpdateBanner(version, notes) {
+    if (!version || version === BUILD || updateDismissed(version) || isSiddurLocked()) return;
+    var existing = document.getElementById("update-banner");
+    if (existing) {
+      var noteEl = existing.querySelector(".update-note");
+      if (noteEl && notes) noteEl.textContent = notes;
+      return;
+    }
+    pendingVersion = version;
+    pendingNotes = notes || "";
+    var banner = document.createElement("div");
+    banner.id = "update-banner";
+    banner.setAttribute("role", "status");
+    var note = document.createElement("p");
+    note.className = "update-note";
+    note.textContent = notes || ("גרסה " + version + " זמינה");
+    var how = document.createElement("p");
+    how.className = "update-how";
+    how.textContent = "כדי לקבל את העדכון לחצו ‘עדכן עכשיו’ (או סגרו ופתחו את הסידור).";
+    var actions = document.createElement("div");
+    actions.className = "update-actions";
+    var nowBtn = document.createElement("button");
+    nowBtn.type = "button";
+    nowBtn.className = "update-now";
+    nowBtn.textContent = "עדכן עכשיו";
+    nowBtn.addEventListener("click", function () { applyUpdate(); });
+    var dismissBtn = document.createElement("button");
+    dismissBtn.type = "button";
+    dismissBtn.className = "update-dismiss";
+    dismissBtn.textContent = "סגירה";
+    dismissBtn.addEventListener("click", function () {
+      try { localStorage.setItem("tefila-update-dismissed", String(version)); } catch (e) {}
+      hideUpdateBanner();
+    });
+    actions.appendChild(nowBtn);
+    actions.appendChild(dismissBtn);
+    banner.appendChild(note);
+    banner.appendChild(how);
+    banner.appendChild(actions);
+    (document.body || document.documentElement).appendChild(banner);
+  }
+
+  function watchLockForBanner() {
+    if (watchLockForBanner.armed) return;
+    watchLockForBanner.armed = true;
+    try {
+      new MutationObserver(function () {
+        if (isSiddurLocked()) hideUpdateBanner();
+        else if (pendingVersion && pendingVersion !== BUILD && !updateDismissed(pendingVersion)) {
+          showUpdateBanner(pendingVersion, pendingNotes);
+        }
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    } catch (e) {}
   }
 
   function stripBust() {
@@ -118,13 +188,13 @@
     } catch (e) {}
   }
 
-  function consider(remote) {
+  function consider(remote, notes) {
     if (!remote || remote === BUILD) { stripBust(); return; }
     pendingVersion = remote;
-    var tried = "";
-    try { tried = sessionStorage.getItem("tefila-reloaded") || ""; } catch (e) {}
-    if (busy() || tried === remote) { showToast(); stripBust(); }
-    else reloadFor(remote);
+    pendingNotes = notes || pendingNotes;
+    watchLockForBanner();
+    showUpdateBanner(remote, notes);
+    stripBust();
   }
 
   function checkVersion() {
@@ -133,7 +203,7 @@
       if (!res.ok) return null;
       return res.json();
     }).then(function (data) {
-      consider(data && data.v ? String(data.v) : "");
+      consider(data && data.v ? String(data.v) : "", data && data.notes ? String(data.notes) : "");
     }).catch(function () {});
   }
 
@@ -160,8 +230,16 @@
   }
   if (navigator.serviceWorker && location.protocol !== "file:") {
     var scopeBase = location.pathname.replace(/\/(tefila|brachot|watch)\/.*$/, "/");
-    navigator.serviceWorker.register(scopeBase + "sw.js").then(function () {
+    navigator.serviceWorker.register(scopeBase + "sw.js").then(function (reg) {
       whenSplashDone(notifyWorker);
+      if (reg.waiting) checkVersion();
+      reg.addEventListener("updatefound", function () {
+        var worker = reg.installing;
+        if (!worker) return;
+        worker.addEventListener("statechange", function () {
+          if (worker.state === "installed" && navigator.serviceWorker.controller) checkVersion();
+        });
+      });
     }).catch(function () {});
   }
 

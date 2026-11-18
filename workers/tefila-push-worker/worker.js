@@ -1,5 +1,5 @@
 import { buildPushPayload } from "@block65/webcrypto-web-push";
-import { dueAlerts, PRAYERS, ORANIT, subKey } from "./schedule.mjs";
+import { dueAlerts, PRAYERS, ORANIT, subKey, prayerPayload, timesForRecord, isShabbatOrYomTovLocked } from "./schedule.mjs";
 
 const ALLOWED_ORIGIN = "https://idanatwork.github.io";
 
@@ -52,6 +52,13 @@ function normalizeRecord(body, existing) {
     tz: typeof body.tz === "string" && body.tz ? body.tz : (existing && existing.tz) || ORANIT.tz,
     alerts: {
       shacharit: !!alerts.shacharit,
+      // Preserve missing shacharitWhen so v47 subscriptions stay on sunrise.
+      ...(alerts.shacharitWhen === "shema" || alerts.shacharitWhen === "sunrise"
+        ? { shacharitWhen: alerts.shacharitWhen }
+        : {}),
+      ...(Number.isFinite(Number(alerts.shacharitOffset))
+        ? { shacharitOffset: Number(alerts.shacharitOffset) }
+        : {}),
       mincha: !!alerts.mincha,
       minchaOffset: Number.isFinite(Number(alerts.minchaOffset)) ? Number(alerts.minchaOffset) : 15,
       arvit: !!alerts.arvit,
@@ -96,8 +103,7 @@ async function handleUnsubscribe(req, env) {
   return json(req, { ok: true });
 }
 
-async function sendPush(env, subscription, kind) {
-  const prayer = PRAYERS[kind];
+async function sendPush(env, subscription, prayer) {
   const message = {
     data: JSON.stringify({ title: prayer.title, body: prayer.body, url: prayer.url }),
     options: { ttl: 60 * 60, urgency: "high" },
@@ -132,6 +138,7 @@ export async function runSchedule(env, now, opts = {}) {
       if (!kinds.length) continue;
       const lastSent = { ...(record.lastSent || {}) };
       const tz = record.tz || ORANIT.tz;
+      const { times, alerts } = timesForRecord(record, now);
       const today = new Intl.DateTimeFormat("en-CA", {
         timeZone: tz,
         year: "numeric",
@@ -141,7 +148,7 @@ export async function runSchedule(env, now, opts = {}) {
       let changed = false;
       for (const kind of kinds) {
         try {
-          const res = await sendPush(env, record.subscription, kind);
+          const res = await sendPush(env, record.subscription, prayerPayload(kind, times, alerts, tz));
           if (res.status === 404 || res.status === 410) {
             await env.SUBSCRIPTIONS_KV.delete(key.name);
             sent.push({ key: key.name, kind, status: res.status, deleted: true });
@@ -166,6 +173,126 @@ export async function runSchedule(env, now, opts = {}) {
     cursor = page.list_complete ? undefined : page.cursor;
   } while (cursor);
   return { sent, errors, now: now.toISOString() };
+}
+
+
+const TEST_HOME = "https://idanatwork.github.io/LPs/tefila/";
+const TEST_PAYLOAD = {
+  title: "התראת בדיקה",
+  body: "כך תיראה התראה לתפילה",
+  url: TEST_HOME,
+};
+
+async function handleTest(req, env) {
+  if (!originAllowed(req)) {
+    return new Response(JSON.stringify({ error: "forbidden" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return json(req, { error: "invalid json" }, 400);
+  }
+  const endpoint = body.subscription?.endpoint || body.endpoint;
+  if (!endpoint || typeof endpoint !== "string") return json(req, { error: "invalid subscription" }, 400);
+  const key = await subKey(endpoint);
+  const record = await env.SUBSCRIPTIONS_KV.get(key, { type: "json" });
+  if (!record || !record.subscription || record.subscription.endpoint !== endpoint) {
+    return json(req, { error: "not found" }, 404);
+  }
+  const limitKey = `ratelimit:test:${key}`;
+  const recent = await env.SUBSCRIPTIONS_KV.get(limitKey);
+  if (recent) return json(req, { error: "rate_limited" }, 429);
+  await env.SUBSCRIPTIONS_KV.put(limitKey, String(Date.now()), { expirationTtl: 60 });
+  try {
+    const res = await sendPush(env, record.subscription, TEST_PAYLOAD);
+    if (res.status === 404 || res.status === 410) {
+      await env.SUBSCRIPTIONS_KV.delete(key);
+      return json(req, { ok: false, deleted: true }, 410);
+    }
+    if (res.ok || res.status === 201) return json(req, { ok: true });
+    return json(req, { error: "send_failed", status: res.status }, 502);
+  } catch (err) {
+    return json(req, { error: "send_failed" }, 502);
+  }
+}
+
+
+async function handleBroadcast(req, env) {
+  const secret = env.TEST_SEND_SECRET;
+  if (!secret) return new Response(null, { status: 404 });
+  const auth = req.headers.get("Authorization") || "";
+  if (auth !== `Bearer ${secret}`) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  let body = {};
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "invalid json" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  const title = typeof body.title === "string" ? body.title.trim() : "";
+  const text = typeof body.body === "string" ? body.body.trim() : "";
+  if (!title || !text) {
+    return new Response(JSON.stringify({ error: "title and body required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  let url = typeof body.url === "string" ? body.url.trim() : TEST_HOME;
+  if (!url.startsWith("https://idanatwork.github.io/")) url = TEST_HOME;
+  const payload = { title, body: text, url };
+  const now = new Date();
+  const sent = [];
+  const skipped = [];
+  const errors = [];
+  let cursor;
+  do {
+    const page = await env.SUBSCRIPTIONS_KV.list({ cursor, limit: 1000 });
+    for (const key of page.keys) {
+      if (key.name.startsWith("ratelimit:")) continue;
+      const record = await env.SUBSCRIPTIONS_KV.get(key.name, { type: "json" });
+      if (!record || !record.subscription || !record.subscription.endpoint) continue;
+      const lat = Number(record.lat) || ORANIT.lat;
+      const lon = Number(record.lng ?? record.lon) || ORANIT.lon;
+      const tz = record.tz || ORANIT.tz;
+      try {
+        if (isShabbatOrYomTovLocked(now, lat, lon, tz)) {
+          skipped.push({ key: key.name, reason: "shabbat" });
+          continue;
+        }
+      } catch (err) {
+        errors.push({ key: key.name, error: String(err) });
+        continue;
+      }
+      try {
+        const res = await sendPush(env, record.subscription, payload);
+        if (res.status === 404 || res.status === 410) {
+          await env.SUBSCRIPTIONS_KV.delete(key.name);
+          sent.push({ key: key.name, status: res.status, deleted: true });
+          continue;
+        }
+        if (res.ok || res.status === 201) sent.push({ key: key.name, status: res.status });
+        else errors.push({ key: key.name, status: res.status });
+      } catch (err) {
+        errors.push({ key: key.name, error: String(err) });
+      }
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+  return new Response(JSON.stringify({ ok: true, sent, skipped, errors }), {
+    status: 200,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
 
 async function handleTestSend(req, env) {
@@ -207,7 +334,9 @@ export default {
     }
     if (req.method === "POST" && url.pathname === "/subscribe") return handleSubscribe(req, env);
     if (req.method === "POST" && url.pathname === "/unsubscribe") return handleUnsubscribe(req, env);
+    if (req.method === "POST" && url.pathname === "/test") return handleTest(req, env);
     if (req.method === "POST" && url.pathname === "/test-send") return handleTestSend(req, env);
+    if (req.method === "POST" && url.pathname === "/broadcast") return handleBroadcast(req, env);
     if (req.method === "GET" && url.pathname === "/") {
       return new Response(JSON.stringify({ ok: true, vapidPublicKey: env.VAPID_PUBLIC_KEY }), {
         status: 200,
