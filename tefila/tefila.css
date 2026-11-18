@@ -470,11 +470,12 @@ p.t {
 #settings-hub #install-hub:not([hidden]) { display: contents; }
 
 .settings-hub .hub-ico {
-  width: 18px;
-  height: 18px;
+  width: 0.8em;
+  height: 0.8em;
   flex: none;
   display: block;
   color: currentColor;
+  stroke-width: 1.75;
 }
 .settings-hub .cards a,
 .settings-hub .cards button.card-btn {
@@ -487,38 +488,37 @@ html:not([data-theme]) .settings-hub .hub-sub,
 .settings-hub .shortcut-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .settings-hub .hub-sub { justify-content: flex-start; }
 .settings-hub .shortcut-btn { justify-content: center; }
-.settings-hub .alerts-panel > summary .hub-ico {
-  margin-inline-start: 0;
-}
 
 
 .alerts-panel {
   margin: 12px 0 0;
-  padding: 0 12px;
+  padding: 0 18px;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  border-radius: 14px;
+  border-radius: 18px;
   background: color-mix(in srgb, var(--accent) 6%, transparent);
   text-align: right;
-  min-height: 48px;
+  min-height: 64px;
   box-sizing: border-box;
 }
-.alerts-panel[open] { padding-bottom: 12px; }
+.alerts-panel[open] { padding-bottom: 16px; }
 .alerts-panel > summary {
   cursor: pointer;
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 10px 2px;
+  gap: 10px;
+  min-height: 64px;
+  margin-inline: -18px;
+  padding: 16px 18px;
   font-weight: 700;
-  font-size: 18px;
-  line-height: 1.4;
+  font-size: 26px;
+  line-height: 1.2;
   color: var(--accent);
+  box-sizing: border-box;
 }
 .alerts-panel > summary::-webkit-details-marker { display: none; }
 .alerts-panel > summary::marker { content: none; }
