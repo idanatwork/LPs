@@ -1156,7 +1156,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=50");
+  --klaf-tile: url("parchment-p1.webp?v=51");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1381,7 +1381,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=50");
+  background-image: url("parchment-p1.webp?v=51");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1402,7 +1402,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=50");
+  background-image: url("parchment-p1.webp?v=51");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1537,3 +1537,60 @@ html.siddur-lock-pending #update-banner {
   display: none !important;
 }
 
+
+/* Hub entry rows (v51): the prayer, times and brachot links read as tappable list rows.
+   Flat grouped list, hairline dividers, gold chevron. --go follows a chosen non-gold accent.
+   The repeated class beats the older per-theme .cards rules without !important. */
+:root { --go: #A9791F; --hub-surf: color-mix(in srgb, var(--fg) 4%, var(--bg)); --hub-hair: color-mix(in srgb, var(--fg) 14%, transparent); }
+html[data-theme="dark"] { --go: #e9c46a; --hub-surf: color-mix(in srgb, var(--fg) 7%, var(--bg)); --hub-hair: color-mix(in srgb, var(--fg) 16%, transparent); }
+html[data-accent]:not([data-accent="gold"]) { --go: var(--accent); }
+.index-main.index-main.index-main.index-main > nav.cards {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--hub-hair);
+  border-radius: 18px;
+  background: var(--hub-surf);
+}
+.index-main.index-main.index-main.index-main > nav.cards a {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  box-shadow: none;
+  min-height: 84px;
+  padding: 18px 18px 18px 14px;
+  font-size: 28px;
+  -webkit-tap-highlight-color: transparent;
+}
+.index-main.index-main.index-main.index-main > nav.cards a + a { border-top: 1px solid var(--hub-hair); }
+.index-main.index-main.index-main.index-main > nav.cards a:active { background: color-mix(in srgb, var(--go) 14%, transparent); }
+.index-main.index-main.index-main.index-main > nav.cards.small a { min-height: 60px; padding: 14px 18px 14px 14px; font-size: 22px; }
+.index-main > nav.cards a::after {
+  content: "\2039";
+  flex: none;
+  margin-inline-start: auto;
+  padding-bottom: 3px;
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--go);
+}
+.index-main > nav.cards:not(.small) a > span:first-child::after {
+  content: "פתיחת התפילה";
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.index-main.index-main.index-main.index-main > nav.cards a.now {
+  background: color-mix(in srgb, var(--go) 12%, var(--bg));
+  color: var(--fg);
+  box-shadow: inset -4px 0 0 var(--go);
+}
+.index-main.index-main.index-main.index-main > nav.cards a.now .now-tag {
+  background: transparent;
+  color: var(--go);
+  border: 1px solid var(--go);
+}
+.index-main > .today, .index-main > .hub-halacha, .index-main > .mode-panel { background: transparent; border-color: var(--hub-hair); }
