@@ -474,8 +474,10 @@ p.t {
   height: 0.8em;
   flex: none;
   display: block;
+  align-self: center;
   color: currentColor;
   stroke-width: 1.75;
+  overflow: visible;
 }
 .settings-hub .cards a,
 .settings-hub .cards button.card-btn {
@@ -522,11 +524,13 @@ html:not([data-theme]) .settings-hub .hub-sub,
 }
 .alerts-panel > summary::-webkit-details-marker { display: none; }
 .alerts-panel > summary::marker { content: none; }
-.alerts-panel > summary::before {
-  content: "◂ ";
+.alerts-panel > summary::after {
+  content: "◂";
   font-weight: 400;
+  margin-inline-start: auto;
+  flex: none;
 }
-.alerts-panel[open] > summary::before { content: "▾ "; }
+.alerts-panel[open] > summary::after { content: "▾"; }
 .alerts-ios {
   margin: 0 0 8px;
   font-size: 14px;
