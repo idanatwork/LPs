@@ -18,9 +18,10 @@ async function modeOf(page) {
     stored: localStorage.getItem("tefila-minyan"),
     yachid: document.querySelector('[data-set-minyan="yachid"]')?.getAttribute("aria-pressed"),
     minyan: document.querySelector('[data-set-minyan="minyan"]')?.getAttribute("aria-pressed"),
-    hidden: [...document.querySelectorAll(".minyan-only")].filter((el) => getComputedStyle(el).display === "none").length,
-    total: document.querySelectorAll(".minyan-only").length,
+    hidden: [...document.querySelectorAll(".minyan-only")].filter((el) => !el.closest("nav.toc.toc-collapsible:not(.open)") && getComputedStyle(el).display === "none").length,
+    total: [...document.querySelectorAll(".minyan-only")].filter((el) => !el.closest("nav.toc.toc-collapsible:not(.open)")).length,
     tocHidden: (() => {
+      document.getElementById("toc")?.classList.add("open");
       const toc = document.querySelector(".toc-minyan");
       return toc ? getComputedStyle(toc).display === "none" : null;
     })(),

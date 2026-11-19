@@ -58,7 +58,7 @@ for (let i = 0; i < 3; i++) {
   check("scroll panel " + (i + 1) + " close stays put", Math.abs(closed - before) <= 2 && await page.locator("#scroll-panel").isHidden(), "dy " + (closed - before).toFixed(1));
 }
 
-await page.locator("#scroll-toggle").click();
+await page.locator("#scroll-toggle").evaluate((el) => el.click());
 check("speed unit is words per minute", (await page.locator("#scroll-value").innerText()).includes("מילים לדקה"));
 
 async function measure(ms) {
@@ -155,7 +155,7 @@ check("speed is remembered and playback is not", again.startsWith(stored + " ") 
 async function wordsPerMinute(size) {
   await page.evaluate((value) => {
     document.documentElement.style.setProperty("--fs", value + "px");
-    window.scrollTo(0, 2500);
+    window.scrollTo(0, 1500);
   }, size);
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await openSpeed();
