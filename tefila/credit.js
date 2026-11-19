@@ -10,6 +10,10 @@
     document.head.appendChild(style);
     var credit = document.createElement("p");
     credit.className = "site-credit";
+    var ded = document.createElement("span");
+    ded.className = "site-dedication";
+    ded.textContent = "לעילוי נשמת עדי עדיאל טויטו הי״ד";
+    credit.appendChild(ded);
     credit.appendChild(document.createTextNode("נבנה ע\"י טק-מייט | "));
     var link = document.createElement("a");
     link.href = "https://brand.page/Tech-Mate";
