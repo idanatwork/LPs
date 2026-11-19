@@ -21,6 +21,15 @@
     link.rel = "noopener";
     link.textContent = "Tech-Mate";
     credit.appendChild(link);
+    var build = document.querySelector('meta[name="tefila-build"]');
+    var ver = build ? String(build.getAttribute("content") || "") : "";
+    if (ver) {
+      var tag = document.createElement("span");
+      tag.className = "site-version";
+      tag.setAttribute("dir", "ltr");
+      tag.textContent = "v" + ver;
+      credit.appendChild(tag);
+    }
     var main = document.querySelector("main");
     (main || document.body).appendChild(credit);
   }
