@@ -1609,14 +1609,14 @@ header.bar {
 header.bar .bsd {
   position: absolute;
   top: calc(env(safe-area-inset-top) + 2px);
-  left: 0;
-  right: 0;
+  left: auto;
+  right: 12px;
   flex: none;
   min-height: 0;
   padding: 0;
   font-size: 10px;
   line-height: 12px;
-  text-align: center;
+  text-align: right;
   pointer-events: none;
 }
 header.bar .brand {
@@ -1692,7 +1692,7 @@ header.bar .szs .mode-switch { height: 34px; }
 header.bar .szs .mode-switch button { width: auto; min-width: 0; min-height: 0; height: 34px; padding: 0 7px; font-size: 12.5px; border: 0; display: inline-flex; align-items: center; justify-content: center; }
 @media (min-width: 720px) {
   header.bar { padding-top: 16px; }
-  header.bar .bsd { text-align: start; padding-inline: 14px; }
+  header.bar .bsd { right: 16px; }
   header.bar .brand > strong { font-size: 21px; }
   header.bar .header-date,
   header.bar .hub-dedication { font-size: 12px; }
@@ -1710,4 +1710,13 @@ header.bar .szs .mode-switch button { width: auto; min-width: 0; min-height: 0; 
   header.bar .szs svg, header.bar a.home-btn svg { width: 15px; height: 15px; }
   header.bar .brand > strong { font-size: 18px; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
   header.bar .header-date, header.bar .hub-dedication { font-size: 10px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Footer (v53): dedication line above the builder credit, same on every page. */
+.site-credit .site-dedication {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
 }
