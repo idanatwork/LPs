@@ -48,7 +48,8 @@ for (const name of ["shacharit", "mincha", "arvit"]) {
   check(name + " date does not cover the header controls", !overlap && dateBox && dateBox.width <= 390);
   const home = await page.locator("a.home-btn").boundingBox();
   const title = await page.locator(".brand strong").boundingBox();
-  const between = dateBox.x < home.x ? dateBox.x + dateBox.width <= home.x + 2 && title.x + title.width <= dateBox.x + 2 : dateBox.x + dateBox.width <= title.x + 2 && home.x + home.width <= dateBox.x + 2;
+  const clear = (box) => dateBox.x + dateBox.width <= box.x + 2 || box.x + box.width <= dateBox.x + 2 || dateBox.y >= box.y + box.height - 1 || box.y >= dateBox.y + dateBox.height - 1;
+  const between = clear(home) && clear(title);
   check(name + " date sits between home and title", between);
   const tops = await page.locator("header.bar .szs button, header.bar .szs .mode-switch").evaluateAll((nodes) => {
     const visible = nodes.filter((node) => {

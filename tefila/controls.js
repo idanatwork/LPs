@@ -129,8 +129,21 @@
     panel.innerHTML = '<div class="font-panel-row"><span class="font-mark font-mark-sm" aria-hidden="true">א</span><input type="range" id="font-slider" min="0" max="100" step="1" dir="rtl" aria-label="גודל טקסט"><span class="font-mark font-mark-lg" aria-hidden="true">א</span><button type="button" id="font-panel-close" aria-label="סגור">×</button></div><div class="scroll-actions" id="font-step-row"></div><p class="font-value" id="font-value"></p>';
     pop.appendChild(toggle);
     var header = document.querySelector("header.bar");
-    if (dec && dec.parentNode) dec.parentNode.insertBefore(pop, dec);
-    else if (header) header.appendChild(pop);
+    var stack = document.createElement("div");
+    stack.className = "font-stack";
+    function stackButton(id, label, dir, path) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.id = id;
+      b.setAttribute("aria-label", label);
+      b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="' + path + '"/></svg>';
+      stepButton(b, dir);
+      return b;
+    }
+    stack.appendChild(stackButton("font-stack-inc", "הגדל אות", 1, "M10.6 4h2.8v6.6H20v2.8h-6.6V20h-2.8v-6.6H4v-2.8h6.6z"));
+    stack.appendChild(pop);
+    stack.appendChild(stackButton("font-stack-dec", "הקטן אות", -1, "M4 10.6h16v2.8H4z"));
+    document.body.appendChild(stack);
     document.body.appendChild(panel);
     var stepRow = panel.querySelector("#font-step-row");
     if (dec) stepRow.appendChild(dec);
@@ -138,6 +151,11 @@
     slider = panel.querySelector("#font-slider");
     sliderValue = panel.querySelector("#font-value");
     syncSlider(read());
+    function placeFontPanel(node) {
+      var rect = stack.getBoundingClientRect();
+      node.style.top = "auto";
+      node.style.bottom = Math.max(8, Math.round(window.innerHeight - rect.top + 8)) + "px";
+    }
     function placePanel(node) {
       var bar = document.querySelector("header.bar");
       var top = bar ? bar.getBoundingClientRect().bottom + 6 : 8;
@@ -157,7 +175,7 @@
         if (open && window.tefilaCloseScrollPanel) window.tefilaCloseScrollPanel();
         panel.hidden = !open;
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
-        if (open) placePanel(panel);
+        if (open) placeFontPanel(panel);
       });
     }
     window.tefilaCloseFontPanel = function () { if (!panel.hidden) setOpen(false); };
@@ -169,7 +187,7 @@
     panel.querySelector("#font-panel-close").addEventListener("click", function () { setOpen(false); });
     document.addEventListener("pointerdown", function (event) {
       if (panel.hidden) return;
-      if (panel.contains(event.target) || pop.contains(event.target)) return;
+      if (panel.contains(event.target) || stack.contains(event.target)) return;
       setOpen(false);
     });
     document.addEventListener("keydown", function (event) {
@@ -240,7 +258,9 @@
     paceBtn.setAttribute("aria-label", "מהירות גלילה");
     paceBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 16h4v3H4zm6-5h4v8h-4zm6-4h4v12h-4z"/></svg>';
     scrollPop.appendChild(scrollToggle);
-    if (pop.parentNode) pop.parentNode.insertBefore(scrollPop, pop);
+    var szsRow = document.querySelector("header.bar .szs");
+    if (szsRow) szsRow.appendChild(scrollPop);
+    else if (pop.parentNode) pop.parentNode.insertBefore(scrollPop, pop);
     document.body.appendChild(scrollPanel);
     document.body.appendChild(scrollFloat);
     document.body.appendChild(paceBtn);
@@ -602,6 +622,92 @@
     });
   }
 
+  function openAround(el) {
+    var d = el && el.closest ? el.closest("details") : null;
+    while (d) {
+      d.open = true;
+      d = d.parentElement ? d.parentElement.closest("details") : null;
+    }
+  }
+
+  var COLLAPSED_BY_DEFAULT = ["s3", "s4", "s5", "s6"];
+  function mountCollapse() {
+    if (document.body.getAttribute("data-service") !== "shacharit") return;
+    var toc = document.getElementById("toc");
+    if (toc && !toc.classList.contains("toc-collapsible")) {
+      var title = toc.querySelector(".toc-title");
+      if (title) {
+        toc.classList.add("toc-collapsible");
+        title.setAttribute("role", "button");
+        title.setAttribute("tabindex", "0");
+        title.setAttribute("aria-expanded", "false");
+        var flip = function () {
+          var open = !toc.classList.contains("open");
+          toc.classList.toggle("open", open);
+          title.setAttribute("aria-expanded", open ? "true" : "false");
+        };
+        title.addEventListener("click", flip);
+        title.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); flip(); }
+        });
+      }
+    }
+    COLLAPSED_BY_DEFAULT.forEach(function (id) {
+      var h = document.getElementById(id);
+      if (!h || h.tagName !== "H2" || h.closest("summary")) return;
+      var parent = h.parentNode;
+      var details = document.createElement("details");
+      details.className = "acc";
+      var summary = document.createElement("summary");
+      var body = document.createElement("div");
+      body.className = "acc-body";
+      parent.insertBefore(details, h);
+      details.appendChild(summary);
+      details.appendChild(body);
+      var node = h.nextSibling;
+      summary.appendChild(h);
+      while (node && !(node.nodeType === 1 && (node.tagName === "H2" || node.classList.contains("site-credit")))) {
+        var next = node.nextSibling;
+        body.appendChild(node);
+        node = next;
+      }
+    });
+    if (location.hash.length > 1) {
+      var hashTarget = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (hashTarget) openAround(hashTarget);
+    }
+    window.addEventListener("hashchange", function () {
+      var t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (t) openAround(t);
+    });
+  }
+
+  function mountHeaderHide() {
+    var bar = document.querySelector("header.bar");
+    var row = bar ? bar.querySelector(".szs") : null;
+    if (!bar || !row || !document.querySelector(".font-stack")) return;
+    var lastY = window.scrollY;
+    var ticking = false;
+    function measure() {
+      document.documentElement.style.setProperty("--szs-h", Math.round(row.offsetHeight + 8) + "px");
+    }
+    function update() {
+      ticking = false;
+      var y = window.scrollY;
+      var dy = y - lastY;
+      if (y < 90) bar.classList.remove("szs-hidden");
+      else if (dy > 8) { measure(); bar.classList.add("szs-hidden"); }
+      else if (dy < -8) bar.classList.remove("szs-hidden");
+      if (Math.abs(dy) > 8 || y < 90) lastY = y;
+    }
+    measure();
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
+  }
+
   function mountTocOverlay() {
     var opener = document.querySelector("a.to-toc");
     var source = document.getElementById("toc");
@@ -645,6 +751,7 @@
       var id = ((anchor && anchor.getAttribute("href")) || "").slice(1);
       var target = document.getElementById(id);
       if (!target) return;
+      openAround(target);
       document.documentElement.style.scrollBehavior = "auto";
       target.scrollIntoView({ block: "start", behavior: "auto" });
       try { history.replaceState(null, "", "#" + id); } catch (e) {}
@@ -744,6 +851,8 @@
       menu.appendChild(reset);
     });
     mountTocOverlay();
+    mountCollapse();
+    mountHeaderHide();
     document.addEventListener("click", function (event) {
       var reset = event.target.closest && event.target.closest("[data-theme-default]");
       if (reset) {
