@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta name="tefila-build" content="57">
+<meta charset="utf-8">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="סידור עד-י-אל">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" id="theme-color" content="#DACCB2">
+<link rel="manifest" href="birkat-haderech.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tefila/tefila.css?v=57">
+<link rel="stylesheet" href="../tefila/accent.css?v=57">
+<title>ברכת הדרך</title>
+<script type="importmap">
+{
+  "imports": {
+    "@hebcal/core": "../tefila/vendor/hebcal-core.js"
+  }
+}
+</script>
+<script src="../tefila/boot.js?v=57"></script>
+<script nomodule>
+(function () {
+  var root = document.documentElement;
+  if (root.classList.contains("siddur-lock-pending") && !root.classList.contains("siddur-locked")) {
+    root.classList.remove("siddur-lock-pending");
+  }
+})();
+</script>
+<script type="module" src="../tefila/shabbat-lock.mjs?v=57"></script>
+
+</head>
+<body class="siddur-frame">
+
+
+<header class="bar">
+  <p class="bsd">בס״ד</p>
+  <div class="brand"><a class="home-btn" href="../tefila/" aria-label="בית"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg><span>בית</span></a><p class="header-date" id="header-date"></p><strong>ברכת הדרך</strong></div>
+  <div class="szs">
+    <div class="accent-pop"><button type="button" id="accent-toggle" aria-expanded="false" aria-label="צבע הדגשה"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="7" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="8" r="3" fill="currentColor" opacity=".45"/><circle cx="11.8" cy="16" r="3" fill="currentColor" opacity=".75"/></svg></button><div class="accent-menu" hidden role="listbox" aria-label="צבעים"><button type="button" role="option" data-set-accent="gold" aria-label="זהב"></button><button type="button" role="option" data-set-accent="blue" aria-label="כחול"></button><button type="button" role="option" data-set-accent="olive" aria-label="ירוק זית"></button><button type="button" role="option" data-set-accent="bordeaux" aria-label="בורדו"></button><button type="button" role="option" data-set-accent="purple" aria-label="סגול"></button><button type="button" role="option" data-set-accent="turquoise" aria-label="פירוז"></button></div></div>
+    <button type="button" id="theme-toggle" aria-label="מצב כהה"><svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5z"/></svg><svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></g></svg></button>
+    <button type="button" id="font-dec" aria-label="הקטן אות">א−</button>
+    <button type="button" id="font-inc" aria-label="הגדל אות">א+</button>
+  </div>
+</header>
+<main>
+<p class="kicker">ברכת הדרך</p>
+<div class="sep"></div>
+<div class="today" id="today-banner"><p class="date"></p><p class="status"></p><p class="extra" hidden></p></div>
+<h2>תְּפִלַּת הַדֶּרֶךְ</h2>
+<details class="add" open><summary>מתי אומרים?</summary>
+<p class="note">ביציאה לדרך (נסיעה או טיסה) מחוץ לעיר, לאחר שיצאו מתחום העיר. אומרים פעם אחת ביום, גם אם הנסיעה נמשכת כמה ימים (ובלילה, אם ישנו באמצע, אומרים שוב למחרת).</p>
+<p class="note">הנסיעה צריכה להימשך לפחות 72 דקות מחוץ לעיר כדי לומר בשם ומלכות (חתימה "שומע תפילה"). פחות מכך, אומרים בלי שם ומלכות. טוב לסמוך אותה לברכה אחרונה של אכילה או שתייה.</p>
+<p class="note">אם חוזרים באותו יום, מוסיפים "וְתַחֲזִירֵֽנוּ לְשָׁלוֹם". בשאלה מעשית יש לשאול רב.</p>
+</details>
+<p class="t">יְהִי רָצוֹן מִלְּפָנֶֽיךָ יְהֹוָה אֱלֹהֵֽינוּ וֵאלֹהֵי אֲבוֹתֵֽינוּ, שֶׁתּוֹלִיכֵֽנוּ לְשָׁלוֹם, וְתַצְעִידֵֽנוּ לְשָׁלוֹם, וְתַדְרִיכֵֽנוּ לְשָׁלוֹם, וְתַגִּיעֵֽנוּ לִמְחוֹז חֶפְצֵֽנוּ לְשָׁלוֹם, <span class="opt">(אם חוזר באותו יום: וְתַחֲזִירֵֽנוּ לְשָׁלוֹם,)</span> וְתַצִּילֵֽנוּ מִכַּף כָּל־אוֹיֵב וְאוֹרֵב בַּדֶּֽרֶךְ, וְתִשְׁלַח בְּרָכָה בְּמַעֲשֵׂי יָדֵֽינוּ, וְתִתְּנֵֽנוּ לְחֵן וּלְחֶֽסֶד וּלְרַחֲמִים בְּעֵינֶֽיךָ וּבְעֵינֵי כָל־רוֹאֵֽינוּ, וְתִשְׁמַע קוֹל תַּחֲנוּנֵֽינוּ. כִּי אֵל שׁוֹמֵֽעַ תְּפִלָּה וְתַחֲנוּן אָתָּה. בָּרוּךְ אַתָּה יְהֹוָה, שׁוֹמֵֽעַ תְּפִלָּה.</p>
+<details class="add"><summary>פסוקים לשמירה (נוהגים להוסיף)</summary>
+<p class="t">וְיַעֲקֹב הָלַךְ לְדַרְכּוֹ, וַיִּפְגְּעוּ בוֹ מַלְאֲכֵי אֱלֹהִים. וַיֹּאמֶר יַעֲקֹב כַּאֲשֶׁר רָאָם, מַחֲנֵה אֱלֹהִים זֶה, וַיִּקְרָא שֵׁם הַמָּקוֹם הַהוּא מַחֲנָיִם. <span class="opt">(ג' פעמים)</span></p>
+<p class="t">וַיִּסָּעוּ, וַיְהִי חִתַּת אֱלֹהִים עַל הֶעָרִים אֲשֶׁר סְבִיבוֹתֵיהֶם, וְלֹא רָדְפוּ אַחֲרֵי בְּנֵי יַעֲקֹב. לִישׁוּעָתְךָ קִוִּיתִי יְהֹוָה.</p>
+<p class="t">יְבָרֶכְךָ יְהֹוָה וְיִשְׁמְרֶךָ. יָאֵר יְהֹוָה פָּנָיו אֵלֶיךָ וִיחֻנֶּךָּ. יִשָּׂא יְהֹוָה פָּנָיו אֵלֶיךָ, וְיָשֵׂם לְךָ שָׁלוֹם. <span class="opt">(ג' פעמים)</span></p>
+<p class="t">הִנֵּה אָנֹכִי שֹׁלֵחַ מַלְאָךְ לְפָנֶיךָ לִשְׁמָרְךָ בַּדֶּרֶךְ וְלַהֲבִיאֲךָ אֶל הַמָּקוֹם אֲשֶׁר הֲכִנֹתִי. <span class="opt">(ג' פעמים)</span></p>
+<p class="t">הַמַּלְאָךְ הַגֹּאֵל אֹתִי מִכָּל רָע יְבָרֵךְ אֶת הַנְּעָרִים, וְיִקָּרֵא בָהֶם שְׁמִי וְשֵׁם אֲבֹתַי אַבְרָהָם וְיִצְחָק, וְיִדְגּוּ לָרֹב בְּקֶרֶב הָאָרֶץ. <span class="opt">(ג' פעמים)</span></p>
+</details>
+<p class="src">נוסח עדות המזרח · <a href="https://www.sefaria.org/Siddur_Edot_HaMizrach">ספריא</a></p>
+</main>
+<script src="../tefila/controls.js?v=57"></script>
+<script src="../tefila/credit.js?v=57"></script>
+<script type="module" src="../tefila/bracha-page.mjs?v=57"></script>
+</body>
+</html>
