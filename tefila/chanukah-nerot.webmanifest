@@ -1,0 +1,31 @@
+{
+ "name": "סידור עד-י-אל",
+ "short_name": "סידור עד-י-אל",
+ "lang": "he",
+ "dir": "rtl",
+ "start_url": "./chanukah-nerot.html",
+ "scope": "../",
+ "display": "standalone",
+ "background_color": "#DACCB2",
+ "theme_color": "#DACCB2",
+ "icons": [
+  {
+   "src": "../brachot/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "../brachot/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "../brachot/icon-512-maskable.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

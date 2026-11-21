@@ -887,7 +887,14 @@
         var willOpen = menu.hasAttribute("hidden");
         closeAccentMenus();
         if (willOpen) {
+          menu.style.translate = "";
           menu.hidden = false;
+          var box = menu.getBoundingClientRect();
+          var vw = document.documentElement.clientWidth;
+          var dx = 0;
+          if (box.right > vw - 8) dx = vw - 8 - box.right;
+          if (box.left + dx < 8) dx = 8 - box.left;
+          if (dx) menu.style.translate = dx + "px 0";
           toggle.setAttribute("aria-expanded", "true");
         }
         return;

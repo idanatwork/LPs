@@ -1,6 +1,6 @@
 import { HDate } from "@hebcal/core";
-import { ilanotItem, isDone, markDone, omerItem } from "./seasonal.mjs?v=62";
-import { omerCountText, omerNumber } from "./omer.mjs?v=62";
+import { ilanotItem, isDone, markDone, omerItem } from "./seasonal.mjs?v=63";
+import { omerCountText, omerNumber } from "./omer.mjs?v=63";
 
 function paint() {
   const main = document.querySelector("main[data-seasonal]");
