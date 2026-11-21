@@ -1,7 +1,7 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=58";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=59";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=58";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=59";
 
 function paintHub() {
   const now = new Date();
@@ -55,6 +55,28 @@ function paintHub() {
   if (card) {
     card.classList.add("now");
     card.setAttribute("aria-current", "true");
+  }
+  paintFab(service);
+}
+
+const FAB_NAMES = { shacharit: "שחרית", mincha: "מנחה", arvit: "ערבית" };
+let fabObserver = null;
+function paintFab(service) {
+  const fab = document.getElementById("now-fab");
+  const card = document.getElementById("card-" + service);
+  if (!fab || !card || !FAB_NAMES[service]) return;
+  fab.setAttribute("href", card.getAttribute("href"));
+  const text = document.getElementById("now-fab-text");
+  if (text) text.textContent = FAB_NAMES[service];
+  fab.setAttribute("aria-label", FAB_NAMES[service] + " עכשיו");
+  fab.hidden = false;
+  fab.classList.remove("fab-off");
+  if (fabObserver) fabObserver.disconnect();
+  if ("IntersectionObserver" in window) {
+    fabObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e) => fab.classList.toggle("fab-off", e.isIntersecting));
+    }, { threshold: 0.6 });
+    fabObserver.observe(card);
   }
 }
 
