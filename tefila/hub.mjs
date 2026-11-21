@@ -1,8 +1,8 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=62";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=63";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=62";
-import { seasonalItems } from "./seasonal.mjs?v=62";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=63";
+import { markDone, seasonalItems } from "./seasonal.mjs?v=63";
 
 function paintHub() {
   const now = new Date();
@@ -79,11 +79,21 @@ function paintSeasonal(now) {
     text.textContent = item.text;
     const actions = document.createElement("div");
     actions.className = "install-banner-actions";
-    const link = document.createElement("a");
-    link.className = "shortcut-btn shortcut-start";
-    link.href = item.href;
-    link.textContent = item.hrefLabel;
-    actions.appendChild(link);
+    if (item.href) {
+      const link = document.createElement("a");
+      link.className = "shortcut-btn shortcut-start";
+      link.href = item.href;
+      link.textContent = item.hrefLabel;
+      actions.appendChild(link);
+    }
+    if (item.doneLabel && item.doneKey) {
+      const done = document.createElement("button");
+      done.type = "button";
+      done.className = "shortcut-btn" + (item.href ? "" : " shortcut-start");
+      done.textContent = item.doneLabel;
+      done.addEventListener("click", () => { markDone(item); paintSeasonal(new Date()); });
+      actions.appendChild(done);
+    }
     card.appendChild(title);
     card.appendChild(text);
     card.appendChild(actions);
