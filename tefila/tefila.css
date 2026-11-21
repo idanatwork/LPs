@@ -967,6 +967,9 @@ html[data-il="0"] .baaretz { display: none; }
   padding: 8px 14px;
   background: transparent;
   min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 .tg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
 .z-nav { display: flex; gap: 8px; align-items: center; margin: 8px 0 12px; }

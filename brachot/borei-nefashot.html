@@ -83,7 +83,8 @@ const v=ks.length?ks:['m'];
 document.getElementById('open').textContent=v.map((k,i)=>(i?'וְ':'')+O[k]).join(' ')+',';
 const e=v.map(k=>'וְעַל '+E[k][ey]).join(' ');
 document.getElementById('mid').textContent=e;document.getElementById('end').textContent=e;}
-document.querySelectorAll('.tg button').forEach(b=>b.onclick=()=>{b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');r();});
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.tg button');if(!b)return;b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true');r();});
+window.addEventListener('pageshow',r);
 r();
 </script>
 </main>
