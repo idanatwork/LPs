@@ -4,7 +4,7 @@
  "lang": "he",
  "dir": "rtl",
  "start_url": "./borei-nefashot.html",
- "scope": "./",
+ "scope": "../",
  "display": "standalone",
  "background_color": "#DACCB2",
  "theme_color": "#DACCB2",
