@@ -1,8 +1,8 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=61";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=62";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=61";
-import { daysLeftText, levanaDone, levanaState } from "./levana.mjs?v=61";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=62";
+import { seasonalItems } from "./seasonal.mjs?v=62";
 
 function paintHub() {
   const now = new Date();
@@ -58,19 +58,37 @@ function paintHub() {
     card.setAttribute("aria-current", "true");
   }
   paintFab(service);
-  paintLevana(now);
+  paintSeasonal(now);
 }
 
-function paintLevana(now) {
-  const banner = document.getElementById("levana-banner");
-  if (!banner) return;
-  let show = false;
-  try {
-    const s = levanaState(now);
-    show = s.inWindow && !levanaDone(s.key);
-    if (show) document.getElementById("levana-banner-text").textContent = daysLeftText(s.daysLeft) + ". אחרי שבירכת, סמן בסוף הנוסח ״בירכתי״ והתזכורת תיעלם.";
-  } catch (e) {}
-  banner.hidden = !show;
+function paintSeasonal(now) {
+  const host = document.getElementById("seasonal-cards");
+  if (!host) return;
+  let items = [];
+  try { items = seasonalItems(now); } catch (e) {}
+  host.textContent = "";
+  items.forEach((item) => {
+    const card = document.createElement("aside");
+    card.className = "install-banner seasonal-card";
+    card.dataset.seasonal = item.id;
+    const title = document.createElement("p");
+    title.className = "install-banner-title";
+    title.textContent = item.title;
+    const text = document.createElement("p");
+    text.className = "install-banner-text";
+    text.textContent = item.text;
+    const actions = document.createElement("div");
+    actions.className = "install-banner-actions";
+    const link = document.createElement("a");
+    link.className = "shortcut-btn shortcut-start";
+    link.href = item.href;
+    link.textContent = item.hrefLabel;
+    actions.appendChild(link);
+    card.appendChild(title);
+    card.appendChild(text);
+    card.appendChild(actions);
+    host.appendChild(card);
+  });
 }
 
 const FAB_NAMES = { shacharit: "שחרית", mincha: "מנחה", arvit: "ערבית" };
