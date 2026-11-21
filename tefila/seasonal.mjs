@@ -148,10 +148,15 @@ function roshChodeshItem(now, hd) {
   };
 }
 
-function chanukahItem(now, hd) {
+export function chanukahNight(hd) {
   const tonight = hd.next();
   const first = new HDate(25, months.KISLEV, tonight.getFullYear());
-  const k = tonight.abs() - first.abs() + 1;
+  return { k: tonight.abs() - first.abs() + 1, year: tonight.getFullYear() };
+}
+
+function chanukahItem(now, hd) {
+  const tonight = hd.next();
+  const k = chanukahNight(hd).k;
   if (k < 1 || k > 8) return null;
   const weekday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getDay();
   const t = sunTimes(now);
@@ -159,7 +164,7 @@ function chanukahItem(now, hd) {
   const when = friday ? "לפני הדלקת נרות שבת, " + formatHM(t.candles) : "בצאת הכוכבים, " + formatHM(t.tzeit);
   let text = (k === 1 ? "הלילה מדליקים נר ראשון" : "הלילה מדליקים " + k + " נרות") + " " + "(" + (friday ? "ערב שבת: " : "") + when + "). ";
   text += k === 1 ? "מברכים להדליק נר של חנוכה, שעשה ניסים ושהחיינו." : "מברכים להדליק נר של חנוכה ושעשה ניסים.";
-  const card = { id: "chanukah", title: "חנוכה, נר " + (k === 1 ? "ראשון" : k + ""), text, href: "zmanim.html", hrefLabel: "זמני היום", doneLabel: "הדלקתי" };
+  const card = { id: "chanukah", title: "חנוכה, נר " + (k === 1 ? "ראשון" : k + ""), text, href: "chanukah-nerot.html", hrefLabel: "לנוסח הברכות", doneLabel: "הדלקתי" };
   return doneFor(card, "tefila-chanukah-done", k + "-" + tonight.getFullYear());
 }
 
