@@ -1156,7 +1156,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=58");
+  --klaf-tile: url("parchment-p1.webp?v=59");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1381,7 +1381,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=58");
+  background-image: url("parchment-p1.webp?v=59");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1402,7 +1402,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=58");
+  background-image: url("parchment-p1.webp?v=59");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1838,3 +1838,44 @@ details.acc > .acc-body { padding-bottom: 14px; }
   color: var(--muted);
   opacity: .75;
 }
+
+
+/* Floating "current prayer" button (v59): small round button, same size and place as the scroll button.
+   Hides itself while the matching card is on screen, behind the update banner, and in the Shabbat lock. */
+.now-fab {
+  position: fixed;
+  z-index: 45;
+  left: 16px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3px;
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--fg) 20%, transparent);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.now-fab-sub { font-size: 11px; font-weight: 600; opacity: .9; white-space: nowrap; }
+.now-fab[hidden] { display: none; }
+.now-fab.fab-off { opacity: 0; pointer-events: none; transform: translateY(10px); }
+.now-fab:hover { filter: brightness(1.12); }
+body:has(#update-banner) .now-fab,
+html.siddur-locked .now-fab,
+html.siddur-lock-pending .now-fab { display: none; }
+@media (min-width: 900px) {
+  .now-fab { left: max(16px, calc(50% - (var(--col) / 2) - 16px - 62px)); }
+}
+@media (prefers-reduced-motion: reduce) { .now-fab { transition: none; } }
