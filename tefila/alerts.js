@@ -336,6 +336,84 @@
     }
   }
 
+
+  // Gentle one-time invite to turn on alerts (v58). Hub only, never on prayer pages.
+  var NOTIFY_LATER = "tefila-notify-later";
+  var NOTIFY_NEVER = "tefila-notify-never";
+  var NOTIFY_VISITS = "tefila-visits";
+  var NOTIFY_SNOOZE = 14 * 24 * 60 * 60 * 1000;
+
+  function notifySnoozed() {
+    try {
+      if (localStorage.getItem(NOTIFY_NEVER) === "1") return true;
+      var at = parseInt(localStorage.getItem(NOTIFY_LATER), 10);
+      return !!at && Date.now() - at < NOTIFY_SNOOZE;
+    } catch (e) { return true; }
+  }
+
+  function countVisit() {
+    var n = 0;
+    try {
+      n = (parseInt(localStorage.getItem(NOTIFY_VISITS), 10) || 0) + 1;
+      localStorage.setItem(NOTIFY_VISITS, String(n));
+    } catch (e) {}
+    return n;
+  }
+
+  function hideNotify() {
+    var b = $("notify-banner");
+    if (b) b.hidden = true;
+  }
+
+  async function maybeShowNotify(visits) {
+    var b = $("notify-banner");
+    if (!b || visits < 2 || notifySnoozed()) return;
+    if (!supported() || iosBlocked()) return;
+    if (Notification.permission !== "default") return;
+    var root = document.documentElement;
+    if (root.classList.contains("siddur-locked") || root.classList.contains("siddur-lock-pending")) return;
+    var inst = $("install-banner");
+    if (inst && !inst.hidden) return;
+    var sub = null;
+    try { sub = await currentSub(); } catch (e) {}
+    if (sub) return;
+    b.hidden = false;
+  }
+
+  function armNotify() {
+    var b = $("notify-banner");
+    if (!b) return;
+    var visits = countVisit();
+    $("notify-later").addEventListener("click", function () {
+      try { localStorage.setItem(NOTIFY_LATER, String(Date.now())); } catch (e) {}
+      hideNotify();
+    });
+    $("notify-never").addEventListener("click", function () {
+      try { localStorage.setItem(NOTIFY_NEVER, "1"); } catch (e) {}
+      hideNotify();
+    });
+    $("notify-go").addEventListener("click", async function () {
+      var msg = $("notify-msg");
+      $("alert-subscribe").click();
+      setTimeout(async function () {
+        var sub = null;
+        try { sub = await currentSub(); } catch (e) {}
+        if (sub) { hideNotify(); return; }
+        if (Notification.permission === "denied") {
+          msg.textContent = "ההרשאה נחסמה. אפשר להפעיל אותה בהגדרות המכשיר.";
+          msg.hidden = false;
+        } else if (Notification.permission === "default") {
+          hideNotify();
+        }
+      }, 2500);
+    });
+    var go = function () { maybeShowNotify(visits); };
+    if (window.tefilaSplashActive) {
+      var prev = window.tefilaAfterSplash;
+      window.tefilaAfterSplash = function () { if (typeof prev === "function") prev(); go(); };
+    } else go();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     if (!$("alerts-panel")) return;
     var s = load();
@@ -346,6 +424,7 @@
       if (cur.loc === "geo") locateNow(cur, function () { subscribe(); });
       else subscribe();
     });
+    armNotify();
     $("alert-unsubscribe").addEventListener("click", function () { unsubscribe(); });
     $("alert-test").addEventListener("click", function () { sendTest(); });
     $("alerts-panel").addEventListener("change", function (e) {
