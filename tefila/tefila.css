@@ -1156,7 +1156,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=59");
+  --klaf-tile: url("parchment-p1.webp?v=60");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1381,7 +1381,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=59");
+  background-image: url("parchment-p1.webp?v=60");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1402,7 +1402,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=59");
+  background-image: url("parchment-p1.webp?v=60");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1879,3 +1879,22 @@ html.siddur-lock-pending .now-fab { display: none; }
   .now-fab { left: max(16px, calc(50% - (var(--col) / 2) - 16px - 62px)); }
 }
 @media (prefers-reduced-motion: reduce) { .now-fab { transition: none; } }
+
+
+/* Kiddush levana (v60): hub reminder card and the status block / done button on the levana page. */
+.levana-banner[hidden] { display: none !important; }
+.levana-banner .install-banner-actions a { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.levana-status {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+}
+.levana-status[hidden] { display: none !important; }
+.levana-status-title { margin: 0 0 4px; font-size: 18px; font-weight: 700; color: var(--accent); }
+.levana-status-text { margin: 0; font-size: 16px; line-height: 1.45; }
+.levana-done { margin: 28px 0 8px; text-align: center; }
+.levana-done .shortcut-btn { min-width: 12rem; min-height: 48px; }
+.levana-done .shortcut-btn[hidden] { display: none; }
+.levana-done-note { margin: 10px 0 0; color: var(--muted, inherit); font-size: 15px; }
