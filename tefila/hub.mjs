@@ -1,7 +1,8 @@
 import { Location, Zmanim } from "@hebcal/core";
-import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=59";
+import { activeService, hebrewNow, statusForHDate } from "./day-status.mjs?v=60";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { halachaForHDate } from "./halacha-yomit.mjs?v=59";
+import { halachaForHDate } from "./halacha-yomit.mjs?v=60";
+import { daysLeftText, levanaDone, levanaState } from "./levana.mjs?v=60";
 
 function paintHub() {
   const now = new Date();
@@ -57,6 +58,19 @@ function paintHub() {
     card.setAttribute("aria-current", "true");
   }
   paintFab(service);
+  paintLevana(now);
+}
+
+function paintLevana(now) {
+  const banner = document.getElementById("levana-banner");
+  if (!banner) return;
+  let show = false;
+  try {
+    const s = levanaState(now);
+    show = s.inWindow && !levanaDone(s.key);
+    if (show) document.getElementById("levana-banner-text").textContent = daysLeftText(s.daysLeft) + ". אחרי שבירכת, סמן בסוף הנוסח ״בירכתי״ והתזכורת תיעלם.";
+  } catch (e) {}
+  banner.hidden = !show;
 }
 
 const FAB_NAMES = { shacharit: "שחרית", mincha: "מנחה", arvit: "ערבית" };
