@@ -212,14 +212,14 @@
       setState("הדפדפן אינו תומך בהתראות");
       $("alert-subscribe").disabled = true;
       $("alert-unsubscribe").hidden = true;
-      $("alert-test").hidden = true;
+      $("alert-test").hidden = false;
       return;
     }
     if (iosBlocked()) {
       $("alerts-ios").hidden = false;
       $("alert-subscribe").disabled = true;
       $("alert-unsubscribe").hidden = true;
-      $("alert-test").hidden = true;
+      $("alert-test").hidden = false;
       setState("לא פעילות");
       return;
     }
@@ -228,7 +228,7 @@
       setState("ההרשאה להתראות נחסמה");
       $("alert-subscribe").disabled = true;
       $("alert-unsubscribe").hidden = true;
-      $("alert-test").hidden = true;
+      $("alert-test").hidden = false;
       return;
     }
     var sub = await currentSub();
@@ -238,12 +238,14 @@
       $("alert-subscribe").disabled = false;
       $("alert-unsubscribe").hidden = false;
       $("alert-test").hidden = false;
+      if ($("alert-save")) $("alert-save").hidden = false;
     } else {
+      if ($("alert-save")) $("alert-save").hidden = true;
       setState("לא פעילות");
       $("alert-subscribe").hidden = false;
       $("alert-subscribe").disabled = false;
       $("alert-unsubscribe").hidden = true;
-      $("alert-test").hidden = true;
+      $("alert-test").hidden = false;
     }
     if (s && s.loc === "geo" && typeof s.lat === "number") {
       setMsg("המיקום הנוכחי: " + formatCoords(s.lat, s.lng));
@@ -253,7 +255,9 @@
   async function subscribe() {
     var s = readForm(load());
     save(s);
-    if (!supported() || iosBlocked()) return;
+    if (!supported()) { setMsg("הדפדפן אינו תומך בהתראות"); return; }
+    if (iosBlocked()) { setMsg("להפעלת התראות יש להוסיף את הסידור למסך הבית"); return; }
+    setMsg("מפעיל התראות…");
     var perm = await Notification.requestPermission();
     if (perm !== "granted") {
       setState(perm === "denied" ? "ההרשאה להתראות נחסמה" : "נדרשת הרשאה להתראות");
@@ -275,9 +279,29 @@
       return;
     }
     setState("פעילות");
+    setMsg("ההתראות הופעלו");
     $("alert-subscribe").hidden = true;
     $("alert-unsubscribe").hidden = false;
     $("alert-test").hidden = false;
+    if ($("alert-save")) $("alert-save").hidden = false;
+  }
+
+  async function saveSettings() {
+    var s = readForm(load());
+    save(s);
+    var sub = await currentSub();
+    if (!sub) { setMsg("אין מנוי פעיל. מפעילים התראות תחילה."); await refreshState(s); return; }
+    setMsg("שומר…");
+    try {
+      var res = await fetch(WORKER + "/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload(s, sub))
+      });
+      setMsg(res.ok ? "ההגדרות נשמרו" : "לא הצלחנו לשמור (" + res.status + ")");
+    } catch (e) {
+      setMsg("לא הצלחנו לשמור. בדקו חיבור לאינטרנט.");
+    }
   }
 
   async function unsubscribe() {
@@ -296,7 +320,7 @@
     setMsg("");
     $("alert-subscribe").hidden = false;
     $("alert-unsubscribe").hidden = true;
-    $("alert-test").hidden = true;
+    $("alert-test").hidden = false;
   }
 
   function persistFromForm() {
@@ -305,13 +329,13 @@
     pushSettings(s);
   }
 
-  async function sendTest() {
+  async function sendTest(retried) {
     var sub = await currentSub();
     if (!sub) {
-      setMsg("אין מנוי פעיל");
+      setMsg(Notification.permission === "denied" ? "ההרשאה להתראות נחסמה בהגדרות המכשיר" : "ההתראות עדיין לא מופעלות. לוחצים קודם על הפעלת התראות.");
       return;
     }
-    setMsg("שולח התראת בדיקה…");
+    setMsg("שולח התראה לדוגמה…");
     try {
       var res = await fetch(WORKER + "/test", {
         method: "POST",
@@ -323,6 +347,11 @@
         return;
       }
       if (res.status === 404 || res.status === 410) {
+        if (!retried) {
+          setMsg("מחדש את הרישום ושולח שוב…");
+          await saveSettings();
+          return sendTest(true);
+        }
         setMsg("אין מנוי פעיל");
         return;
       }
@@ -330,7 +359,7 @@
         setMsg("לא הצלחנו לשלוח את ההתראה");
         return;
       }
-      setMsg("נשלחה התראת בדיקה");
+      setMsg("נשלחה התראה לדוגמה. אמורה להגיע תוך שניות.");
     } catch (e) {
       setMsg("לא הצלחנו לשלוח את ההתראה");
     }
@@ -421,12 +450,14 @@
     refreshState(s);
     $("alert-subscribe").addEventListener("click", function () {
       var cur = readForm(load());
-      if (cur.loc === "geo") locateNow(cur, function () { subscribe(); });
-      else subscribe();
+      var fail = function (e) { setMsg("ההפעלה נכשלה" + (e && e.message ? ": " + e.message : "")); };
+      if (cur.loc === "geo") locateNow(cur, function () { subscribe().catch(fail); });
+      else subscribe().catch(fail);
     });
     armNotify();
     $("alert-unsubscribe").addEventListener("click", function () { unsubscribe(); });
-    $("alert-test").addEventListener("click", function () { sendTest(); });
+    $("alert-test").addEventListener("click", function () { sendTest().catch(function () { setMsg("לא הצלחנו לשלוח את ההתראה"); }); });
+    if ($("alert-save")) $("alert-save").addEventListener("click", function () { saveSettings().catch(function () { setMsg("לא הצלחנו לשמור"); }); });
     $("alerts-panel").addEventListener("change", function (e) {
       var t = e.target;
       if (t && t.name === "alert-loc" && t.value === "geo") {
