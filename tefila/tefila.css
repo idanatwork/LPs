@@ -1911,7 +1911,7 @@ nav.toc a.here {
   padding-inline: 10px;
 }
 nav.toc a.here::after {
-  content: "אתה כאן";
+  content: "את/ה כאן";
   position: absolute;
   inset-inline-end: 8px;
   top: 50%;
