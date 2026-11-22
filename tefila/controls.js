@@ -786,6 +786,27 @@
       if (open) fill();
       panel.hidden = !open;
       button.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) markHere();
+    }
+    /* "You are here": highlight the section at the top of the screen and bring it into view in the list. */
+    function markHere() {
+      var here = null;
+      var first = null;
+      nav.querySelectorAll("a[href^='#']").forEach(function (a) {
+        var t = document.getElementById((a.getAttribute("href") || "").slice(1));
+        if (!t) return;
+        var r = t.getBoundingClientRect();
+        if (r.height < 1 && r.top === 0) return;
+        if (!first) first = a;
+        if (r.top <= 140) here = a;
+      });
+      here = here || first;
+      if (!here) return;
+      here.classList.add("here");
+      here.setAttribute("aria-current", "location");
+      var pr = panel.getBoundingClientRect();
+      var lr = here.getBoundingClientRect();
+      panel.scrollTop += (lr.top - pr.top) - panel.clientHeight / 3;
     }
     function setOpen(open) {
       holdScroll(function () { paint(open); });
