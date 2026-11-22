@@ -1159,7 +1159,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=66");
+  --klaf-tile: url("parchment-p1.webp?v=67");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1384,7 +1384,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=66");
+  background-image: url("parchment-p1.webp?v=67");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1405,7 +1405,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=66");
+  background-image: url("parchment-p1.webp?v=67");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1900,3 +1900,26 @@ html.siddur-lock-pending .now-fab { display: none; }
 .levana-done .shortcut-btn { min-width: 12rem; min-height: 48px; }
 .levana-done .shortcut-btn[hidden] { display: none; }
 .levana-done-note { margin: 10px 0 0; color: var(--muted, inherit); font-size: 15px; }
+
+/* TOC: current position */
+nav.toc a.here {
+  position: relative;
+  color: var(--accent);
+  font-weight: 800;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-radius: 8px;
+  padding-inline: 10px;
+}
+nav.toc a.here::after {
+  content: "אתה כאן";
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+}
