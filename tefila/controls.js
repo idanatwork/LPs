@@ -792,8 +792,19 @@
     function markHere() {
       /* The TOC list is not always in page order (the minyan entries sit in a box at the end),
          so pick the visible target closest above the top of the screen, not the last one in the list. */
+      /* Where the reading area starts depends on the real header height (on iPhone the safe area
+         makes it taller), so measure it instead of using a fixed number. */
+      var bar = document.querySelector("header.bar");
+      var barBottom = 0;
+      if (bar) {
+        barBottom = bar.getBoundingClientRect().bottom;
+        if (bar.classList.contains("szs-hidden")) barBottom -= parseFloat(document.documentElement.style.getPropertyValue("--szs-h")) || 0;
+      }
+      var limit = Math.max(120, barBottom + 70);
+      var zoneStart = barBottom - 10;
       var here = null;
-      var hereTop = -Infinity;
+      var hereTop = 0;
+      var hereInZone = false;
       var first = null;
       var firstTop = Infinity;
       nav.querySelectorAll("a[href^='#']").forEach(function (a) {
@@ -802,7 +813,13 @@
         var r = t.getBoundingClientRect();
         if (r.height < 1 && r.top === 0) return;
         if (r.top < firstTop) { first = a; firstTop = r.top; }
-        if (r.top <= 110 && r.top > hereTop) { here = a; hereTop = r.top; }
+        if (r.top > limit) return;
+        var inZone = r.top >= zoneStart;
+        /* A heading showing just under the header wins (topmost one); otherwise the nearest one above. */
+        if (!here) { here = a; hereTop = r.top; hereInZone = inZone; return; }
+        if (inZone) {
+          if (!hereInZone || r.top < hereTop) { here = a; hereTop = r.top; hereInZone = true; }
+        } else if (!hereInZone && r.top >= hereTop) { here = a; hereTop = r.top; }
       });
       here = here || first;
       if (!here) return;
