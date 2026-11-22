@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl" data-il="1">
 <head>
-<meta name="tefila-build" content="69">
+<meta name="tefila-build" content="70">
 <meta charset="utf-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
@@ -17,8 +17,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../tefila/tefila.css?v=69">
-<link rel="stylesheet" href="../tefila/accent.css?v=69">
+<link rel="stylesheet" href="../tefila/tefila.css?v=70">
+<link rel="stylesheet" href="../tefila/accent.css?v=70">
 <title>ברכה מעין שלוש</title>
 <script type="importmap">
 {
@@ -27,7 +27,7 @@
   }
 }
 </script>
-<script src="../tefila/boot.js?v=69"></script>
+<script src="../tefila/boot.js?v=70"></script>
 <script nomodule>
 (function () {
   var root = document.documentElement;
@@ -36,7 +36,7 @@
   }
 })();
 </script>
-<script type="module" src="../tefila/shabbat-lock.mjs?v=69"></script>
+<script type="module" src="../tefila/shabbat-lock.mjs?v=70"></script>
 
 </head>
 <body class="siddur-frame">
@@ -67,6 +67,7 @@
 <button type="button" data-k="e" aria-pressed="false">פירות</button>
 <button type="button" id="il" aria-pressed="true">מארץ ישראל</button>
 </div>
+<p class="note" id="tgprev" aria-live="polite"></p>
 <p class="t" data-food="m">עַל הַמִּחְיָה וְעַל הַכַּלְכָּלָה</p><p class="t" data-food="g">(וְ)עַל הַגֶּֽפֶן וְעַל פְּרִי הַגֶּֽפֶן</p><p class="t" data-food="e">(וְ)עַל הָעֵץ וְעַל פְּרִי הָעֵץ</p>
 <p class="t">וְעַל תְּנוּבַת הַשָּׂדֶה, וְעַל אֶֽרֶץ חֶמְדָּה טוֹבָה וּרְחָבָה, שֶׁרָצִֽיתָ וְהִנְחַֽלְתָּ לַאֲבוֹתֵֽינוּ, לֶאֱכֹל מִפִּרְיָהּ וְלִשְׂבֹּֽעַ מִטּוּבָהּ. רַחֵם יְהֹוָה אֱלֹהֵֽינוּ עָלֵֽינוּ וְעַל יִשְׂרָאֵל עַמָּךְ, וְעַל יְרוּשָׁלַֽיִם עִירָךְ, וְעַל הַר צִיּוֹן מִשְׁכַּן כְּבוֹדָךְ, וְעַל מִזְבָּחָךְ וְעַל הֵיכָלָךְ. וּבְנֵה יְרוּשָׁלַֽיִם עִיר הַקֹּֽדֶשׁ בִּמְהֵרָה בְיָמֵֽינוּ, וְהַעֲלֵֽנוּ לְתוֹכָהּ, וְשַׂמְּחֵֽנוּ בְּבִנְיָנָהּ, וּנְבָֽרְכָֽךְ עָלֶֽיהָ בִּקְדֻשָּׁה וּבְטָהֳרָה:</p>
 <details class="add" data-open="shabbat"><summary>שבת</summary><p class="note">בשבת</p><p class="t">וּרְצֵה וְהַחֲלִיצֵֽנוּ בְּיוֹם הַשַּׁבָּת הַזֶּה.</p></details>
@@ -86,6 +87,8 @@ document.querySelectorAll(".tg button").forEach(function (b) {
   b.addEventListener("click", function () {
     if (b.id !== "il") {
       var on = b.getAttribute("aria-pressed") === "true";
+      var others = document.querySelectorAll('#foods button[data-k][aria-pressed="true"]').length;
+      if (on && others < 2) return; // חייב להישאר לפחות מאכל אחד נבחר
       b.setAttribute("aria-pressed", on ? "false" : "true");
     } else {
       b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
@@ -103,14 +106,19 @@ function paint() {
   });
   var il = document.getElementById("il").getAttribute("aria-pressed") === "true";
   document.documentElement.setAttribute("data-il", il ? "1" : "0");
+  var pv = document.getElementById("tgprev");
+  var end = Array.from(document.querySelectorAll("p.t[data-food] > span")).filter(function (s) {
+    return !s.parentNode.hidden && getComputedStyle(s).display !== "none" && !s.parentNode.textContent.endsWith(":") ;
+  }).map(function (s) { return s.textContent; });
+  pv.textContent = "בסיום הברכה: " + end.join(" / ");
 }
 paint();
 </script>
 
 </main>
 <a class="to-toc" href="#toc">תוכן</a>
-<script src="../tefila/controls.js?v=69"></script>
-<script src="../tefila/credit.js?v=69"></script>
-<script type="module" src="../tefila/bracha-page.mjs?v=69"></script>
+<script src="../tefila/controls.js?v=70"></script>
+<script src="../tefila/credit.js?v=70"></script>
+<script type="module" src="../tefila/bracha-page.mjs?v=70"></script>
 </body>
 </html>
