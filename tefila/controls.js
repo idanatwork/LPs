@@ -790,15 +790,19 @@
     }
     /* "You are here": highlight the section at the top of the screen and bring it into view in the list. */
     function markHere() {
+      /* The TOC list is not always in page order (the minyan entries sit in a box at the end),
+         so pick the visible target closest above the top of the screen, not the last one in the list. */
       var here = null;
+      var hereTop = -Infinity;
       var first = null;
+      var firstTop = Infinity;
       nav.querySelectorAll("a[href^='#']").forEach(function (a) {
         var t = document.getElementById((a.getAttribute("href") || "").slice(1));
         if (!t) return;
         var r = t.getBoundingClientRect();
         if (r.height < 1 && r.top === 0) return;
-        if (!first) first = a;
-        if (r.top <= 140) here = a;
+        if (r.top < firstTop) { first = a; firstTop = r.top; }
+        if (r.top <= 110 && r.top > hereTop) { here = a; hereTop = r.top; }
       });
       here = here || first;
       if (!here) return;
