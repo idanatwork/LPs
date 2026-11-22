@@ -1,4 +1,4 @@
-import { daysLeftText, levanaDone, levanaState, markLevanaDone } from "./levana.mjs?v=65";
+import { daysLeftText, levanaDone, levanaState, markLevanaDone } from "./levana.mjs?v=66";
 
 function fmt(d) {
   return new Intl.DateTimeFormat("he-IL", { timeZone: "Asia/Jerusalem", weekday: "long", day: "numeric", month: "long" }).format(d);

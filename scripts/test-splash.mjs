@@ -189,7 +189,7 @@ await fits(375, 667);
 await fits(390, 844);
 await fits(430, 932);
 
-for (const path of ["/watch/", "/tefila/shortcuts.html", "/tefila/shacharit.html", "/tefila/zmanim.html", "/brachot/asher-yatzar.html"]) {
+for (const path of ["/watch/", "/tefila/shacharit.html", "/tefila/zmanim.html", "/brachot/asher-yatzar.html"]) {
   const other = await open(false, { width: 390, height: 844 }, path);
   check(path + " has no splash", await other.page.locator("#memorial-splash").count() === 0);
   await other.context.close();

@@ -1,7 +1,7 @@
 import { HDate, HebrewCalendar, Location, Zmanim, flags, months } from "@hebcal/core";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { daysLeftText, levanaDone, levanaState } from "./levana.mjs?v=65";
-import { omerNumber } from "./omer.mjs?v=65";
+import { daysLeftText, levanaDone, levanaState } from "./levana.mjs?v=66";
+import { omerNumber } from "./omer.mjs?v=66";
 
 /**
  * Seasonal reminders. Every provider returns null (nothing to show now) or a card:
