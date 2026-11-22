@@ -34,6 +34,38 @@ function tefilaSetFocus(on) {
   } catch (e) {}
 }
 
+var TEFILA_RETURN_KEY = "tefilaReturn";
+var TEFILA_RETURN_MS = 3 * 60 * 1000;
+
+function tefilaIsHub() {
+  return /\/tefila\/(index\.html)?$/.test(location.pathname);
+}
+
+/* Remember the prayer page the user was on, so the shortcut's trip through the hub brings them back. */
+function tefilaRememberReturn() {
+  if (tefilaIsHub()) return;
+  try {
+    localStorage.setItem(TEFILA_RETURN_KEY, JSON.stringify({
+      url: location.pathname + location.search + location.hash,
+      y: Math.round(window.scrollY || 0),
+      ts: Date.now()
+    }));
+  } catch (e) {}
+}
+
+function tefilaTakeReturn() {
+  try {
+    var raw = localStorage.getItem(TEFILA_RETURN_KEY);
+    if (!raw) return null;
+    var data = JSON.parse(raw);
+    if (!data || !data.url || !data.ts || Date.now() - Number(data.ts) > TEFILA_RETURN_MS) {
+      localStorage.removeItem(TEFILA_RETURN_KEY);
+      return null;
+    }
+    return data;
+  } catch (e) { return null; }
+}
+
 function applyIcloudLinks() {
   var pending = "קישור ההורדה יתווסף בקרוב";
   var ready = "הוסף לאייפון";
@@ -77,6 +109,14 @@ function applyIcloudLinks() {
     var flag = query.get("focus");
     if (flag !== "on" && flag !== "off") return;
     tefilaSetFocus(flag === "on");
+    if (flag === "on" && tefilaIsHub()) {
+      var back = tefilaTakeReturn();
+      if (back && /^\/[^\/\\]/.test(back.url)) {
+        try { localStorage.setItem(TEFILA_RETURN_KEY, JSON.stringify({ url: back.url, y: back.y, ts: back.ts, restore: true })); } catch (e) {}
+        location.replace(back.url);
+        return;
+      }
+    }
     query.delete("focus");
     var search = query.toString();
     history.replaceState(null, "", location.pathname + (search ? "?" + search : "") + location.hash);
@@ -96,8 +136,23 @@ function applyIcloudLinks() {
 
   consumeFocusQuery();
 
+  /* Landed back on the prayer page after the hub bounce: restore the scroll position once. */
+  (function restoreAfterBounce() {
+    if (tefilaIsHub()) return;
+    var back = tefilaTakeReturn();
+    if (!back || !back.restore) return;
+    try { localStorage.removeItem(TEFILA_RETURN_KEY); } catch (e) {}
+    var y = Number(back.y) || 0;
+    if (!y) return;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, y);
+    requestAnimationFrame(function () { window.scrollTo(0, y); });
+    setTimeout(function () { window.scrollTo(0, y); }, 400);
+  })();
+
   document.querySelectorAll("[data-shortcut=start]").forEach(function (link) {
     link.addEventListener("click", function () {
+      tefilaRememberReturn();
       tefilaSetFocus(true);
       applyFocusUi();
     });
