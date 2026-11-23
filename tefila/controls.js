@@ -214,7 +214,7 @@
     var speedKey = "tefila-scroll-wpm:" + speedService;
     var speedMin = 20;
     var speedMax = 500;
-    var wpm = 110;
+    var wpm = 200;
     function clampWpm(value) {
       return Math.max(speedMin, Math.min(speedMax, Math.round(value)));
     }
@@ -324,7 +324,7 @@
       return window.scrollY >= max - 2;
     }
     function paintFloat() {
-      var show = started && scrollPanel.hidden;
+      var show = scrollPanel.hidden;
       scrollFloat.hidden = !show;
       paceBtn.hidden = !show;
       scrollFloat.innerHTML = playing ? pauseIcon : playIcon;
@@ -443,6 +443,7 @@
       });
     }
     showSpeed();
+    paintFloat();
     playBtn.innerHTML = playIcon;
     armPress(scrollToggle, function () {
       if (!started) setScrollOpen(scrollPanel.hidden);
