@@ -1159,7 +1159,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=71");
+  --klaf-tile: url("parchment-p1.webp?v=72");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1384,7 +1384,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=71");
+  background-image: url("parchment-p1.webp?v=72");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1405,7 +1405,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=71");
+  background-image: url("parchment-p1.webp?v=72");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
