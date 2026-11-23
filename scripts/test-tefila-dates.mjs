@@ -50,7 +50,7 @@ function at(y, m, d, service) {
   const mi = statusForHDate(hd, "mincha");
   const ar = statusForHDate(hd, "arvit");
   check("9 Av 5787 is the fast", hd.greg().toDateString() === "Thu Aug 12 2027" && sh.chips.includes("תענית ציבור"), hd.greg().toDateString());
-  check("9 Av aneinu all services, nachem only mincha", sh.flags.anenu && !sh.flags.nachem && mi.flags.anenu && mi.flags.nachem && ar.flags.anenu && !ar.flags.nachem);
+  check("9 Av aneinu and nachem in all services (SA OC 557:1)", sh.flags.anenu && sh.flags.nachem && mi.flags.anenu && mi.flags.nachem && ar.flags.anenu && ar.flags.nachem);
   check("9 Av no tachanun, morid and barechenu", !sh.flags.tachanun && sh.flags.tal && sh.flags.barechenu && sh.chips.includes("מוריד הטל") && sh.chips.includes("ברכנו"), sh.chips.join(" · "));
 }
 
@@ -65,7 +65,7 @@ function at(y, m, d, service) {
   const sh = statusForHDate(hd, "shacharit");
   const mi = statusForHDate(hd, "mincha");
   const ar = statusForHDate(hd, "arvit");
-  check("7 Cheshvan daytime barechenu, arvit barech", sh.flags.barechenu && !sh.flags.barech && mi.flags.barechenu && ar.flags.barech && !ar.flags.barechenu);
+  check("7 Cheshvan barech in all services (SA OC 117:1)", sh.flags.barech && !sh.flags.barechenu && mi.flags.barech && !mi.flags.barechenu && ar.flags.barech && !ar.flags.barechenu);
 }
 
 {

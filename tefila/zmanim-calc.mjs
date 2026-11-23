@@ -50,7 +50,7 @@ export function formatHM(date, tz = ORANIT.tz) {
 
 export const ZMAN_ROWS = [
   ["alot", "עלות השחר"],
-  ["misheyakir", "משיכיר — ציצית ותפילין"],
+  ["misheyakir", "משיכיר — ציצית ותפילין, בשעת הצורך"],
   ["sunrise", "הנץ החמה"],
   ["shemaMGA", "סוף זמן ק״ש מג״א"],
   ["shemaGRA", "סוף זמן ק״ש גר״א"],

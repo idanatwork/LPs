@@ -1,7 +1,7 @@
 import { HDate, HebrewCalendar, Location, Zmanim, flags, months } from "@hebcal/core";
 import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs";
-import { daysLeftText, levanaDone, levanaState } from "./levana.mjs?v=72";
-import { omerNumber } from "./omer.mjs?v=72";
+import { daysLeftText, levanaDone, levanaState } from "./levana.mjs?v=73";
+import { omerNumber } from "./omer.mjs?v=73";
 
 /**
  * Seasonal reminders. Every provider returns null (nothing to show now) or a card:
@@ -16,6 +16,7 @@ const FASTS = {
   "Ta'anit Esther": "תענית אסתר",
   "Tzom Tammuz": "צום י״ז בתמוז",
   "Tish'a B'Av": "תשעה באב",
+  "Tish'a B'Av (observed)": "תשעה באב (נדחה)",
 };
 
 const WEEKDAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
@@ -83,7 +84,8 @@ function fastItem(now) {
   const name = FASTS[e.getDesc()];
   const fastDay = e.getDate();
   const diff = fastDay.abs() - day.abs();
-  const isAv = e.getDesc() === "Tish'a B'Av";
+  const isAv = /^Tish'a B'Av/.test(e.getDesc());
+  const nidche = e.getDesc() === "Tish'a B'Av (observed)";
   const greg = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff, 12);
   const times = sunTimes(greg);
   const weekday = WEEKDAYS[greg.getDay()];
@@ -91,10 +93,10 @@ function fastItem(now) {
   if (diff === 0) {
     const today = sunTimes(now);
     if (now > today.tzeit) return null;
-    card.text = "היום צום. הצום מסתיים בצאת הכוכבים, " + formatHM(today.tzeit) + ". אומרים ״עננו״ בתפילה.";
+    card.text = "היום צום. הצום מסתיים בצאת הכוכבים, " + formatHM(today.tzeit) + ". אומרים ״עננו״ בתפילה." + (nidche ? " במוצאי הצום מבדילים על הכוס, בלי נר ובשמים." : "");
   } else if (diff === 1) {
     card.text = isAv
-      ? "מחר תשעה באב. הצום מתחיל בשקיעה, " + formatHM(sunTimes(now).sunset) + ". אוכלים סעודה מפסקת לפני כן."
+      ? "מחר תשעה באב. הצום מתחיל בשקיעה, " + formatHM(sunTimes(now).sunset) + (nidche ? ". מפסיקים לאכול לפני השקיעה." : ". אוכלים סעודה מפסקת לפני כן.")
       : "מחר צום (יום " + weekday + "). הצום מתחיל בעלות השחר, " + formatHM(times.alot) + ".";
   } else {
     card.text = "בעוד " + (diff === 2 ? "יומיים" : diff + " ימים") + ", ביום " + weekday + ". " + (isAv ? "הצום מתחיל בשקיעה." : "הצום מתחיל בעלות השחר.");
@@ -243,7 +245,7 @@ function ninedaysItem(now, hd) {
   const m = hd.getMonth();
   const d = hd.getDate();
   if (m === months.AV && d >= 1 && d <= 9) {
-    return { id: "ninedays", title: "תשעת הימים", text: "מראש חודש אב ועד תשעה באב: לא אוכלים בשר ולא שותים יין (חוץ משבת), לא מכבסים ולא לובשים בגדים חדשים, ולא רוחצים ברחצת תענוג.", href: null };
+    return { id: "ninedays", title: "תשעת הימים", text: "מראש חודש אב: ממעטים בשמחה ולא עורכים נישואין, לא אוכלים בשר ולא שותים יין (חוץ משבת וסעודת מצווה), ולא לובשים בגדים חדשים. בשבוע שחל בו תשעה באב גם לא מסתפרים, לא מכבסים, לא לובשים בגדים מכובסים ולא רוחצים בחמין להנאה. כשתשעה באב חל ביום ראשון או נדחה, אין דין שבוע שחל בו (שו״ע או״ח תקנא). האשכנזים נוהגים בכיבוס וברחצה כבר מראש חודש.", href: null };
   }
   return null;
 }
@@ -252,7 +254,7 @@ function betweenStraitsItem(now, hd) {
   const m = hd.getMonth();
   const d = hd.getDate();
   if (m === months.TAMUZ && d >= 17) {
-    return { id: "bein", title: "בין המצרים", text: "מי״ז בתמוז ועד תשעה באב: ימי אבל על חורבן בית המקדש. לא נושאים נישואין.", href: null };
+    return { id: "bein", title: "בין המצרים", text: "מי״ז בתמוז ועד תשעה באב: ימי אבל על חורבן בית המקדש. הספרדים נוהגים לערוך נישואין עד ראש חודש אב, ומראש חודש לא. האשכנזים נמנעים כבר מי״ז בתמוז (שו״ע או״ח תקנא, ב).", href: null };
   }
   return null;
 }

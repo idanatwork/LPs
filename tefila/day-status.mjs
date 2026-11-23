@@ -12,6 +12,12 @@ const PUBLIC_FASTS = new Set([
   "Tish'a B'Av",
 ]);
 
+/** hebcal names a Tisha B'Av that falls on Shabbat and is pushed to Sunday "Tish'a B'Av (observed)". */
+const TISHA_RE = /^Tish'a B'Av( \(observed\))?$/;
+function baseDesc(d) {
+  return String(d).replace(/ \(observed\)$/, "");
+}
+
 const DEBATE_NOTE =
   "לדעת הרב אליעזר מלמד אין אומרים תחנון ביום העצמאות וביום ירושלים ובמנחה שלפניהם. הרב עובדיה יוסף הורה שאין לומר תחנון בשני הימים, ויש מקומות שאומרים; ינהג כמנהג מקומו.";
 
@@ -61,21 +67,22 @@ function isMashiv(hd, service) {
   return false;
 }
 
-function isBarech(hd, service) {
+function isBarech(hd, _service) {
   const m = hd.getMonth();
   const d = hd.getDate();
   if (m >= months.KISLEV) return true;
-  if (m === months.CHESHVAN && d >= (service === "arvit" ? 7 : 8)) return true;
+  // SA OC 117:1 — in Israel from the night of 7 Cheshvan, and so in every prayer of that day.
+  if (m === months.CHESHVAN && d >= 7) return true;
   if (m === months.NISAN && d <= 14) return true;
   return false;
 }
 
-function isBarechenu(hd, service) {
+function isBarechenu(hd, _service) {
   const m = hd.getMonth();
   const d = hd.getDate();
   if (m === months.NISAN && d >= 16) return true;
   if (m >= months.IYYAR && m <= months.TISHREI) return true;
-  if (m === months.CHESHVAN && d <= (service === "arvit" ? 6 : 7)) return true;
+  if (m === months.CHESHVAN && d <= 6) return true;
   return false;
 }
 
@@ -92,7 +99,7 @@ function tachanunDecision(hd, events, service, weekday) {
   if (has(/^Pesach Sheni/)) return { say: false, debate: false };
   if (has(/^Lag BaOmer/)) return { say: false, debate: false };
   if (m === months.SIVAN && d <= 12) return { say: false, debate: false };
-  if (has(/^Tish'a B'Av$/)) return { say: false, debate: false };
+  if (has(TISHA_RE)) return { say: false, debate: false };
   if (has(/^Tu B'Av$/)) return { say: false, debate: false };
   if (m === months.TISHREI && d >= 9) return { say: false, debate: false };
   if (mask & flags.CHAG) return { say: false, debate: false };
@@ -104,6 +111,21 @@ function tachanunDecision(hd, events, service, weekday) {
   if (has(/^Erev Rosh Hashana/)) return { say: false, debate: false };
   if (service === "mincha" && weekday === 5) return { say: false, debate: false };
   if (service === "mincha" && isErevYomTov(events)) return { say: false, debate: false };
+  if (service === "mincha") {
+    const next = hd.next();
+    const nextEvents = eventsOn(next);
+    const nextDesc = nextEvents.map((e) => e.getDesc());
+    // SA OC 552:12 — no tachanun at Mincha of Erev Tisha B'Av (it is called a mo'ed).
+    if (nextDesc.some((x) => TISHA_RE.test(x))) return { say: false, debate: false };
+    // Kitzur Shulchan Aruch Yalkut Yosef 131:38 — no vidui at the Mincha before any day without vidui
+    // (Erev Rosh Chodesh, Erev Chanukah, Erev Lag BaOmer and the like), except Erev Rosh Hashana and Erev Yom Kippur.
+    // Erev Pesach Sheni is referred there to a separate note, and Yom HaAtzmaut / Yom Yerushalayim are a dispute; both stay as they were.
+    const skipNext = nextDesc.some((x) => /^Erev (Rosh Hashana|Yom Kippur)/.test(x) || /^Pesach Sheni/.test(x));
+    if (!skipNext) {
+      const nextDecision = tachanunDecision(next, nextEvents, "shacharit", civilWeekday(next));
+      if (!nextDecision.say && !nextDecision.debate) return { say: false, debate: false };
+    }
+  }
   return { say: true, debate: false };
 }
 
@@ -124,8 +146,8 @@ export function statusForHDate(hd, service) {
   const chm = (mask & flags.CHOL_HAMOED) !== 0;
   const pesachChm = chm && hd.getMonth() === months.NISAN;
   const sukkotChm = chm && hd.getMonth() === months.TISHREI;
-  const fast = desc.some((d) => PUBLIC_FASTS.has(d));
-  const tisha = desc.includes("Tish'a B'Av");
+  const fast = desc.some((d) => PUBLIC_FASTS.has(baseDesc(d)));
+  const tisha = desc.some((d) => TISHA_RE.test(d));
   const aseret = hd.getMonth() === months.TISHREI && hd.getDate() >= 1 && hd.getDate() <= 10;
   const mashiv = isMashiv(hd, service);
   const barech = isBarech(hd, service);
@@ -155,7 +177,11 @@ export function statusForHDate(hd, service) {
   if (barech) chips.push("ברך עלינו");
   else if (barechenu) chips.push("ברכנו");
 
-  const openAnenu = tisha || (fast && service === "mincha");
+  // SA OC 565:3 (Mechaber) and Kitzur Yalkut Yosef (laws of fasts): one who fasts says Anenu at Shacharit and Mincha;
+  // on Tisha B'Av also at Arvit. Arvit before the other fasts is still a night of eating.
+  const openAnenu = tisha || (fast && service !== "arvit");
+  const monThu = weekday === 1 || weekday === 4;
+  const hallel = service === "shacharit" && (rc || chanukah || (hd.getMonth() === months.NISAN && hd.getDate() >= 15 && hd.getDate() <= 21) || (hd.getMonth() === months.SIVAN && hd.getDate() === 6) || (hd.getMonth() === months.TISHREI && hd.getDate() >= 15 && hd.getDate() <= 22));
   const flagsOut = {
     aseret,
     tal: !mashiv,
@@ -169,9 +195,10 @@ export function statusForHDate(hd, service) {
     chanukah,
     purim,
     anenu: openAnenu,
-    nachem: tisha && service === "mincha",
+    // SA OC 557:1 (Mechaber) and Rav Ovadia Yosef: Nachem in every prayer of Tisha B'Av.
+    nachem: tisha,
     "twice-elohim": service === "shacharit" && (aseret || (hd.getMonth() === months.TISHREI && hd.getDate() === 21)),
-    hallel: service === "shacharit" && (rc || chanukah || (hd.getMonth() === months.NISAN && hd.getDate() >= 15 && hd.getDate() <= 21) || (hd.getMonth() === months.SIVAN && hd.getDate() === 6) || (hd.getMonth() === months.TISHREI && hd.getDate() >= 15 && hd.getDate() <= 22)),
+    hallel,
     "hallel-full": service === "shacharit" && (chanukah || (hd.getMonth() === months.NISAN && hd.getDate() === 15) || (hd.getMonth() === months.SIVAN && hd.getDate() === 6) || (hd.getMonth() === months.TISHREI && hd.getDate() >= 15 && hd.getDate() <= 22)),
     "musaf-rc": service === "shacharit" && rc && weekday !== 6,
     "musaf-shabbat-note": service === "shacharit" && rc && weekday === 6,
@@ -186,8 +213,15 @@ export function statusForHDate(hd, service) {
     "shemini-atzeret": hd.getMonth() === months.TISHREI && hd.getDate() === 22,
     yomtov: (mask & flags.CHAG) !== 0 || chm,
     fast,
+    // Birkat kohanim at Mincha only on a fast day (SA OC 129:1).
+    "bk-mincha": service === "mincha" && fast,
+    // Weekday Shacharit in a minyan: half kaddish after the Amida / vidui, except Monday and Thursday,
+    // when the Torah reading follows directly and ends with its own half kaddish (Siddur Edot HaMizrach).
+    "half-kaddish": service === "shacharit" && weekday !== 6 && !hallel && !monThu,
+    // Kaddish titkabal closes the prayer after Uva LeTzion on a day without Hallel.
+    "titkabal-uva": service === "shacharit" && weekday !== 6 && !hallel,
     torah:
-      (service === "shacharit" && weekday !== 6 && (((weekday === 1 || weekday === 4) && tachanun.say) || rc || fast))
+      (service === "shacharit" && weekday !== 6 && (monThu || rc || fast || chanukah || purim || chm))
       || (service === "mincha" && fast && weekday !== 6),
   };
   if (service === "shacharit" && weekday <= 5) flagsOut["weekday-" + weekday] = true;
