@@ -3,9 +3,11 @@
  * (Oranit; 20 clock minutes before sunset; the lock lifts at Rabbeinu Tam,
  * 72 GRA minutes after sunset, times.rabbeinuTam).
  * Israeli calendar only: one-day Yom Tov, except two days of Rosh Hashana.
+ * v75: on Friday / erev Yom Tov (a weekday eve) the Mincha page stays open
+ * from candle lighting until sunset; every other page locks at candle lighting.
  */
 import { HDate, Location, Zmanim, months } from "@hebcal/core";
-import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs?v=74";
+import { ORANIT, computeFromSun, formatHM } from "./zmanim-calc.mjs?v=75";
 
 const TZ = ORANIT.tz;
 const LOCK_ID = "siddur-shabbat-lock";
@@ -100,10 +102,31 @@ function intervalsAround(now) {
   return merged;
 }
 
-export function evaluateLock(now) {
+/** Sunset on the weekday eve that opens `period` (Friday / erev Yom Tov), or null
+ * when the eve is itself a holy day (Yom Tov into Shabbat, 2nd day of Rosh Hashana). */
+export function minchaOpenUntil(period) {
+  if (!period || !period.days || !period.days.length) return null;
+  const eveIso = shiftIso(period.days[0].iso, -1);
+  if (holyInfo(new HDate(atNoon(eveIso))).holy) return null;
+  return timesForCivilIso(eveIso).sunset;
+}
+
+export function isMinchaPage() {
+  if (typeof location === "undefined") return false;
+  return /\/mincha\.html$/.test(location.pathname || "");
+}
+
+export function evaluateLock(now, opts) {
   const when = now instanceof Date ? now : new Date();
+  const mincha = opts && typeof opts.mincha === "boolean" ? opts.mincha : isMinchaPage();
   const period = intervalsAround(when).find((item) => when >= item.start && when < item.end);
   if (!period) return { locked: false, period: null, greeting: "", heading: "", untilLabel: "", untilTime: "" };
+
+  const sunset = minchaOpenUntil(period);
+  const minchaOpen = !!sunset && when < sunset;
+  if (minchaOpen && mincha) {
+    return { locked: false, period, minchaOpen: true, minchaUntil: sunset, greeting: "", heading: "", untilLabel: "", untilTime: "" };
+  }
 
   const current = [...period.days].reverse().find((day) => when >= day.start) || period.days[0];
   const last = period.days[period.days.length - 1];
@@ -125,6 +148,8 @@ export function evaluateLock(now) {
     untilLabel,
     untilTime: formatHM(period.end, TZ),
     current,
+    minchaOpen,
+    minchaUntil: minchaOpen ? sunset : null,
   };
 }
 
@@ -146,6 +171,7 @@ function lockDocument() {
       '<p class="siddur-lock-heading" hidden></p>' +
       '<p class="siddur-lock-body">הסידור אינו זמין בשבת ובחג</p>' +
       '<p class="siddur-lock-until"></p>' +
+      '<p class="siddur-lock-mincha" hidden><a href="mincha.html"></a></p>' +
       '<p class="siddur-lock-memorial">לעילוי נשמת עדי עדיאל טויטו הי״ד</p>' +
     '</div>';
   (document.body || document.documentElement).appendChild(el);
@@ -162,6 +188,15 @@ function hideSplash() {
   const splash = document.getElementById("memorial-splash");
   if (splash && splash.parentNode) splash.remove();
   try { document.documentElement.classList.add("splash-seen"); } catch (e) {}
+}
+
+function minchaHref() {
+  try {
+    const mod = new URL(import.meta.url);
+    return new URL("mincha.html", mod).pathname;
+  } catch (e) {
+    return "mincha.html";
+  }
 }
 
 export function applyLock(now) {
@@ -182,6 +217,15 @@ export function applyLock(now) {
     el.querySelector(".siddur-lock-until"),
     "יחזור לפעילות " + state.untilLabel + " בשעה " + state.untilTime
   );
+  const minchaRow = el.querySelector(".siddur-lock-mincha");
+  if (minchaRow) {
+    minchaRow.hidden = !state.minchaOpen;
+    const link = minchaRow.querySelector("a");
+    if (link && state.minchaOpen) {
+      link.href = minchaHref();
+      link.textContent = "תפילת מנחה פתוחה עד השקיעה בשעה " + formatHM(state.minchaUntil, TZ);
+    }
+  }
   root.classList.add("siddur-locked");
   root.classList.remove("siddur-lock-pending");
   return state;

@@ -1,5 +1,5 @@
 import { buildPushPayload } from "@block65/webcrypto-web-push";
-import { dueAlerts, PRAYERS, ORANIT, subKey, prayerPayload, timesForRecord, isShabbatOrYomTovLocked } from "./schedule.mjs";
+import { dueAlerts, PRAYERS, ORANIT, subKey, prayerPayload, timesForRecord, isShabbatOrYomTovLocked, MINCHA_DEFAULT, CANDLES_DEFAULT, pushTtl } from "./schedule.mjs";
 
 const ALLOWED_ORIGIN = "https://idanatwork.github.io";
 
@@ -60,7 +60,11 @@ function normalizeRecord(body, existing) {
         ? { shacharitOffset: Number(alerts.shacharitOffset) }
         : {}),
       mincha: !!alerts.mincha,
-      minchaOffset: Number.isFinite(Number(alerts.minchaOffset)) ? Number(alerts.minchaOffset) : 15,
+      minchaOffset: Number.isFinite(Number(alerts.minchaOffset)) ? Number(alerts.minchaOffset) : MINCHA_DEFAULT,
+      ...(alerts.minchaOffsetSet ? { minchaOffsetSet: true } : {}),
+      // Candle-lighting alert (v75): on unless explicitly turned off.
+      candles: alerts.candles !== false,
+      candlesOffset: Number.isFinite(Number(alerts.candlesOffset)) ? Math.max(5, Math.min(120, Number(alerts.candlesOffset))) : CANDLES_DEFAULT,
       arvit: !!alerts.arvit,
       arvitOffset: Number.isFinite(Number(alerts.arvitOffset)) ? Number(alerts.arvitOffset) : 0,
     },
@@ -103,10 +107,10 @@ async function handleUnsubscribe(req, env) {
   return json(req, { ok: true });
 }
 
-async function sendPush(env, subscription, prayer) {
+async function sendPush(env, subscription, prayer, ttl = 60 * 60) {
   const message = {
     data: JSON.stringify({ title: prayer.title, body: prayer.body, url: prayer.url }),
-    options: { ttl: 60 * 60, urgency: "high" },
+    options: { ttl, urgency: "high" },
   };
   const payload = await buildPushPayload(message, subscription, {
     subject: env.VAPID_SUBJECT,
@@ -132,6 +136,10 @@ export async function runSchedule(env, now, opts = {}) {
         errors.push({ key: key.name, error: String(err) });
         continue;
       }
+      // Never send inside Shabbat / Yom Tov, even for a forced test send.
+      const rLat = Number(record.lat) || ORANIT.lat;
+      const rLon = Number(record.lng ?? record.lon) || ORANIT.lon;
+      if (isShabbatOrYomTovLocked(now, rLat, rLon, record.tz || ORANIT.tz)) continue;
       if (opts.forceKind && !kinds.includes(opts.forceKind)) {
         if (opts.force) kinds = [opts.forceKind];
       }
@@ -148,7 +156,8 @@ export async function runSchedule(env, now, opts = {}) {
       let changed = false;
       for (const kind of kinds) {
         try {
-          const res = await sendPush(env, record.subscription, prayerPayload(kind, times, alerts, tz));
+          // TTL never reaches past candle lighting, so a late delivery cannot land on Shabbat / Yom Tov.
+          const res = await sendPush(env, record.subscription, prayerPayload(kind, times, alerts, tz), pushTtl(record, now));
           if (res.status === 404 || res.status === 410) {
             await env.SUBSCRIPTIONS_KV.delete(key.name);
             sent.push({ key: key.name, kind, status: res.status, deleted: true });

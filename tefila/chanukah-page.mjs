@@ -1,5 +1,5 @@
 import { HDate } from "@hebcal/core";
-import { chanukahNight, isDone, markDone } from "./seasonal.mjs?v=74";
+import { chanukahNight, isDone, markDone } from "./seasonal.mjs?v=75";
 
 function paint() {
   const now = new Date();

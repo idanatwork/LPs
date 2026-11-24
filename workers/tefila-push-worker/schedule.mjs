@@ -21,7 +21,35 @@ export const PRAYERS = {
     body: "הגיע זמן ערבית",
     url: `${BASE}/arvit.html`,
   },
+  candles: {
+    title: "הדלקת נרות",
+    body: "הדלקת נרות בקרוב",
+    url: `${BASE}/zmanim.html`,
+  },
 };
+
+/** Mincha default moved from 15 to 30 minutes before sunset (v75). */
+export const MINCHA_DEFAULT = 30;
+const OLD_MINCHA_DEFAULT = 15;
+/** Candle-lighting alert: minutes before candle lighting (candles = sunset − 20, so 40 min before sunset). */
+export const CANDLES_DEFAULT = 20;
+
+/**
+ * Mincha offset for a subscription. Clients before v75 always sent 15 (the old default), so a 15
+ * without minchaOffsetSet is treated as "never chosen" and moves to the new default.
+ */
+export function minchaOffset(alerts) {
+  const a = alerts || {};
+  const mins = Number(a.minchaOffset);
+  if (!Number.isFinite(mins)) return MINCHA_DEFAULT;
+  if (mins === OLD_MINCHA_DEFAULT && !a.minchaOffsetSet) return MINCHA_DEFAULT;
+  return mins;
+}
+
+export function candlesOffset(alerts) {
+  const mins = Number(alerts && alerts.candlesOffset);
+  return Number.isFinite(mins) ? Math.max(5, Math.min(120, mins)) : CANDLES_DEFAULT;
+}
 
 export function computeFromSun(sunrise, sunset) {
   const shaah = (sunset.getTime() - sunrise.getTime()) / 12;
@@ -65,6 +93,9 @@ export function prayerPayload(kind, times, alerts, tz = ORANIT.tz) {
       ...base,
       body: `סוף זמן קריאת שמע בשעה ${formatHM(times.shemaMGA, tz)}`,
     };
+  }
+  if (kind === "candles" && times.candles) {
+    return { ...base, body: `הדלקת נרות בשעה ${formatHM(times.candles, tz)}` + (times.candlesFor ? ` · ${times.candlesFor}` : "") };
   }
   return { ...base };
 }
@@ -122,7 +153,8 @@ function isChagEvent(ev) {
   if (f & flags.EREV) return false;
   const desc = ev.getDesc();
   return (
-    desc.startsWith("Rosh Hashana") ||
+    // "Rosh Hashana 5787" and "Rosh Hashana II" — not "Rosh Hashana LaBehemot" (1 Elul, a weekday).
+    /^Rosh Hashana (\d+|II)$/.test(desc) ||
     desc === "Yom Kippur" ||
     desc === "Pesach I" ||
     desc === "Pesach VII" ||
@@ -180,9 +212,10 @@ export function alertTime(kind, times, alerts) {
     return times.sunrise;
   }
   if (kind === "mincha") {
-    const mins = Number(alerts.minchaOffset);
-    const offset = Number.isFinite(mins) ? mins : 15;
-    return new Date(times.sunset.getTime() - offset * 60 * 1000);
+    return new Date(times.sunset.getTime() - minchaOffset(alerts) * 60 * 1000);
+  }
+  if (kind === "candles") {
+    return new Date(times.candles.getTime() - candlesOffset(alerts) * 60 * 1000);
   }
   if (kind === "arvit") {
     const mins = Number(alerts.arvitOffset);
@@ -194,7 +227,38 @@ export function alertTime(kind, times, alerts) {
 
 export function kindEnabled(kind, alerts) {
   if (!alerts) return false;
+  // Candle-lighting alert is on unless the subscriber turned it off (records before v75 have no field).
+  if (kind === "candles") return alerts.candles !== false;
   return !!alerts[kind];
+}
+
+/**
+ * Candle lighting tonight opens Shabbat / Yom Tov, and today is not itself Shabbat / Yom Tov
+ * (2nd day of Rosh Hashana, Yom Tov into Shabbat: candles fall inside the earlier holy day — no alert).
+ */
+export function candlesTonight(y, m, d) {
+  const today = hdateFromCivil(y, m, d);
+  if (isHoly(today)) return null;
+  const tonight = today.next();
+  if (!isHoly(tonight)) return null;
+  if (tonight.getDay() === 6) return "שבת שלום";
+  const ev = HebrewCalendar.getHolidaysOnDate(tonight, true) || [];
+  return ev.some((e) => e.getDesc() === "Yom Kippur") ? "גמר חתימה טובה" : "חג שמח";
+}
+
+/**
+ * Push TTL in seconds: one hour, but never past tonight's candle lighting on Friday / erev Yom Tov,
+ * so a delayed delivery cannot arrive after Shabbat / Yom Tov has begun.
+ */
+export function pushTtl(record, now) {
+  const lat = Number(record.lat) || ORANIT.lat;
+  const lon = Number(record.lng ?? record.lon) || ORANIT.lon;
+  const tz = record.tz || ORANIT.tz;
+  const p = civilParts(now, tz);
+  if (!candlesTonight(p.y, p.m, p.d)) return 3600;
+  const candles = zmanimForCivil(p.y, p.m, p.d, lat, lon, tz).candles;
+  const secs = Math.floor((candles.getTime() - now.getTime()) / 1000);
+  return Math.max(0, Math.min(3600, secs));
 }
 
 /**
@@ -213,8 +277,10 @@ export function dueAlerts(record, now) {
   const today = civilYmd(now, tz);
   const lastSent = record.lastSent || {};
   const due = [];
-  for (const kind of ["shacharit", "mincha", "arvit"]) {
+  const candlesFor = candlesTonight(p.y, p.m, p.d);
+  for (const kind of ["shacharit", "mincha", "arvit", "candles"]) {
     if (!kindEnabled(kind, alerts)) continue;
+    if (kind === "candles" && !candlesFor) continue;
     if (lastSent[kind] === today) continue;
     const when = alertTime(kind, times, alerts);
     if (!when) continue;
@@ -234,5 +300,8 @@ export function timesForRecord(record, now) {
   const lon = Number(record.lng ?? record.lon) || ORANIT.lon;
   const tz = record.tz || ORANIT.tz;
   const p = civilParts(now, tz);
-  return { tz, times: zmanimForCivil(p.y, p.m, p.d, lat, lon, tz), alerts: record.alerts || {} };
+  const times = zmanimForCivil(p.y, p.m, p.d, lat, lon, tz);
+  const candlesFor = candlesTonight(p.y, p.m, p.d);
+  if (candlesFor) times.candlesFor = candlesFor;
+  return { tz, times, alerts: record.alerts || {} };
 }

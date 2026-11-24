@@ -10,7 +10,10 @@
       shacharitWhen: "shema",
       shacharitOffset: 15,
       mincha: true,
-      minchaOffset: 15,
+      minchaOffset: 30,
+      minchaOffsetSet: false,
+      candles: true,
+      candlesOffset: 20,
       arvit: true,
       arvitOffset: 0,
       loc: "oranit",
@@ -28,6 +31,8 @@
         var parsed = JSON.parse(raw);
         Object.assign(s, parsed);
         if (!parsed.shacharitWhen) s.shacharitWhen = "sunrise";
+        // v75: Mincha default moved from 15 to 30. A stored 15 that the user never edited is the old default.
+        if (Number(s.minchaOffset) === 15 && !parsed.minchaOffsetSet) s.minchaOffset = 30;
       }
     } catch (e) {}
     return s;
@@ -78,6 +83,10 @@
     s.shacharitOffset = Math.max(0, Math.min(180, Number($("alert-shacharit-offset").value) || 0));
     s.mincha = $("alert-mincha").checked;
     s.minchaOffset = Math.max(0, Math.min(180, Number($("alert-mincha-offset").value) || 0));
+    if ($("alert-candles")) {
+      s.candles = $("alert-candles").checked;
+      s.candlesOffset = Math.max(5, Math.min(120, Number($("alert-candles-offset").value) || 20));
+    }
     s.arvit = $("alert-arvit").checked;
     s.arvitOffset = Math.max(0, Math.min(180, Number($("alert-arvit-offset").value) || 0));
     var loc = document.querySelector('input[name="alert-loc"]:checked');
@@ -98,6 +107,10 @@
     $("alert-shacharit-offset").value = String(s.shacharitOffset == null ? 15 : s.shacharitOffset);
     $("alert-mincha").checked = !!s.mincha;
     $("alert-mincha-offset").value = String(s.minchaOffset);
+    if ($("alert-candles")) {
+      $("alert-candles").checked = s.candles !== false;
+      $("alert-candles-offset").value = String(s.candlesOffset == null ? 20 : s.candlesOffset);
+    }
     $("alert-arvit").checked = !!s.arvit;
     $("alert-arvit-offset").value = String(s.arvitOffset);
     var radios = document.querySelectorAll('input[name="alert-loc"]');
@@ -151,6 +164,9 @@
         shacharitOffset: s.shacharitOffset,
         mincha: !!s.mincha,
         minchaOffset: s.minchaOffset,
+        minchaOffsetSet: !!s.minchaOffsetSet,
+        candles: s.candles !== false,
+        candlesOffset: s.candlesOffset == null ? 20 : s.candlesOffset,
         arvit: !!s.arvit,
         arvitOffset: s.arvitOffset
       }
@@ -467,6 +483,13 @@
       if (t && t.name === "alert-loc" && t.value === "oranit") {
         var cur = readForm(load());
         applyOranit(cur, "");
+        return;
+      }
+      if (t && t.id === "alert-mincha-offset") {
+        var edited = readForm(load());
+        edited.minchaOffsetSet = true;
+        save(edited);
+        pushSettings(edited);
         return;
       }
       persistFromForm();

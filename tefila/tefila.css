@@ -554,6 +554,13 @@ html:not([data-theme]) .settings-hub .hub-sub,
 .alerts-panel {
   accent-color: var(--accent);
 }
+.alerts-note {
+  margin: -4px 0 8px;
+  padding-right: 1.6em;
+  font-size: 13px;
+  line-height: 1.45;
+  opacity: 0.8;
+}
 .alerts-sub {
   margin: 0 0 6px;
   padding-right: 1.6em;
@@ -1159,7 +1166,7 @@ html:not([data-theme]) {
   --fg: #2B2620;
   --muted: #4E4338;
   --accent: #3F2A18;
-  --klaf-tile: url("parchment-p1.webp?v=74");
+  --klaf-tile: url("parchment-p1.webp?v=75");
   --klaf-bg: #DACCB2;
   background-color: var(--klaf-bg);
   background-image: var(--klaf-tile);
@@ -1384,7 +1391,7 @@ html.siddur-lock-pending::after {
   inset: 0;
   z-index: 400;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=74");
+  background-image: url("parchment-p1.webp?v=75");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1405,7 +1412,7 @@ html.siddur-locked body > *:not(.siddur-lock) {
   padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px);
   box-sizing: border-box;
   background-color: #DACCB2;
-  background-image: url("parchment-p1.webp?v=74");
+  background-image: url("parchment-p1.webp?v=75");
   background-repeat: repeat;
   background-size: 640px auto;
   background-attachment: fixed;
@@ -1460,6 +1467,22 @@ html.siddur-locked body > *:not(.siddur-lock) {
   line-height: 1.55;
   font-weight: 700;
   color: #3F2A18;
+}
+.siddur-lock-mincha {
+  margin: -20px 0 32px;
+  font-size: clamp(17px, 3.4vw, 22px);
+  line-height: 1.5;
+}
+.siddur-lock-mincha[hidden] { display: none; }
+.siddur-lock-mincha a {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid #8A6A3A;
+  border-radius: 999px;
+  color: #3F2A18;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgba(255, 250, 240, 0.55);
 }
 .siddur-lock-memorial {
   margin: 0;
